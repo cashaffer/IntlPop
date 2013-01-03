@@ -1,0 +1,5 @@
+/**
+* Version support
+*/
+(function() {
+  var theVERSION = "

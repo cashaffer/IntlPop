@@ -1,2 +1,6 @@
 # Temp files
 *~
+
+#Generated files
+version.js
+version.txt
