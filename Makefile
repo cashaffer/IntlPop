@@ -18,6 +18,7 @@ version.js :version1.txt version.txt version2.txt
 
 clean:
 	- $(RM) *~
+	- $(RM) version.txt version.js
 
 lint: csslint jshint
 
