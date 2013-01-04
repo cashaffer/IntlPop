@@ -1,0 +1,12 @@
+/* CSS file for styling a Simulation window */
+
+rect {
+  fill-opacity: 0;
+  stroke: black;
+  stroke-width: 1
+}
+
+text { 
+  font-family: sans-serif;
+  font-size: 12px;
+}
