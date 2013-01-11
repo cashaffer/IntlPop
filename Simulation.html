@@ -9,20 +9,200 @@
   <meta charset="utf-8">
   <title>IntlPop Simulation Window</title>
   <link rel="stylesheet" href="Simulation.css" type="text/css" />
+<style>
+/* Note: This will move to Simulation.css once things settle down and
+   I'm not constantly having to reload the page for little changes! */
+/* CSS file for styling a Simulation window */
 
+* {
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+}
+
+#container {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 1060px;
+  height: 352px;
+  background-color: #efe;
+}
+
+#pyramidPanel { 
+  position: absolute;
+  width: 355px;
+  height: 300px;
+  top: 0;
+  left: 0;
+}
+
+#popChartPanel { 
+  position: absolute;
+  width: 450px;
+  height: 300px;
+  top: 0;
+  left: 350px;
+}
+
+#simPanel { 
+  position: relative;
+  width: 255px;
+  height: 300px;
+  top: 0;
+  left: 800px;
+}
+
+/* This is where we send text messages to explain what is going on */
+.output {
+  position: absolute;
+  height: 50px;
+  width: 1050px;
+  top: 291px;
+  border: 1px solid black;
+  padding: 5px;
+}
+
+#b1 {
+  position: absolute;
+  left: 0;
+}
+
+#b2 {
+  position: absolute;
+  right: 0;
+}
+
+#fertilityButton {
+  position: absolute;
+  background-color: red;
+  right: 0; /* on the right border of the container */
+  top: 10%; /* 10% from the top of the container */
+}
+
+#simBackButton, #simOptionsButton, #simForwardButton {
+  position: relative;
+  background-color: red;
+  top: -75px;
+  left: 55px;
+}
+
+</style>
 
 </head>
 
 <body>
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
-  <rect x="30" y="20" width="100" height="150"/>
-  <text x="10" y="100" 
-   font-family="'Times New Roman', Times, serif" font-size="48">
-    Some text
-  </text>
-  <text x="197" y="25">Year:</text>
-  <text x="10" y="11">Deaths/</text>
-  <text x="10" y="21">1000</text>
-</svg>
+<div id="container">
+  <div id="main">
+    <div id="pyramidPanel">
+      <button id="b1">B1</button>
+      <button id="b2">B2</button>
+      <div id="birthChart"></div>
+      <div id="deathChart"></div>
+    </div>
+    <div id="popChartPanel">
+      <button id="fertilityButton">Fertility</button>
+      <button>Life Expectancy</button>
+      <button>Net Migration</button>
+    </div>
+    <div id="simPanel">
+      <button id="simBackButton">&lt; Sim</button>
+      <button id="simOptionsButton">Options</button>
+      <button id="simForwardButton">Sim &gt;</button>
+    </div>
+  </div>
+  <p class="output"></p>
+</div>
+
+<script src="http://raphaeljs.com/raphael.js"></script>
+<script src="http://github.com/DmitryBaranovskiy/g.raphael/blob/master/min/g.raphael-min.js?raw=t\
+rue"></script>
+<script src="http://github.com/DmitryBaranovskiy/g.raphael/blob/master/min/g.bar-min.js?raw=true"\
+></script>
+<script src="http://github.com/DmitryBaranovskiy/g.raphael/blob/master/min/g.line-min.js?raw=true\
+"></script>
+<script src="lib/jquery.min.js"></script>
+<script>
+/* Note: This will move to Simulation.js once things settle down and
+   I'm not constantly having to reload the page for little changes! */
+"use strict";
+(function ($) {
+  var tell = function (msg) { $('p.output').text(msg); };
+  var inputFileLines; /* This will hold the country data */
+
+  // Set up the interface
+  var rSim = new Raphael("simPanel", 255, 300);
+  rSim.rect(5, 20, 245, 200);
+  rSim.path("M20 50 L230 50");
+  var initPopField = rSim.text(125, 35, "Initial Population:");
+  var currYearField = rSim.text(125, 65, "");
+  var currPopField = rSim.text(125, 80, "");
+  var currYear = 2010;
+  var currPop = 0;
+
+  tell("Click on the 'Options' button to choose from among the available simulation features.");
+
+  // Handler for Fertility button
+  function fertility() {
+    tell("Clicked on Fertility button.");
+  }
+
+
+  // Handler for options button
+  function options() {
+    tell("Clicked on simOptions button.");
+    if (readFile("file:///C:/Cliff/IntlPop/US.txt") === true) {
+      initPopField.attr('text', 'Initial Population: ' + inputFileLines[1]);
+      currYearField.attr('text', 'Year: ' + inputFileLines[2]);
+      currPopField.attr('text', 'Population: ' + inputFileLines[1]);
+    }
+  }
+
+  // Handler for simForward button
+  function simForward() {
+    tell("Clicked on simForward button.");
+    currPop = currPop * inputFileLines[3];
+    currYear = currYear + 1;
+    currYearField.attr('text', 'Year: ' + currYear);
+    currPopField.attr('text', 'Population: ' + currPop);
+  }
+
+  // Stub function for reading data files
+  function readFile(theURL) {
+    var txtFile = new XMLHttpRequest();
+    txtFile.open("GET", theURL, false);
+    txtFile.onreadystatechange = function() {
+console.log("Inside");
+      if (txtFile.readyState === 4) {  // Makes sure the document is ready to parse.
+console.log("Ready to parse");
+        if (txtFile.status === 200) {  // Makes sure it's found the file.
+console.log("Found file");
+          inputFileLines = txtFile.responseText.split("\n"); // Will separate each line into an array
+console.log("Read it in.");
+console.log(inputFileLines[0]);
+        }
+        else {
+console.log("Failed to read");
+	  alert("Unable to find file " + theURL);
+	  return false;
+	}
+      }
+      else {
+console.log("Document not ready");
+        alert("Document not ready");
+        return false;
+      }
+    }
+    return txtFile.send(null);
+  }
+
+
+  // Button callbacks
+  $('#fertilityButton').click(fertility);
+  $('#simForwardButton').click(simForward);
+  $('#simOptionsButton').click(options);
+}(jQuery));
+</script>
+
 </body>
 </html>
