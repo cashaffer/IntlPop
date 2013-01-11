@@ -56,7 +56,7 @@
 .output {
   position: absolute;
   height: 50px;
-  width: 1050px;
+  width: 1048px;
   top: 291px;
   border: 1px solid black;
   padding: 5px;
@@ -72,11 +72,11 @@
   right: 0;
 }
 
-#fertilityButton {
-  position: absolute;
+#fertilityButton, #lifeExpButton, #netMigButton {
+  position: relative;
   background-color: red;
-  right: 0; /* on the right border of the container */
-  top: 10%; /* 10% from the top of the container */
+  top: -100px;
+  left: 55px;
 }
 
 #simBackButton, #simOptionsButton, #simForwardButton {
@@ -100,8 +100,8 @@
     </div>
     <div id="popChartPanel">
       <button id="fertilityButton">Fertility</button>
-      <button>Life Expectancy</button>
-      <button>Net Migration</button>
+      <button id="lifeExpButton">Life Expectancy</button>
+      <button id="netMigButton">Net Migration</button>
     </div>
     <div id="simPanel">
       <button id="simBackButton">&lt; Sim</button>
@@ -129,6 +129,9 @@
   var initPopField = rSim.text(125, 35, "Initial Population:");
   var currYearField = rSim.text(125, 65, "");
   var currPopField = rSim.text(125, 80, "");
+
+  var rChart = new Raphael("popChartPanel", 500, 300);
+  var countryField = rChart.text(100, 100, "");
   var currYear = 2010;
   var currPop = 0;
 
@@ -143,9 +146,11 @@
   // Handler for options button
   function options() {
     tell("Clicked on simOptions button.");
-    if (readFile("http://algoviz.org/IntlPop/US.txt") === true) {
+    if (readFile("http://geosim.cs.vt.edu/IntlPop/US.txt") === true) {
 console.log("Back now: " + inputFileLines[0]);
-      initPopField.attr('text', 'Initial Population: ' + inputFileLines[1]);
+      countryField.attr('text', inputFileLines[0]);
+      currPop = inputFileLines[1];
+      initPopField.attr('text', 'Initial Population: ' + currPop);
       currYearField.attr('text', 'Year: ' + inputFileLines[2]);
       currPopField.attr('text', 'Population: ' + inputFileLines[1]);
     }
