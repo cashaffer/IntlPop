@@ -119,8 +119,6 @@
    I'm not constantly having to reload the page for little changes! */
 "use strict";
 (function ($) {
-//  var serverURL = "http://geosim.cs.vt.edu/IntlPop/US.txt";
-  var serverURL = "file:///home/shaffer/IntlPop/US.txt";
   var tell = function (msg) { $('p.output').text(msg); };
   var inputFileLines; /* This will hold the country data */
 
@@ -137,6 +135,22 @@
   var currYear = 2010;
   var currPop = 0;
 
+  // Based on the URL of the current page, build the URL for a data file
+  function buildURL(filename) {
+    var pathArray = window.location.pathname.split( '/' );
+    var theURL = window.location.protocol + "//" + window.location.host;
+    for ( var i = 0; i < pathArray.length - 1; i++ ) {
+      theURL += pathArray[i];
+      theURL += "/";
+    }
+    theURL += filename;
+console.log("Data URL is: " + theURL);
+    return theURL;
+  }
+
+  console.log("This page's URL is: " + window.location.protocol + "://" +
+              window.location.host + "/" + window.location.pathname);
+
   tell("Click on the 'Options' button to choose from among the available simulation features.");
 
   // Handler for Fertility button
@@ -147,11 +161,12 @@
   // Handler for options button
   function options() {
     tell("Clicked on simOptions button.");
-    var getFile = $.get(serverURL,
+    var dataURL = buildURL("US.txt");
+    var getFile = $.get(dataURL,
           function (data) { console.log("What do we have? "+ data);
                             inputFileLines = data.split('\n');
                             console.log(inputFileLines[0]); })
-          .error(function() { alert("Unable to read data from " + serverURL); });
+          .error(function() { alert("Unable to read data from " + dataURL); });
     getFile.complete(function() {    
       console.log("Back now: " + inputFileLines[0]);
       countryField.attr('text', inputFileLines[0]);
