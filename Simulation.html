@@ -119,6 +119,7 @@
    I'm not constantly having to reload the page for little changes! */
 "use strict";
 (function ($) {
+  var serverURL = "http://geosim.cs.vt.edu/IntlPop/US.txt";
   var tell = function (msg) { $('p.output').text(msg); };
   var inputFileLines; /* This will hold the country data */
 
@@ -142,18 +143,21 @@
     tell("Clicked on Fertility button.");
   }
 
-
   // Handler for options button
   function options() {
     tell("Clicked on simOptions button.");
-    if (readFile("http://geosim.cs.vt.edu/IntlPop/US.txt") === true) {
-console.log("Back now: " + inputFileLines[0]);
+    var getFile = $.get(serverURL,
+          function (data) { inputFileLines = data.split('\n');
+                            console.log(inputFileLines[0]); })
+          .error(function() { alert("Unable to read data from" + serverURL); });
+    getFile.complete(function() {    
+      console.log("Back now: " + inputFileLines[0]);
       countryField.attr('text', inputFileLines[0]);
       currPop = inputFileLines[1];
       initPopField.attr('text', 'Initial Population: ' + currPop);
       currYearField.attr('text', 'Year: ' + inputFileLines[2]);
       currPopField.attr('text', 'Population: ' + inputFileLines[1]);
-    }
+    });
   }
 
   // Handler for simForward button
@@ -164,37 +168,6 @@ console.log("Back now: " + inputFileLines[0]);
     currYearField.attr('text', 'Year: ' + currYear);
     currPopField.attr('text', 'Population: ' + currPop);
   }
-
-  // Stub function for reading data files
-  function readFile(theURL) {
-    var txtFile = new XMLHttpRequest();
-    txtFile.open("GET", theURL, false);
-    txtFile.onreadystatechange = function() {
-console.log("Inside");
-      if (txtFile.readyState === 4) {  // Makes sure the document is ready to parse.
-console.log("Ready to parse");
-        if (txtFile.status === 200) {  // Makes sure it's found the file.
-console.log("Found file");
-          inputFileLines = txtFile.responseText.split("\n"); // Will separate each line into an array
-console.log("Read it in.");
-console.log(inputFileLines[0]);
-        }
-        else {
-console.log("Failed to read");
-	  alert("Unable to find file " + theURL);
-	  return false;
-	}
-      }
-      else {
-console.log("Document not ready");
-        alert("Document not ready");
-        return false;
-      }
-    };
-    txtFile.send(null);
-    return true;
-  }
-
 
   // Button callbacks
   $('#fertilityButton').click(fertility);
