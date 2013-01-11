@@ -8,7 +8,6 @@
 <head>
   <meta charset="utf-8">
   <title>IntlPop Simulation Window</title>
-  <link rel="stylesheet" href="Simulation.css" type="text/css" />
 <style>
 /* Note: This will move to Simulation.css once things settle down and
    I'm not constantly having to reload the page for little changes! */
@@ -86,7 +85,6 @@
   top: -75px;
   left: 55px;
 }
-
 </style>
 
 </head>
@@ -114,13 +112,7 @@
   <p class="output"></p>
 </div>
 
-<script src="http://raphaeljs.com/raphael.js"></script>
-<script src="http://github.com/DmitryBaranovskiy/g.raphael/blob/master/min/g.raphael-min.js?raw=t\
-rue"></script>
-<script src="http://github.com/DmitryBaranovskiy/g.raphael/blob/master/min/g.bar-min.js?raw=true"\
-></script>
-<script src="http://github.com/DmitryBaranovskiy/g.raphael/blob/master/min/g.line-min.js?raw=true\
-"></script>
+<script src="lib/raphael.js"></script>
 <script src="lib/jquery.min.js"></script>
 <script>
 /* Note: This will move to Simulation.js once things settle down and
@@ -151,7 +143,8 @@ rue"></script>
   // Handler for options button
   function options() {
     tell("Clicked on simOptions button.");
-    if (readFile("file:///C:/Cliff/IntlPop/US.txt") === true) {
+    if (readFile("http://algoviz.org/IntlPop/US.txt") === true) {
+console.log("Back now: " + inputFileLines[0]);
       initPopField.attr('text', 'Initial Population: ' + inputFileLines[1]);
       currYearField.attr('text', 'Year: ' + inputFileLines[2]);
       currPopField.attr('text', 'Population: ' + inputFileLines[1]);
@@ -192,8 +185,9 @@ console.log("Document not ready");
         alert("Document not ready");
         return false;
       }
-    }
-    return txtFile.send(null);
+    };
+    txtFile.send(null);
+    return true;
   }
 
 

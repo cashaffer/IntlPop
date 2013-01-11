@@ -12,10 +12,7 @@ body {
 h1 { 
   background-color: maroon;
   color: white;
-  padding-left: .5em;
-  padding-right: .5em;
-  padding-top: .5em;
-  padding-bottom: .5em;
+  padding: .5em;
   text-align: center; 
 }
 

@@ -1,0 +1,74 @@
+/* CSS file for styling a Simulation window */
+
+* {
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+}
+
+#container {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 1060px;
+  height: 352px;
+  background-color: #efe;
+}
+
+#pyramidPanel { 
+  position: absolute;
+  width: 355px;
+  height: 300px;
+  top: 0;
+  left: 0;
+}
+
+#popChartPanel { 
+  position: absolute;
+  width: 450px;
+  height: 300px;
+  top: 0;
+  left: 350px;
+}
+
+#simPanel { 
+  position: relative;
+  width: 255px;
+  height: 300px;
+  top: 0;
+  left: 800px;
+}
+
+/* This is where we send text messages to explain what is going on */
+.output {
+  position: absolute;
+  height: 50px;
+  width: 1050px;
+  top: 291px;
+  border: 1px solid black;
+  padding: 5px;
+}
+
+#b1 {
+  position: absolute;
+  left: 0;
+}
+
+#b2 {
+  position: absolute;
+  right: 0;
+}
+
+#fertilityButton {
+  position: absolute;
+  background-color: red;
+  right: 0; /* on the right border of the container */
+  top: 10%; /* 10% from the top of the container */
+}
+
+#simBackButton, #simOptionsButton, #simForwardButton {
+  position: relative;
+  background-color: red;
+  top: -75px;
+  left: 55px;
+}
