@@ -119,7 +119,8 @@
    I'm not constantly having to reload the page for little changes! */
 "use strict";
 (function ($) {
-  var serverURL = "http://geosim.cs.vt.edu/IntlPop/US.txt";
+//  var serverURL = "http://geosim.cs.vt.edu/IntlPop/US.txt";
+  var serverURL = "file:///home/shaffer/IntlPop/US.txt";
   var tell = function (msg) { $('p.output').text(msg); };
   var inputFileLines; /* This will hold the country data */
 
@@ -147,9 +148,10 @@
   function options() {
     tell("Clicked on simOptions button.");
     var getFile = $.get(serverURL,
-          function (data) { inputFileLines = data.split('\n');
+          function (data) { console.log("What do we have? "+ data);
+                            inputFileLines = data.split('\n');
                             console.log(inputFileLines[0]); })
-          .error(function() { alert("Unable to read data from" + serverURL); });
+          .error(function() { alert("Unable to read data from " + serverURL); });
     getFile.complete(function() {    
       console.log("Back now: " + inputFileLines[0]);
       countryField.attr('text', inputFileLines[0]);
