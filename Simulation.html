@@ -19,6 +19,13 @@
   font-size: 12px;
 }
 
+button {
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+
 #container {
   position: relative;
   top: 0;
@@ -83,7 +90,7 @@
   position: relative;
   background-color: red;
   top: -75px;
-  left: 55px;
+  left: 48px;
 }
 </style>
 
@@ -104,9 +111,9 @@
       <button id="netMigButton">Net Migration</button>
     </div>
     <div id="simPanel">
-      <button id="simBackButton">&lt; Sim</button>
+      <button id="simBackButton" disabled="disabled">&lt; Sim</button>
       <button id="simOptionsButton">Options</button>
-      <button id="simForwardButton">Sim &gt;</button>
+      <button id="simForwardButton" disabled="disabled">Sim &gt;</button>
     </div>
   </div>
   <p class="output"></p>
@@ -121,6 +128,7 @@
 (function ($) {
   var tell = function (msg) { $('p.output').text(msg); };
   var inputFileLines; /* This will hold the country data */
+  var country;
 
   // Set up the interface
   var rSim = new Raphael("simPanel", 255, 300);
@@ -148,7 +156,7 @@ console.log("Data URL is: " + theURL);
     return theURL;
   }
 
-  console.log("This page's URL is: " + window.location.protocol + "://" +
+  console.log("This page's URL is: " + window.location.protocol + "//" +
               window.location.host + "/" + window.location.pathname);
 
   tell("Click on the 'Options' button to choose from among the available simulation features.");
@@ -161,34 +169,46 @@ console.log("Data URL is: " + theURL);
   // Handler for options button
   function options() {
     tell("Clicked on simOptions button.");
-    var dataURL = buildURL("US.txt");
-    var getFile = $.get(dataURL,
-          function (data) { console.log("What do we have? "+ data);
-                            inputFileLines = data.split('\n');
-                            console.log(inputFileLines[0]); })
-          .error(function() { alert("Unable to read data from " + dataURL); });
-    getFile.complete(function() {    
-      console.log("Back now: " + inputFileLines[0]);
-      countryField.attr('text', inputFileLines[0]);
-      currPop = inputFileLines[1];
+    var dataURL = buildURL("US.js");
+    $.getScript(dataURL, function () {
+      country = setCountry(); // This loads the country
+      console.log("Back now: " + country.name);
+      countryField.attr('text', country.name);
+      currPop = country.initPop;
       initPopField.attr('text', 'Initial Population: ' + currPop);
-      currYearField.attr('text', 'Year: ' + inputFileLines[2]);
-      currPopField.attr('text', 'Population: ' + inputFileLines[1]);
+      currYearField.attr('text', 'Year: ' + country.startYear);
+      currPopField.attr('text', 'Population: ' + country.initPop);
+      $('#simForwardButton').removeAttr('disabled');
     });
   }
 
   // Handler for simForward button
   function simForward() {
     tell("Clicked on simForward button.");
-    currPop = currPop * inputFileLines[3];
+    currPop = currPop * country.growthRate;
     currYear = currYear + 1;
     currYearField.attr('text', 'Year: ' + currYear);
     currPopField.attr('text', 'Population: ' + currPop);
+    $('#simBackButton').removeAttr('disabled');
+  }
+
+  // Handler for simForward button
+  function simBack() {
+    tell("Clicked on simBack button.");
+    currPop = currPop / country.growthRate;
+    currYear = currYear - 1;
+    currYearField.attr('text', 'Year: ' + currYear);
+    currPopField.attr('text', 'Population: ' + currPop);
+    if (currYear === country.startYear) {
+      console.log("Disable Back button");
+      $('#simBackButton').attr('disabled', 'disabled');
+    }
   }
 
   // Button callbacks
   $('#fertilityButton').click(fertility);
   $('#simForwardButton').click(simForward);
+  $('#simBackButton').click(simBack);
   $('#simOptionsButton').click(options);
 }(jQuery));
 </script>
