@@ -13,6 +13,9 @@
    I'm not constantly having to reload the page for little changes! */
 /* CSS file for styling a Simulation window */
 
+#simplemodal-overlay {background-color:#000;}
+#simplemodal-container {background-color:#efe; border:1px solid }
+
 * {
   margin: 0;
   padding: 0;
@@ -124,34 +127,26 @@ button {
   top: 80px;
 }
 
-#b1 {
-  position: absolute;
-  left: 0;
-}
-
-#b2 {
-  position: absolute;
-  right: 0;
-}
-
 #fertilityButton, #lifeExpButton, #netMigButton {
   position: relative;
-  background-color: red;
   top: -90px;
-  left: 25px;
-  width: 125px;
+  left: 24px;
+  width: 126px;
   margin: 3px;
 }
 
 #simBackButton, #simOptionsButton, #simForwardButton {
   position: relative;
-  background-color: red;
   top: -80px;
   left: 48px;
 }
 
 #optionsDropDown {
   font-size: 11px;
+}
+
+#countrySelectModal {
+  display: none;
 }
 
 </style>
@@ -162,8 +157,6 @@ button {
 <div id="container">
   <div id="main">
     <div id="pyramidPanel">
-      <button id="b1" value="Dropdown" data-dropdown="#dropdown-1">B1</button>
-      <button id="b2">B2</button>
       <div id="birthChart"></div>
       <div id="deathChart"></div>
     </div>
@@ -198,11 +191,16 @@ button {
   </ul>
 </div>
 
+<div id="countrySelectModal">
+  <button id="dummySelect">Select it</button>
+</div>
+
 <script src="lib/raphael.js"></script>
 <script src="lib/jquery.min.js"></script>
 <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
 <link type="text/css" rel="stylesheet" href="lib/jquery.dropdown.css" />
 <script type="text/javascript" src="lib/jquery.dropdown.js"></script>
+<script type="text/javascript" src="lib/jquery.simplemodal.js"></script>
 
 <script>
 /* Note: This will move to Simulation.js once things settle down and
@@ -228,8 +226,8 @@ $(document).ready(function () {
   // Population chart panel
   var rChart = new Raphael("popChartPanel", 500, 300);
   rChart.rect( 27, 218, 126, 60);
-  rChart.rect(162, 218, 126, 60);
-  rChart.rect(297, 218, 126, 60);
+  rChart.rect(163, 218, 126, 60);
+  rChart.rect(299, 218, 126, 60);
 
   // Simulation panel
   var rSim = new Raphael("simPanel", 255, 300);
@@ -254,6 +252,11 @@ console.log("Data URL is: " + theURL);
               window.location.host + "/" + window.location.pathname);
 
   tell("Click on the 'Options' button to choose from among the available simulation features.");
+
+  // Handler for launching the country select modal window
+  function openSelectModal() {
+    $('#countrySelectModal').modal({ minHeight: 350, minWidth: 1000});
+  }
 
   // Handler for Fertility button
   function fertility() {
@@ -280,6 +283,7 @@ console.log("Data URL is: " + theURL);
       $('p.lifeExpField').text(currLifeExp + ' Years');
       $('p.netMigField').text(currNetMig);
       $('#simForwardButton').removeAttr('disabled');
+      $.modal.close();
     });
   }
 
@@ -310,9 +314,11 @@ console.log("Data URL is: " + theURL);
   $('#fertilityButton').click(fertility);
   $('#simForwardButton').click(simForward);
   $('#simBackButton').click(simBack);
-  $('#optionsSelect').click(selectCountry);
+  $('#optionsSelect').click(openSelectModal);
+  $('#dummySelect').click(selectCountry);
 });
 </script>
 
 </body>
 </html>
+
