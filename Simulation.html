@@ -16,7 +16,11 @@
 * {
   margin: 0;
   padding: 0;
-  font-size: 12px;
+}
+
+p {
+  font-size: 14px;
+  text-align: center;
 }
 
 button {
@@ -31,13 +35,13 @@ button {
   top: 0;
   left: 0;
   width: 1060px;
-  height: 352px;
+  height: 362px;
   background-color: #efe;
 }
 
 #pyramidPanel { 
   position: absolute;
-  width: 355px;
+  width: 350px;
   height: 300px;
   top: 0;
   left: 0;
@@ -62,11 +66,62 @@ button {
 /* This is where we send text messages to explain what is going on */
 .output {
   position: absolute;
-  height: 50px;
+  height: 60px;
   width: 1048px;
   top: 291px;
   border: 1px solid black;
   padding: 5px;
+  text-align: left;
+}
+
+.countryField {
+  position: absolute;
+  width: 450px;
+  top: 5px;
+  color: purple;
+  font-size: 20px;
+}
+
+.childrenField {
+  position: absolute;
+  width: 125px;
+  top: 246px;
+  left: 26px;
+  font-size: 20px;
+}
+
+.lifeExpField {
+  position: absolute;
+  width: 125px;
+  top: 246px;
+  left: 162px;
+  font-size: 20px;
+}
+
+.netMigField {
+  position: absolute;
+  width: 125px;
+  top: 246px;
+  left: 297px;
+  font-size: 20px;
+}
+
+.initPopField {
+  position: absolute;
+  width: 255px;
+  top: 27px;
+}
+
+.currYearField {
+  position: absolute;
+  width: 255px;
+  top: 65px;
+}
+
+.currPopField {
+  position: absolute;
+  width: 255px;
+  top: 80px;
 }
 
 #b1 {
@@ -82,16 +137,23 @@ button {
 #fertilityButton, #lifeExpButton, #netMigButton {
   position: relative;
   background-color: red;
-  top: -100px;
-  left: 55px;
+  top: -90px;
+  left: 25px;
+  width: 125px;
+  margin: 3px;
 }
 
 #simBackButton, #simOptionsButton, #simForwardButton {
   position: relative;
   background-color: red;
-  top: -75px;
+  top: -80px;
   left: 48px;
 }
+
+#optionsDropDown {
+  font-size: 11px;
+}
+
 </style>
 
 </head>
@@ -100,48 +162,80 @@ button {
 <div id="container">
   <div id="main">
     <div id="pyramidPanel">
-      <button id="b1">B1</button>
+      <button id="b1" value="Dropdown" data-dropdown="#dropdown-1">B1</button>
       <button id="b2">B2</button>
       <div id="birthChart"></div>
       <div id="deathChart"></div>
     </div>
     <div id="popChartPanel">
-      <button id="fertilityButton">Fertility</button>
+      <p class="countryField"></p>
+      <p class="childrenField"></p>
+      <p class="lifeExpField"></p>
+      <p class="netMigField"></p>
+      <button id="fertilityButton">Fertility Rate</button>
       <button id="lifeExpButton">Life Expectancy</button>
       <button id="netMigButton">Net Migration</button>
     </div>
     <div id="simPanel">
+      <p class="initPopField"></p>
+      <p class="currYearField"></p>
+      <p class="currPopField"></p>
       <button id="simBackButton" disabled="disabled">&lt; Sim</button>
-      <button id="simOptionsButton">Options</button>
+      <button id="simOptionsButton" value="Dropdown"
+              data-dropdown="#optionsDropDown" data-horizontal-offset="-70">Options</button>
       <button id="simForwardButton" disabled="disabled">Sim &gt;</button>
     </div>
   </div>
   <p class="output"></p>
 </div>
 
+<div id="optionsDropDown" class="dropdown-menu">
+  <ul>
+    <li><a href="#" id="optionsSelect">Select region/country for simulation</a></li>
+    <li><a href="#">Run another simulation</a></li>
+    <li><a href="#">View birth and death rate buttons</a></li>
+    <li><a href="#">Reset the simulation</a></li>
+  </ul>
+</div>
+
 <script src="lib/raphael.js"></script>
 <script src="lib/jquery.min.js"></script>
+<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+<link type="text/css" rel="stylesheet" href="../lib/jquery.dropdown.css" />
+<script type="text/javascript" src="../lib/jquery.dropdown.js"></script>
+
 <script>
 /* Note: This will move to Simulation.js once things settle down and
    I'm not constantly having to reload the page for little changes! */
 "use strict";
-(function ($) {
+$(document).ready(function () {
   var tell = function (msg) { $('p.output').text(msg); };
-  var inputFileLines; /* This will hold the country data */
-  var country;
+
+  var country; // This will hold the current country record
+
+  // Current simulation state
+  var currYear;
+  var currPop;
+  var currChildren;
+  var currLifeExp;
+  var currNetMig;
 
   // Set up the interface
+
+  // Pyramid Panel
+  var rPyramid = new Raphael("pyramidPanel", 350, 300);
+
+  // Population chart panel
+  var rChart = new Raphael("popChartPanel", 500, 300);
+  rChart.rect( 27, 218, 126, 60);
+  rChart.rect(162, 218, 126, 60);
+  rChart.rect(297, 218, 126, 60);
+
+  // Simulation panel
   var rSim = new Raphael("simPanel", 255, 300);
   rSim.rect(5, 20, 245, 200);
   rSim.path("M20 50 L230 50");
-  var initPopField = rSim.text(125, 35, "Initial Population:");
-  var currYearField = rSim.text(125, 65, "");
-  var currPopField = rSim.text(125, 80, "");
-
-  var rChart = new Raphael("popChartPanel", 500, 300);
-  var countryField = rChart.text(100, 100, "");
-  var currYear = 2010;
-  var currPop = 0;
+  $('p.initPopField').text("Initial Population:");
 
   // Based on the URL of the current page, build the URL for a data file
   function buildURL(filename) {
@@ -167,17 +261,24 @@ console.log("Data URL is: " + theURL);
   }
 
   // Handler for options button
-  function options() {
-    tell("Clicked on simOptions button.");
+  function selectCountry() {
+    tell("Clicked on select button.");
     var dataURL = buildURL("US.js");
     $.getScript(dataURL, function () {
       country = setCountry(); // This loads the country
       console.log("Back now: " + country.name);
-      countryField.attr('text', country.name);
+      $('p.countryField').text(country.name);
       currPop = country.initPop;
-      initPopField.attr('text', 'Initial Population: ' + currPop);
-      currYearField.attr('text', 'Year: ' + country.startYear);
-      currPopField.attr('text', 'Population: ' + country.initPop);
+      currYear = country.startYear;
+      currChildren = country.children;
+      currLifeExp = country.lifeExp;
+      currNetMig = country.netMigration;
+      $('p.initPopField').text('Initial Population: ' + currPop);
+      $('p.currYearField').text('Year: ' + currYear);
+      $('p.currPopField').text('Population: ' + currPop);
+      $('p.childrenField').text(currChildren + ' Children');
+      $('p.lifeExpField').text(currLifeExp + ' Years');
+      $('p.netMigField').text(currNetMig);
       $('#simForwardButton').removeAttr('disabled');
     });
   }
@@ -185,20 +286,20 @@ console.log("Data URL is: " + theURL);
   // Handler for simForward button
   function simForward() {
     tell("Clicked on simForward button.");
-    currPop = currPop * country.growthRate;
+    currPop = Math.round(currPop * country.growthRate);
     currYear = currYear + 1;
-    currYearField.attr('text', 'Year: ' + currYear);
-    currPopField.attr('text', 'Population: ' + currPop);
+    $('p.currYearField').text('Year: ' + currYear);
+    $('p.currPopField').text('Population: ' + currPop);
     $('#simBackButton').removeAttr('disabled');
   }
 
   // Handler for simForward button
   function simBack() {
     tell("Clicked on simBack button.");
-    currPop = currPop / country.growthRate;
+    currPop = Math.round(currPop / country.growthRate);
     currYear = currYear - 1;
-    currYearField.attr('text', 'Year: ' + currYear);
-    currPopField.attr('text', 'Population: ' + currPop);
+    $('p.currYearField').text('Year: ' + currYear);
+    $('p.currPopField').text('Population: ' + currPop);
     if (currYear === country.startYear) {
       console.log("Disable Back button");
       $('#simBackButton').attr('disabled', 'disabled');
@@ -209,8 +310,8 @@ console.log("Data URL is: " + theURL);
   $('#fertilityButton').click(fertility);
   $('#simForwardButton').click(simForward);
   $('#simBackButton').click(simBack);
-  $('#simOptionsButton').click(options);
-}(jQuery));
+  $('#optionsSelect').click(selectCountry);
+});
 </script>
 
 </body>
