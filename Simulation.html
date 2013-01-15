@@ -8,148 +8,6 @@
 <head>
   <meta charset="utf-8">
   <title>IntlPop Simulation Window</title>
-<style>
-/* Note: This will move to Simulation.css once things settle down and
-   I'm not constantly having to reload the page for little changes! */
-/* CSS file for styling a Simulation window */
-
-#simplemodal-overlay {background-color:#000;}
-#simplemodal-container {background-color:#efe; border:1px solid }
-
-* {
-  margin: 0;
-  padding: 0;
-}
-
-p {
-  font-size: 14px;
-  text-align: center;
-}
-
-button {
-  padding-left: 4px;
-  padding-right: 4px;
-  padding-top: 1px;
-  padding-bottom: 1px;
-}
-
-#container {
-  position: relative;
-  top: 0;
-  left: 0;
-  width: 1060px;
-  height: 362px;
-  background-color: #efe;
-}
-
-#pyramidPanel { 
-  position: absolute;
-  width: 350px;
-  height: 300px;
-  top: 0;
-  left: 0;
-}
-
-#popChartPanel { 
-  position: absolute;
-  width: 450px;
-  height: 300px;
-  top: 0;
-  left: 350px;
-}
-
-#simPanel { 
-  position: relative;
-  width: 255px;
-  height: 300px;
-  top: 0;
-  left: 800px;
-}
-
-/* This is where we send text messages to explain what is going on */
-.output {
-  position: absolute;
-  height: 60px;
-  width: 1048px;
-  top: 291px;
-  border: 1px solid black;
-  padding: 5px;
-  text-align: left;
-}
-
-.countryField {
-  position: absolute;
-  width: 450px;
-  top: 5px;
-  color: purple;
-  font-size: 20px;
-}
-
-.childrenField {
-  position: absolute;
-  width: 125px;
-  top: 246px;
-  left: 26px;
-  font-size: 20px;
-}
-
-.lifeExpField {
-  position: absolute;
-  width: 125px;
-  top: 246px;
-  left: 162px;
-  font-size: 20px;
-}
-
-.netMigField {
-  position: absolute;
-  width: 125px;
-  top: 246px;
-  left: 297px;
-  font-size: 20px;
-}
-
-.initPopField {
-  position: absolute;
-  width: 255px;
-  top: 27px;
-}
-
-.currYearField {
-  position: absolute;
-  width: 255px;
-  top: 65px;
-}
-
-.currPopField {
-  position: absolute;
-  width: 255px;
-  top: 80px;
-}
-
-#fertilityButton, #lifeExpButton, #netMigButton {
-  position: relative;
-  top: -90px;
-  left: 24px;
-  width: 126px;
-  margin: 3px;
-}
-
-#simBackButton, #simOptionsButton, #simForwardButton {
-  position: relative;
-  top: -80px;
-  left: 48px;
-}
-
-#optionsDropDown {
-  font-size: 11px;
-}
-
-#countrySelectModal {
-  display: none;
-}
-
-</style>
 
 </head>
 
@@ -192,133 +50,21 @@ button {
 </div>
 
 <div id="countrySelectModal">
-  <button id="dummySelect">Select it</button>
+  <p id="maps">Map-based selection support goes here.</p>
+  <button id="doSelect">Select it</button>
+  <select id="countrySelectMenu" size=12>
+  </select>
 </div>
 
+<link type="text/css" rel="stylesheet" href="Simulation.css" />
 <script src="lib/raphael.js"></script>
 <script src="lib/jquery.min.js"></script>
 <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
 <link type="text/css" rel="stylesheet" href="lib/jquery.dropdown.css" />
 <script type="text/javascript" src="lib/jquery.dropdown.js"></script>
 <script type="text/javascript" src="lib/jquery.simplemodal.js"></script>
-
-<script>
-/* Note: This will move to Simulation.js once things settle down and
-   I'm not constantly having to reload the page for little changes! */
-"use strict";
-$(document).ready(function () {
-  var tell = function (msg) { $('p.output').text(msg); };
-
-  var country; // This will hold the current country record
-
-  // Current simulation state
-  var currYear;
-  var currPop;
-  var currChildren;
-  var currLifeExp;
-  var currNetMig;
-
-  // Set up the interface
-
-  // Pyramid Panel
-  var rPyramid = new Raphael("pyramidPanel", 350, 300);
-
-  // Population chart panel
-  var rChart = new Raphael("popChartPanel", 500, 300);
-  rChart.rect( 27, 218, 126, 60);
-  rChart.rect(163, 218, 126, 60);
-  rChart.rect(299, 218, 126, 60);
-
-  // Simulation panel
-  var rSim = new Raphael("simPanel", 255, 300);
-  rSim.rect(5, 20, 245, 200);
-  rSim.path("M20 50 L230 50");
-  $('p.initPopField').text("Initial Population:");
-
-  // Based on the URL of the current page, build the URL for a data file
-  function buildURL(filename) {
-    var pathArray = window.location.pathname.split( '/' );
-    var theURL = window.location.protocol + "//" + window.location.host;
-    for ( var i = 0; i < pathArray.length - 1; i++ ) {
-      theURL += pathArray[i];
-      theURL += "/";
-    }
-    theURL += filename;
-console.log("Data URL is: " + theURL);
-    return theURL;
-  }
-
-  console.log("This page's URL is: " + window.location.protocol + "//" +
-              window.location.host + "/" + window.location.pathname);
-
-  tell("Click on the 'Options' button to choose from among the available simulation features.");
-
-  // Handler for launching the country select modal window
-  function openSelectModal() {
-    $('#countrySelectModal').modal({ minHeight: 350, minWidth: 1000});
-  }
-
-  // Handler for Fertility button
-  function fertility() {
-    tell("Clicked on Fertility button.");
-  }
-
-  // Handler for options button
-  function selectCountry() {
-    tell("Clicked on select button.");
-    var dataURL = buildURL("US.js");
-    $.getScript(dataURL, function () {
-      country = setCountry(); // This loads the country
-      console.log("Back now: " + country.name);
-      $('p.countryField').text(country.name);
-      currPop = country.initPop;
-      currYear = country.startYear;
-      currChildren = country.children;
-      currLifeExp = country.lifeExp;
-      currNetMig = country.netMigration;
-      $('p.initPopField').text('Initial Population: ' + currPop);
-      $('p.currYearField').text('Year: ' + currYear);
-      $('p.currPopField').text('Population: ' + currPop);
-      $('p.childrenField').text(currChildren + ' Children');
-      $('p.lifeExpField').text(currLifeExp + ' Years');
-      $('p.netMigField').text(currNetMig);
-      $('#simForwardButton').removeAttr('disabled');
-      $.modal.close();
-    });
-  }
-
-  // Handler for simForward button
-  function simForward() {
-    tell("Clicked on simForward button.");
-    currPop = Math.round(currPop * country.growthRate);
-    currYear = currYear + 1;
-    $('p.currYearField').text('Year: ' + currYear);
-    $('p.currPopField').text('Population: ' + currPop);
-    $('#simBackButton').removeAttr('disabled');
-  }
-
-  // Handler for simForward button
-  function simBack() {
-    tell("Clicked on simBack button.");
-    currPop = Math.round(currPop / country.growthRate);
-    currYear = currYear - 1;
-    $('p.currYearField').text('Year: ' + currYear);
-    $('p.currPopField').text('Population: ' + currPop);
-    if (currYear === country.startYear) {
-      console.log("Disable Back button");
-      $('#simBackButton').attr('disabled', 'disabled');
-    }
-  }
-
-  // Button callbacks
-  $('#fertilityButton').click(fertility);
-  $('#simForwardButton').click(simForward);
-  $('#simBackButton').click(simBack);
-  $('#optionsSelect').click(openSelectModal);
-  $('#dummySelect').click(selectCountry);
-});
-</script>
-
+<script type="text/javascript" src="countrylist.js"></script>
+<script type="text/javascript" src="Simulation.js"></script>
 </body>
 </html>
 

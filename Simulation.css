@@ -1,23 +1,38 @@
-/* CSS file for styling a Simulation window */
+/* Support for the simplemodal plugin */
+#simplemodal-overlay {background-color:#000;}
+#simplemodal-container {background-color:#efe; border:1px solid }
 
+/* Generic element styling */
 * {
   margin: 0;
   padding: 0;
-  font-size: 12px;
 }
 
+p {
+  font-size: 14px;
+  text-align: center;
+}
+
+button {
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+
+/* Element-specific styling */
 #container {
   position: relative;
   top: 0;
   left: 0;
   width: 1060px;
-  height: 352px;
+  height: 362px;
   background-color: #efe;
 }
 
 #pyramidPanel { 
   position: absolute;
-  width: 355px;
+  width: 350px;
   height: 300px;
   top: 0;
   left: 0;
@@ -39,36 +54,104 @@
   left: 800px;
 }
 
-/* This is where we send text messages to explain what is going on */
+/* .output is where we send text messages to explain what is going on */
 .output {
   position: absolute;
-  height: 50px;
-  width: 1050px;
+  height: 60px;
+  width: 1048px;
   top: 291px;
   border: 1px solid black;
   padding: 5px;
+  text-align: left;
 }
 
-#b1 {
+.countryField {
   position: absolute;
-  left: 0;
+  width: 450px;
+  top: 5px;
+  color: purple;
+  font-size: 20px;
 }
 
-#b2 {
+.childrenField {
   position: absolute;
-  right: 0;
+  width: 125px;
+  top: 246px;
+  left: 26px;
+  font-size: 20px;
 }
 
-#fertilityButton {
+.lifeExpField {
   position: absolute;
-  background-color: red;
-  right: 0; /* on the right border of the container */
-  top: 10%; /* 10% from the top of the container */
+  width: 125px;
+  top: 246px;
+  left: 162px;
+  font-size: 20px;
+}
+
+.netMigField {
+  position: absolute;
+  width: 125px;
+  top: 246px;
+  left: 297px;
+  font-size: 20px;
+}
+
+.initPopField {
+  position: absolute;
+  width: 255px;
+  top: 27px;
+}
+
+.currYearField {
+  position: absolute;
+  width: 255px;
+  top: 65px;
+}
+
+.currPopField {
+  position: absolute;
+  width: 255px;
+  top: 80px;
+}
+
+#fertilityButton, #lifeExpButton, #netMigButton {
+  position: relative;
+  top: -90px;
+  left: 24px;
+  width: 126px;
+  margin: 3px;
 }
 
 #simBackButton, #simOptionsButton, #simForwardButton {
   position: relative;
-  background-color: red;
-  top: -75px;
-  left: 55px;
+  top: -80px;
+  left: 48px;
+}
+
+#optionsDropDown {
+  font-size: 11px;
+}
+
+#countrySelectModal {
+  display: none;
+  position: relative;
+}
+
+#countrySelectMenu {
+  position: absolute;
+  top: 5px;
+  left: 800px;
+}
+
+#maps {
+  position: absolute;
+  top: 100px;
+  left: 300px;
+}
+
+#doSelect {
+  position: absolute;
+  top: 210px;
+  left: 800px;
 }

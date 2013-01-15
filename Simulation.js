@@ -1,78 +1,135 @@
 "use strict";
-(function ($) {
+$(document).ready(function () {
   var tell = function (msg) { $('p.output').text(msg); };
-  var inputFileLines; /* This will hold the country data */
+
+  var country; // This will hold the current country record
+
+  // Current simulation state
+  var currYear;
+  var currPop;
+  var currChildren;
+  var currLifeExp;
+  var currNetMig;
 
   // Set up the interface
+
+  // Pyramid Panel
+  var rPyramid = new Raphael("pyramidPanel", 350, 300);
+
+  // Population chart panel
+  var rChart = new Raphael("popChartPanel", 500, 300);
+  rChart.rect( 27, 218, 126, 60);
+  rChart.rect(163, 218, 126, 60);
+  rChart.rect(299, 218, 126, 60);
+
+  // Simulation panel
   var rSim = new Raphael("simPanel", 255, 300);
   rSim.rect(5, 20, 245, 200);
   rSim.path("M20 50 L230 50");
-  var initPopField = rSim.text(125, 35, "Initial Population:");
-  var currYearField = rSim.text(125, 65, "");
-  var currPopField = rSim.text(125, 80, "");
-  var currYear = 2010;
-  var currPop = 0;
+  $('p.initPopField').text("Initial Population:");
+
+  // Based on the URL of the current page, build the URL for a data file
+  function buildURL(filename) {
+    var pathArray = window.location.pathname.split( '/' );
+    var theURL = window.location.protocol + "//" + window.location.host;
+    for ( var i = 0; i < pathArray.length - 1; i++ ) {
+      theURL += pathArray[i];
+      theURL += "/";
+    }
+    theURL += filename;
+console.log("Data URL is: " + theURL);
+    return theURL;
+  }
+
+  // Initialize the menu of countries
+  function initCountryMenu() {
+    var html = "";
+    for (var i = 0; i < countryList.length; i++) {
+      html += '<option value="' + i + '">' + countryList[i].name + '</option>';
+    }
+    $('#countrySelectMenu').html(html);
+  }
+
+  initCountryMenu();
+  console.log("Country Menu value: " + $('#countrySelectMenu').val());
+
+  console.log("This page's URL is: " + window.location.protocol + "//" +
+              window.location.host + "/" + window.location.pathname);
 
   tell("Click on the 'Options' button to choose from among the available simulation features.");
+
+  // Handler for clicking on country in country select menu
+  function countryClick(el) {
+    console.log("In countryClick, value: " + $('#countrySelectMenu').val() + ", element: " + el);
+  }
+
+  // Handler for launching the country select modal window
+  function openSelectModal() {
+    $('#countrySelectModal').modal({position: [5], minHeight: 275, minWidth: 1000});
+  }
 
   // Handler for Fertility button
   function fertility() {
     tell("Clicked on Fertility button.");
   }
 
-
   // Handler for options button
-  function options() {
-    tell("Clicked on simOptions button.");
-    if (readFile("http://algoviz.org/IntlPop/US.txt") === true) {
-console.log("Back now: " + inputFileLines[0]);
-      initPopField.attr('text', 'Initial Population: ' + inputFileLines[1]);
-      currYearField.attr('text', 'Year: ' + inputFileLines[2]);
-      currPopField.attr('text', 'Population: ' + inputFileLines[1]);
+  function selectCountry() {
+    tell("Clicked on select button.");
+    if ($('#countrySelectMenu').val() === null) {
+      tell("Must first select a country!");
+    } else {
+      var dataURL = buildURL(countryList[$('#countrySelectMenu').val()].filename);
+      console.log("dataURL: " + dataURL);
+      $.getScript(dataURL, function () {
+        country = setCountry(); // This loads the country
+        console.log("Back now: " + country.name);
+        $('p.countryField').text(country.name);
+        currPop = country.initPop;
+        currYear = country.startYear;
+        currChildren = country.children;
+        currLifeExp = country.lifeExp;
+        currNetMig = country.netMigration;
+        $('p.initPopField').text('Initial Population: ' + currPop);
+        $('p.currYearField').text('Year: ' + currYear);
+        $('p.currPopField').text('Population: ' + currPop);
+        $('p.childrenField').text(currChildren + ' Children');
+        $('p.lifeExpField').text(currLifeExp + ' Years');
+        $('p.netMigField').text(currNetMig);
+        $('#simForwardButton').removeAttr('disabled');
+        $.modal.close();
+      });
     }
   }
 
   // Handler for simForward button
   function simForward() {
     tell("Clicked on simForward button.");
-    currPop = currPop * inputFileLines[3];
+    currPop = Math.round(currPop * country.growthRate);
     currYear = currYear + 1;
-    currYearField.attr('text', 'Year: ' + currYear);
-    currPopField.attr('text', 'Population: ' + currPop);
+    $('p.currYearField').text('Year: ' + currYear);
+    $('p.currPopField').text('Population: ' + currPop);
+    $('#simBackButton').removeAttr('disabled');
   }
 
-  // Stub function for reading data files
-  function readFile(theURL) {
-    var txtFile = new XMLHttpRequest();
-    txtFile.open("GET", theURL, false);
-    txtFile.onreadystatechange = function () {
-console.log("Inside");
-      if (txtFile.readyState === 4) {  // Makes sure the document is ready to parse.
-console.log("Ready to parse");
-        if (txtFile.status === 200) {  // Makes sure it's found the file.
-console.log("Found file");
-          inputFileLines = txtFile.responseText.split("\n"); // Will separate each line into an array
-console.log("Read it in.");
-console.log(inputFileLines[0]);
-        }
-        else {
-console.log("Failed to read");
-          alert("Unable to find file " + theURL);
-          return false;
-        }
-      }
-      else {
-console.log("Document not ready");
-        alert("Document not ready");
-        return false;
-      }
-    };
-    return txtFile.send(null);
+  // Handler for simForward button
+  function simBack() {
+    tell("Clicked on simBack button.");
+    currPop = Math.round(currPop / country.growthRate);
+    currYear = currYear - 1;
+    $('p.currYearField').text('Year: ' + currYear);
+    $('p.currPopField').text('Population: ' + currPop);
+    if (currYear === country.startYear) {
+      console.log("Disable Back button");
+      $('#simBackButton').attr('disabled', 'disabled');
+    }
   }
-
 
   // Button callbacks
   $('#fertilityButton').click(fertility);
   $('#simForwardButton').click(simForward);
-  $('#simOptionsButton').click(options);
-}(jQuery));
+  $('#simBackButton').click(simBack);
+  $('#optionsSelect').click(openSelectModal);
+  $('#doSelect').click(selectCountry);
+  $('#countrySelectMenu').click(countryClick);
+});
