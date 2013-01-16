@@ -2,6 +2,12 @@
 $(document).ready(function () {
   var tell = function (msg) { $('p.output').text(msg); };
 
+  $.fn.commas = function(){ 
+    return this.each(function(){ 
+      $(this).text( $(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") ); 
+		     })
+  }
+
   var country; // This will hold the current country record
 
   // Current simulation state
@@ -10,6 +16,9 @@ $(document).ready(function () {
   var currChildren;
   var currLifeExp;
   var currNetMig;
+  var xPoints = [];
+  var yPoints = [];
+  var theChart;
 
   // Set up the interface
 
@@ -90,13 +99,18 @@ console.log("Data URL is: " + theURL);
         currChildren = country.children;
         currLifeExp = country.lifeExp;
         currNetMig = country.netMigration;
-        $('p.initPopField').text('Initial Population: ' + currPop);
+        $('p.initPopField').text('Initial Population: ' + currPop).commas();
         $('p.currYearField').text('Year: ' + currYear);
-        $('p.currPopField').text('Population: ' + currPop);
-        $('p.childrenField').text(currChildren + ' Children');
-        $('p.lifeExpField').text(currLifeExp + ' Years');
-        $('p.netMigField').text(currNetMig);
+        $('p.currPopField').text('Population: ' + currPop).commas();
+        $('p.childrenField').text(currChildren.toFixed(1) + ' Children');
+        $('p.lifeExpField').text(currLifeExp.toFixed(1) + ' Years');
+        $('p.netMigField').text(currNetMig).commas();
         $('#simForwardButton').removeAttr('disabled');
+	xPoints.length = 0;
+        yPoints.length = 0;
+        xPoints[0] = currYear;
+        yPoints[0] = currPop;
+        theChart = rChart.linechart(70, 25, 370, 180, xPoints, yPoints, {axis: '0 0 1 1', symbol: 'circle'});
         $.modal.close();
       });
     }
@@ -108,8 +122,13 @@ console.log("Data URL is: " + theURL);
     currPop = Math.round(currPop * country.growthRate);
     currYear = currYear + 1;
     $('p.currYearField').text('Year: ' + currYear);
-    $('p.currPopField').text('Population: ' + currPop);
+    $('p.currPopField').text('Population: ' + currPop).commas();
     $('#simBackButton').removeAttr('disabled');
+    xPoints[xPoints.length] = currYear;
+    yPoints[yPoints.length] = currPop;
+    console.log("xPoints: " + xPoints);
+    theChart.remove();
+    theChart = rChart.linechart(70, 25, 370, 180, xPoints, yPoints, {axis: '0 0 1 1', symbol: 'circle'});
   }
 
   // Handler for simForward button
@@ -118,7 +137,7 @@ console.log("Data URL is: " + theURL);
     currPop = Math.round(currPop / country.growthRate);
     currYear = currYear - 1;
     $('p.currYearField').text('Year: ' + currYear);
-    $('p.currPopField').text('Population: ' + currPop);
+    $('p.currPopField').text('Population: ' + currPop).commas();
     if (currYear === country.startYear) {
       console.log("Disable Back button");
       $('#simBackButton').attr('disabled', 'disabled');

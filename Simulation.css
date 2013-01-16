@@ -126,7 +126,8 @@ button {
 #simBackButton, #simOptionsButton, #simForwardButton {
   position: relative;
   top: -80px;
-  left: 48px;
+  left: 35px;
+  width: 60px;
 }
 
 #optionsDropDown {
