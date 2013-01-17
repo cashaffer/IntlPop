@@ -7,5 +7,7 @@ function setCountry () {
   myCountry.children = 2.0;
   myCountry.lifeExp = 75.9;
   myCountry.netMigration = 10000;
+  myCountry.malePop = [1, 1, 2, 3, 5, 6, 7];
+  myCountry.femalePop = [1, 1, 2, 3, 4, 5, 7];
   return myCountry;
 }

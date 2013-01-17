@@ -16,20 +16,22 @@ $(document).ready(function () {
   var currChildren;
   var currLifeExp;
   var currNetMig;
-  var xPoints = [];
-  var yPoints = [];
-  var theChart;
+  var PopxPoints = [];
+  var PopyPoints = [];
+  var PyrValues = [];
+  var rChart;
+  var rPyramid;
 
   // Set up the interface
 
   // Pyramid Panel
-  var rPyramid = new Raphael("pyramidPanel", 350, 300);
+  var rPyramidPanel = new Raphael("pyramidPanel", 350, 300);
 
   // Population chart panel
-  var rChart = new Raphael("popChartPanel", 500, 300);
-  rChart.rect( 27, 218, 126, 60);
-  rChart.rect(163, 218, 126, 60);
-  rChart.rect(299, 218, 126, 60);
+  var rChartPanel = new Raphael("popChartPanel", 500, 300);
+  rChartPanel.rect( 27, 218, 126, 60);
+  rChartPanel.rect(163, 218, 126, 60);
+  rChartPanel.rect(299, 218, 126, 60);
 
   // Simulation panel
   var rSim = new Raphael("simPanel", 255, 300);
@@ -106,11 +108,25 @@ console.log("Data URL is: " + theURL);
         $('p.lifeExpField').text(currLifeExp.toFixed(1) + ' Years');
         $('p.netMigField').text(currNetMig).commas();
         $('#simForwardButton').removeAttr('disabled');
-	xPoints.length = 0;
-        yPoints.length = 0;
-        xPoints[0] = currYear;
-        yPoints[0] = currPop;
-        theChart = rChart.linechart(70, 25, 370, 180, xPoints, yPoints, {axis: '0 0 1 1', symbol: 'circle'});
+	PopxPoints.length = 0;
+        PopyPoints.length = 0;
+        PopxPoints[0] = currYear;
+        PopyPoints[0] = currPop;
+        rChart = rChartPanel.linechart(70, 25, 370, 180, PopxPoints, PopyPoints, {axis: '0 0 1 1', symbol: 'circle'});
+	// WARNING: To display raw values,
+        //   convert Female[i] to -Female[i]
+        //   convert Male[i] to Female[i] + Male[i]
+        var i;
+        var mvals = [];
+        var fvals = [];
+        for (i=0; i< country.malePop.length; i++) {
+          mvals[i] = country.malePop[i] + country.femalePop[i];
+          fvals[i] = -country.femalePop[i];
+        }
+	PyrValues[0] = fvals;
+        PyrValues[1] = mvals;
+	console.log("Pyramid: " + fvals + ", " + mvals + ", " + PyrValues);
+        rPyramid = rPyramidPanel.hbarchart(175, 25, 150, 180, PyrValues, {stacked: true});
         $.modal.close();
       });
     }
@@ -124,11 +140,11 @@ console.log("Data URL is: " + theURL);
     $('p.currYearField').text('Year: ' + currYear);
     $('p.currPopField').text('Population: ' + currPop).commas();
     $('#simBackButton').removeAttr('disabled');
-    xPoints[xPoints.length] = currYear;
-    yPoints[yPoints.length] = currPop;
-    console.log("xPoints: " + xPoints);
-    theChart.remove();
-    theChart = rChart.linechart(70, 25, 370, 180, xPoints, yPoints, {axis: '0 0 1 1', symbol: 'circle'});
+    PopxPoints[PopxPoints.length] = currYear;
+    PopyPoints[PopyPoints.length] = currPop;
+    console.log("PopxPoints: " + PopxPoints);
+    rChart.remove();
+    rChart = rChartPanel.linechart(70, 25, 370, 180, PopxPoints, PopyPoints, {axis: '0 0 1 1', symbol: 'circle'});
   }
 
   // Handler for simForward button
