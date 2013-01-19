@@ -1,12 +1,107 @@
 /* CSS file for styling IntlPop application */
 
+* {
+  margin: 0;
+  padding: 0;
+}
+
 body {
   font-family: Times, serif;
-  background-color: #ffffff;
   color: black;
-  margin: 1% 1% 1% 1%;
 }
 
 h1 { 
   text-align: center; 
+}
+
+button {
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+
+/* Element-specific styling */
+#container {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 732px;
+  height: 542px;
+  background-color: #efe;
+}
+
+#titlePanel{
+  position: relative;
+  top: 0px;
+  width: 800px;
+}
+
+#aboutButton, #helpButton {
+  position: relative;
+  top: -32px;
+  left: 622px;
+}
+
+#countrySelectPanel {
+  position: relative;
+  top: -20px;
+  height: 436px;
+  width: 728px;
+  border: 1px solid black;
+}
+
+#countrySelectMenu {
+  position: absolute;
+  top: 5px;
+  left: 550px;
+  height: 420px;
+  width: 175px;
+}
+
+#regions {
+  position: absolute;
+  top: 0px;
+  left: 10px;
+}
+
+#countries {
+  position: absolute;
+  top: 150px;
+  left: 10px;
+}
+
+#area {
+  position: absolute;
+  top: 0px;
+  left: 300px;
+}
+
+#current {
+  position: absolute;
+  top: 30px;
+  left: 300px;
+}
+
+#scale {
+  position: absolute;
+  top: 60px;
+  left: 300px;
+}
+
+#doSelect {
+  position: absolute;
+  top: 90px;
+  left: 425px;
+}
+
+/* .output is where we send text messages to explain what is going on */
+.output {
+  position: absolute;
+  height: 50px;
+  width: 718px;
+  top: 479px;
+  border: 1px solid black;
+  padding: 5px;
+  text-align: left;
 }

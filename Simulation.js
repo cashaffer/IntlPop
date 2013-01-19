@@ -2,6 +2,27 @@
 $(document).ready(function () {
   var tell = function (msg) { $('p.output').text(msg); };
 
+  // From JSAV utils
+  function getQueryParameter(name) {
+    var params = window.location.search,
+      vars = {},
+      i,
+      pair;
+    if (params) {
+      params = params.slice(1).split('&'); // get rid of ?
+      for (i=params.length; i--; ) {
+        pair = params[i].split('='); // split to name and value
+        vars[pair[0]] = decodeURIComponent(pair[1]); // decode URI
+        if (name && pair[0] === name) {
+          return pair[1]; // if name requested, return the matching value
+        }
+      }
+    }
+    if (name) { return; } // name was passed but param was not found, return undefined
+    return vars;
+  };
+
+
   $.fn.commas = function(){ 
     return this.each(function(){ 
       $(this).text( $(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") ); 
@@ -39,6 +60,20 @@ $(document).ready(function () {
   rSim.path("M20 50 L230 50");
   $('p.initPopField').text("Initial Population:");
 
+  tell("Click on the 'Options' button to choose from among the available simulation features.");
+
+  var params = getQueryParameter();
+  console.log(params.filename);
+  // TODO: TEST HERE FOR PROPER FILE NAME PARAMETER
+  if (params.filename === null) { tell("Ooops! No file name!"); }
+
+   var dataURL = selectCountry(params.filename);
+
+  // Handler for Fertility button
+  function fertility() {
+    tell("Clicked on Fertility button.");
+  }
+
   // Based on the URL of the current page, build the URL for a data file
   function buildURL(filename) {
     var pathArray = window.location.pathname.split( '/' );
@@ -52,84 +87,45 @@ console.log("Data URL is: " + theURL);
     return theURL;
   }
 
-  // Initialize the menu of countries
-  function initCountryMenu() {
-    var html = "";
-    for (var i = 0; i < countryList.length; i++) {
-      html += '<option value="' + i + '">' + countryList[i].name + '</option>';
-    }
-    $('#countrySelectMenu').html(html);
-  }
-
-  initCountryMenu();
-  console.log("Country Menu value: " + $('#countrySelectMenu').val());
-
-  console.log("This page's URL is: " + window.location.protocol + "//" +
-              window.location.host + "/" + window.location.pathname);
-
-  tell("Click on the 'Options' button to choose from among the available simulation features.");
-
-  // Handler for clicking on country in country select menu
-  function countryClick(el) {
-    console.log("In countryClick, value: " + $('#countrySelectMenu').val() + ", element: " + el);
-  }
-
-  // Handler for launching the country select modal window
-  function openSelectModal() {
-    $('#countrySelectModal').modal({position: [5], minHeight: 275, minWidth: 1000});
-  }
-
-  // Handler for Fertility button
-  function fertility() {
-    tell("Clicked on Fertility button.");
-  }
-
-  // Handler for options button
-  function selectCountry() {
-    tell("Clicked on select button.");
-    if ($('#countrySelectMenu').val() === null) {
-      tell("Must first select a country!");
-    } else {
-      var dataURL = buildURL(countryList[$('#countrySelectMenu').val()].filename);
-      console.log("dataURL: " + dataURL);
-      $.getScript(dataURL, function () {
-        country = setCountry(); // This loads the country
-        console.log("Back now: " + country.name);
-        $('p.countryField').text(country.name);
-        currPop = country.initPop;
-        currYear = country.startYear;
-        currChildren = country.children;
-        currLifeExp = country.lifeExp;
-        currNetMig = country.netMigration;
-        $('p.initPopField').text('Initial Population: ' + currPop).commas();
-        $('p.currYearField').text('Year: ' + currYear);
-        $('p.currPopField').text('Population: ' + currPop).commas();
-        $('p.childrenField').text(currChildren.toFixed(1) + ' Children');
-        $('p.lifeExpField').text(currLifeExp.toFixed(1) + ' Years');
-        $('p.netMigField').text(currNetMig).commas();
-        $('#simForwardButton').removeAttr('disabled');
-	PopxPoints.length = 0;
-        PopyPoints.length = 0;
-        PopxPoints[0] = currYear;
-        PopyPoints[0] = currPop;
-        rChart = rChartPanel.linechart(70, 25, 370, 180, PopxPoints, PopyPoints, {axis: '0 0 1 1', symbol: 'circle'});
-	// WARNING: To display raw values,
-        //   convert Female[i] to -Female[i]
-        //   convert Male[i] to Female[i] + Male[i]
-        var i;
-        var mvals = [];
-        var fvals = [];
-        for (i=0; i< country.malePop.length; i++) {
-          mvals[i] = country.malePop[i] + country.femalePop[i];
-          fvals[i] = -country.femalePop[i];
-        }
-	PyrValues[0] = fvals;
-        PyrValues[1] = mvals;
-	console.log("Pyramid: " + fvals + ", " + mvals + ", " + PyrValues);
-        rPyramid = rPyramidPanel.hbarchart(175, 25, 150, 180, PyrValues, {stacked: true});
-        $.modal.close();
-      });
-    }
+  function selectCountry(filename) {
+    var dataURL = buildURL(filename);
+    console.log("dataURL: " + dataURL);
+    $.getScript(dataURL, function () {
+      country = setCountry(); // This loads the country
+      console.log("Back now: " + country.name);
+      $('p.countryField').text(country.name);
+      currPop = country.initPop;
+      currYear = country.startYear;
+      currChildren = country.children;
+      currLifeExp = country.lifeExp;
+      currNetMig = country.netMigration;
+      $('p.initPopField').text('Initial Population: ' + currPop).commas();
+      $('p.currYearField').text('Year: ' + currYear);
+      $('p.currPopField').text('Population: ' + currPop).commas();
+      $('p.childrenField').text(currChildren.toFixed(1) + ' Children');
+      $('p.lifeExpField').text(currLifeExp.toFixed(1) + ' Years');
+      $('p.netMigField').text(currNetMig).commas();
+      $('#simForwardButton').removeAttr('disabled');
+      PopxPoints.length = 0;
+      PopyPoints.length = 0;
+      PopxPoints[0] = currYear;
+      PopyPoints[0] = currPop;
+      rChart = rChartPanel.linechart(70, 25, 370, 180, PopxPoints, PopyPoints, {axis: '0 0 1 1', symbol: 'circle'});
+      // WARNING: To display raw values,
+      //   convert Female[i] to -Female[i]
+      //   convert Male[i] to Female[i] + Male[i]
+      var i;
+      var mvals = [];
+      var fvals = [];
+      for (i=0; i< country.malePop.length; i++) {
+        mvals[i] = country.malePop[i] + country.femalePop[i];
+        fvals[i] = -country.femalePop[i];
+      }
+      PyrValues[0] = fvals;
+      PyrValues[1] = mvals;
+      console.log("Pyramid: " + fvals + ", " + mvals + ", " + PyrValues);
+      rPyramid = rPyramidPanel.hbarchart(175, 25, 150, 180, PyrValues, {stacked: true});
+    });
   }
 
   // Handler for simForward button
@@ -164,7 +160,4 @@ console.log("Data URL is: " + theURL);
   $('#fertilityButton').click(fertility);
   $('#simForwardButton').click(simForward);
   $('#simBackButton').click(simBack);
-  $('#optionsSelect').click(openSelectModal);
-  $('#doSelect').click(selectCountry);
-  $('#countrySelectMenu').click(countryClick);
 });

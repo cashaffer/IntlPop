@@ -133,26 +133,3 @@ button {
 #optionsDropDown {
   font-size: 11px;
 }
-
-#countrySelectModal {
-  display: none;
-  position: relative;
-}
-
-#countrySelectMenu {
-  position: absolute;
-  top: 5px;
-  left: 800px;
-}
-
-#maps {
-  position: absolute;
-  top: 100px;
-  left: 300px;
-}
-
-#doSelect {
-  position: absolute;
-  top: 210px;
-  left: 800px;
-}

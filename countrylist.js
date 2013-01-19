@@ -26,5 +26,5 @@ countryList[7] = {};
 countryList[7].name = "Canada 7";
 countryList[7].filename = "Canada.js";
 countryList[8] = {};
-countryList[8].name = "USA 8";
+countryList[8].name = "Central African Republic";
 countryList[8].filename = "US.js";
