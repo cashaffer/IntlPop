@@ -41,6 +41,7 @@
   // Handler for clicking on country in country select menu
   function countryClick(el) {
     console.log("In countryClick, value: " + $('#countrySelectMenu').val() + ", element: " + el);
+    $('p.currentField').text("Current Selection: " + countryList[$('#countrySelectMenu').val()].name);
   }
 
   console.log("This page's URL is: " + window.location.protocol + "//" +
@@ -50,13 +51,13 @@
   console.log("Country Menu value: " + $('#countrySelectMenu').val());
 
   var rSelectPanel = new Raphael("countrySelectPanel", 550, 700);
-  rSelectPanel.rect(10, 25, 240, 120);
-  rSelectPanel.rect(10, 175, 500, 250);
+  rSelectPanel.rect(10, 15, 240, 120);
+  rSelectPanel.rect(10, 165, 500, 250);
 
   tell("Click on a country, then click 'Select It' to open a simulation window.");
   // Action callbacks for form entities
-  $('#about').click(about);
-  $('#help').click(help);
+  $('#aboutButton').click(about);
+  $('#helpButton').click(help);
   $('#doSelect').click(newsim);
   $('#countrySelectMenu').click(countryClick);
 }(jQuery));

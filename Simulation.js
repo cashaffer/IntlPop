@@ -1,6 +1,6 @@
 "use strict";
 $(document).ready(function () {
-  var tell = function (msg) { $('p.output').text(msg); };
+		    var tell = function (msg,color) { $('p.output').text(msg).css("color",color); };
 
   // From JSAV utils
   function getQueryParameter(name) {
@@ -23,51 +23,13 @@ $(document).ready(function () {
   };
 
 
+  // Take string with a number in it and return that string
+  // with commas in the number
   $.fn.commas = function(){ 
     return this.each(function(){ 
       $(this).text( $(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") ); 
 		     })
   }
-
-  var country; // This will hold the current country record
-
-  // Current simulation state
-  var currYear;
-  var currPop;
-  var currChildren;
-  var currLifeExp;
-  var currNetMig;
-  var PopxPoints = [];
-  var PopyPoints = [];
-  var PyrValues = [];
-  var rChart;
-  var rPyramid;
-
-  // Set up the interface
-
-  // Pyramid Panel
-  var rPyramidPanel = new Raphael("pyramidPanel", 350, 300);
-
-  // Population chart panel
-  var rChartPanel = new Raphael("popChartPanel", 500, 300);
-  rChartPanel.rect( 27, 218, 126, 60);
-  rChartPanel.rect(163, 218, 126, 60);
-  rChartPanel.rect(299, 218, 126, 60);
-
-  // Simulation panel
-  var rSim = new Raphael("simPanel", 255, 300);
-  rSim.rect(5, 20, 245, 200);
-  rSim.path("M20 50 L230 50");
-  $('p.initPopField').text("Initial Population:");
-
-  tell("Click on the 'Options' button to choose from among the available simulation features.");
-
-  var params = getQueryParameter();
-  console.log(params.filename);
-  // TODO: TEST HERE FOR PROPER FILE NAME PARAMETER
-  if (params.filename === null) { tell("Ooops! No file name!"); }
-
-   var dataURL = selectCountry(params.filename);
 
   // Handler for Fertility button
   function fertility() {
@@ -87,9 +49,10 @@ console.log("Data URL is: " + theURL);
     return theURL;
   }
 
-  function selectCountry(filename) {
+  function initCountryObject(filename) {
     var dataURL = buildURL(filename);
     console.log("dataURL: " + dataURL);
+    // TODO: What if there is no such file?
     $.getScript(dataURL, function () {
       country = setCountry(); // This loads the country
       console.log("Back now: " + country.name);
@@ -110,7 +73,14 @@ console.log("Data URL is: " + theURL);
       PopyPoints.length = 0;
       PopxPoints[0] = currYear;
       PopyPoints[0] = currPop;
-      rChart = rChartPanel.linechart(70, 25, 370, 180, PopxPoints, PopyPoints, {axis: '0 0 1 1', symbol: 'circle'});
+      xArray[0] = PopxPoints;
+      xArray[1] = dummyYear;
+      yArray[0] = PopyPoints;
+      yArray[1] = dummyPop;
+      console.log("PopxPoints: " + PopxPoints + ", PopyPoints: " + PopyPoints);
+      console.log("xArray: " + xArray + ", yArray:" + yArray);
+      rChart = rChartPanel.linechart(70, 10, 370, 170, xArray, yArray,
+		     {axis: '0 0 1 1', axisxstep: 8, symbol: ['circle', ''], colors: ['#995555', 'transparent']});
       // WARNING: To display raw values,
       //   convert Female[i] to -Female[i]
       //   convert Male[i] to Female[i] + Male[i]
@@ -125,7 +95,8 @@ console.log("Data URL is: " + theURL);
       PyrValues[1] = mvals;
       console.log("Pyramid: " + fvals + ", " + mvals + ", " + PyrValues);
       rPyramid = rPyramidPanel.hbarchart(175, 25, 150, 180, PyrValues, {stacked: true});
-    });
+    }).fail(function(j, settings, exc)
+	    { tell("Oops! This page was called with a bad country file name: " + filename, "red"); });
   }
 
   // Handler for simForward button
@@ -139,11 +110,16 @@ console.log("Data URL is: " + theURL);
     PopxPoints[PopxPoints.length] = currYear;
     PopyPoints[PopyPoints.length] = currPop;
     console.log("PopxPoints: " + PopxPoints);
+    xArray[0] = PopxPoints;
+    xArray[1] = dummyYear;
+    yArray[0] = PopyPoints;
+    yArray[1] = dummyPop;
     rChart.remove();
-    rChart = rChartPanel.linechart(70, 25, 370, 180, PopxPoints, PopyPoints, {axis: '0 0 1 1', symbol: 'circle'});
+      rChart = rChartPanel.linechart(70, 10, 370, 170, xArray, yArray,
+		     {axis: '0 0 1 1', axisxstep: 8, symbol: ['circle', ''], colors: ['#995555', 'transparent']});
   }
 
-  // Handler for simForward button
+  // Handler for simBack button
   function simBack() {
     tell("Clicked on simBack button.");
     currPop = Math.round(currPop / country.growthRate);
@@ -156,7 +132,59 @@ console.log("Data URL is: " + theURL);
     }
   }
 
-  // Button callbacks
+  /* ------------------ START HERE ---------------------------- */
+
+  // Generic message for  output window when there is nothing special to do
+  var generalMsg = "You can click on the 'Options' button to choose from among the available simulation features, click on the 'Sim' button to advance the simulation, or click on one of the other buttons to set simulation parameters.";
+
+
+  var country; // This will hold the current country record
+
+  // Current simulation state
+  var currYear;
+  var currPop;
+  var currChildren;
+  var currLifeExp;
+  var currNetMig;
+  var PopxPoints = [];
+  var PopyPoints = [];
+  var PyrValues = [];
+  var rChart;
+  var rPyramid;
+  var dummyYear = [2050];
+  var dummyPop = [0];
+  var xArray = [];
+  var yArray = [];
+
+  // Set up the interface
+
+  // Pyramid Panel
+  var rPyramidPanel = new Raphael("pyramidPanel", 350, 300);
+
+  // Population chart panel
+  var rChartPanel = new Raphael("popChartPanel", 450, 270);
+  rChartPanel.rect( 27, 203, 126, 60);
+  rChartPanel.rect(163, 203, 126, 60);
+  rChartPanel.rect(299, 203, 126, 60);
+
+  // Simulation panel
+  var rSim = new Raphael("simPanel", 255, 300);
+  rSim.rect(5, 20, 245, 200);
+  rSim.path("M20 50 L230 50");
+  $('p.initPopField').text("Initial Population:");
+
+  tell(generalMsg);
+
+  var params = getQueryParameter();
+  console.log(params.filename);
+  if ((params.filename === undefined) || (params.filename === "undefined"))
+    { tell("Ooops! This page was opened with no file name given!", "red"); }
+  else if (params.filename === "")
+    { tell("Ooops! Empty file name!", "red"); }
+  else
+    { var dataURL = initCountryObject(params.filename); }
+
+  /* ------------------ Button Callbacks ------------------------- */
   $('#fertilityButton').click(fertility);
   $('#simForwardButton').click(simForward);
   $('#simBackButton').click(simBack);

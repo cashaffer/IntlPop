@@ -1,7 +1,3 @@
-/* Support for the simplemodal plugin */
-#simplemodal-overlay {background-color:#000;}
-#simplemodal-container {background-color:#efe; border:1px solid }
-
 /* Generic element styling */
 * {
   margin: 0;
@@ -26,7 +22,7 @@ button {
   top: 0;
   left: 0;
   width: 1060px;
-  height: 362px;
+  height: 372px;
   background-color: #efe;
 }
 
@@ -40,10 +36,10 @@ button {
 
 #popChartPanel { 
   position: absolute;
-  width: 450px;
-  height: 300px;
-  top: 0;
+  top: 30px;
   left: 350px;
+  width: 450px;
+  height: 270px;
 }
 
 #simPanel { 
@@ -59,7 +55,7 @@ button {
   position: absolute;
   height: 60px;
   width: 1048px;
-  top: 291px;
+  top: 301px;
   border: 1px solid black;
   padding: 5px;
   text-align: left;
@@ -68,7 +64,7 @@ button {
 .countryField {
   position: absolute;
   width: 450px;
-  top: 5px;
+  top: -25px;
   color: purple;
   font-size: 20px;
 }
@@ -76,7 +72,7 @@ button {
 .childrenField {
   position: absolute;
   width: 125px;
-  top: 246px;
+  top: 231px;
   left: 26px;
   font-size: 20px;
 }
@@ -84,7 +80,7 @@ button {
 .lifeExpField {
   position: absolute;
   width: 125px;
-  top: 246px;
+  top: 231px;
   left: 162px;
   font-size: 20px;
 }
@@ -92,7 +88,7 @@ button {
 .netMigField {
   position: absolute;
   width: 125px;
-  top: 246px;
+  top: 231px;
   left: 297px;
   font-size: 20px;
 }
@@ -117,7 +113,7 @@ button {
 
 #fertilityButton, #lifeExpButton, #netMigButton {
   position: relative;
-  top: -90px;
+  top: -75px;
   left: 24px;
   width: 126px;
   margin: 3px;

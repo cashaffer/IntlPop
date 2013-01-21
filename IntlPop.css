@@ -26,8 +26,8 @@ button {
   position: relative;
   top: 0;
   left: 0;
-  width: 732px;
-  height: 542px;
+  width: 742px;
+  height: 532px;
   background-color: #efe;
 }
 
@@ -48,59 +48,70 @@ button {
   top: -20px;
   height: 436px;
   width: 728px;
-  border: 1px solid black;
 }
 
 #countrySelectMenu {
   position: absolute;
-  top: 5px;
-  left: 550px;
+  top: 0px;
+  left: 565px;
   height: 420px;
-  width: 175px;
+  width: 170px;
 }
 
-#regions {
+.tempLabelR {
   position: absolute;
-  top: 0px;
+  top: 65px;
+  left: 50px;
+}
+
+.tempLabelC {
+  position: absolute;
+  top: 280px;
+  left: 180px;
+}
+
+.regions {
+  position: absolute;
+  top: -10px;
   left: 10px;
 }
 
-#countries {
+.countries {
   position: absolute;
-  top: 150px;
+  top: 140px;
   left: 10px;
 }
 
-#area {
+.area {
   position: absolute;
-  top: 0px;
-  left: 300px;
+  top: 5px;
+  left: 265px;
 }
 
-#current {
+.currentField {
   position: absolute;
   top: 30px;
-  left: 300px;
+  left: 265px;
 }
 
-#scale {
+.scale {
   position: absolute;
-  top: 60px;
-  left: 300px;
+  top: 55px;
+  left: 265px;
 }
 
 #doSelect {
   position: absolute;
-  top: 90px;
+  top: 100px;
   left: 425px;
 }
 
 /* .output is where we send text messages to explain what is going on */
 .output {
   position: absolute;
+  top: 469px;
   height: 50px;
-  width: 718px;
-  top: 479px;
+  width: 728px;
   border: 1px solid black;
   padding: 5px;
   text-align: left;
