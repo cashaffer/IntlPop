@@ -178,7 +178,7 @@ console.log("Data URL is: " + theURL);
   var params = getQueryParameter();
   console.log(params.filename);
   if ((params.filename === undefined) || (params.filename === "undefined"))
-    { tell("Ooops! This page was opened with no file name given!", "red"); }
+    { tell("Ooops! This page was opened with no file name given! Pehaps you tried to open it directly, instead of through IntlPop.html", "red"); }
   else if (params.filename === "")
     { tell("Ooops! Empty file name!", "red"); }
   else
