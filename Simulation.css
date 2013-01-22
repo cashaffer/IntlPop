@@ -99,16 +99,46 @@ button {
   top: 27px;
 }
 
-.currYearField {
+.currYearField0 {
   position: absolute;
   width: 255px;
   top: 65px;
+  color: #995555;
 }
 
-.currPopField {
+.currPopField0 {
   position: absolute;
   width: 255px;
   top: 80px;
+  color: #995555;
+}
+
+.currYearField1 {
+  position: absolute;
+  width: 255px;
+  top: 110px;
+  color: #559955;
+}
+
+.currPopField1 {
+  position: absolute;
+  width: 255px;
+  top: 125px;
+  color: #559955;
+}
+
+.currYearField2 {
+  position: absolute;
+  width: 255px;
+  top: 155px;
+  color: #555599;
+}
+
+.currPopField2 {
+  position: absolute;
+  width: 255px;
+  top: 170px;
+  color: #555599;
 }
 
 #fertilityButton, #lifeExpButton, #netMigButton {
