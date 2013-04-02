@@ -4,6 +4,11 @@
   padding: 0;
 }
 
+body, input, select, button {
+  font-size: 12px;
+  font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
+}
+
 p {
   font-size: 14px;
   text-align: center;
@@ -66,7 +71,7 @@ button {
   width: 450px;
   top: -25px;
   color: purple;
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .childrenField {
@@ -74,7 +79,7 @@ button {
   width: 125px;
   top: 231px;
   left: 26px;
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .lifeExpField {
@@ -82,7 +87,7 @@ button {
   width: 125px;
   top: 231px;
   left: 162px;
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .netMigField {
@@ -90,7 +95,7 @@ button {
   width: 125px;
   top: 231px;
   left: 297px;
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .initPopField {
@@ -157,5 +162,4 @@ button {
 }
 
 #optionsDropDown {
-  font-size: 11px;
 }

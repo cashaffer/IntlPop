@@ -5,13 +5,18 @@
   padding: 0;
 }
 
+body, input, select, button {
+  font-size: 14px;
+  font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
+}
+
 body {
-  font-family: Times, serif;
   color: black;
 }
 
 h1 { 
   text-align: center; 
+  font-size: 30px;
 }
 
 button {
