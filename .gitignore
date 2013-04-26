@@ -4,3 +4,7 @@
 #Generated files
 version.js
 version.txt
+
+#Original data files
+RawData
+CSV_Files

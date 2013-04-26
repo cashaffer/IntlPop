@@ -1,0 +1,8 @@
+# Your browser might not let you load a country file into the
+# simulation window unless you run a web server. In case you are on a
+# machine (such as your own PC) without a web server running, 
+# this is a simple little web server that will let you test Intlpop
+# locally. You only need to have Python installed to run this.
+# After invoking this from a command prompt, point your web browser
+# to: http://127.0.0.1:8000/
+python -m SimpleHTTPServer

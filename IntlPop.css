@@ -26,31 +26,30 @@ button {
   padding-bottom: 1px;
 }
 
-/* Element-specific styling */
 #container {
   position: relative;
   top: 0;
   left: 0;
-  width: 742px;
+  width: 907px;
   height: 532px;
   background-color: #efe;
 }
 
 #titlePanel{
   position: relative;
-  top: 0px;
-  width: 800px;
+  top: 10px;
+  width: 900px;
 }
 
 #aboutButton, #helpButton {
   position: relative;
-  top: -32px;
-  left: 622px;
+  top: -42px;
+  left: 793px;
 }
 
 #countrySelectPanel {
   position: relative;
-  top: -20px;
+  top: -15px;
   height: 436px;
   width: 728px;
 }
@@ -58,57 +57,39 @@ button {
 #countrySelectMenu {
   position: absolute;
   top: 0px;
-  left: 565px;
+  left: 710px;
   height: 420px;
-  width: 170px;
-}
-
-.tempLabelR {
-  position: absolute;
-  top: 65px;
-  left: 50px;
+  width: 190px;
 }
 
 .tempLabelC {
   position: absolute;
-  top: 280px;
-  left: 180px;
-}
-
-.regions {
-  position: absolute;
-  top: -10px;
-  left: 10px;
+  top: 230px;
+  left: 270px;
 }
 
 .countries {
   position: absolute;
-  top: 140px;
-  left: 10px;
+  top: 45px;
+  left: 5px;
 }
 
-.area {
+.hover {
   position: absolute;
-  top: 5px;
-  left: 265px;
+  top: 45px;
+  left: 450px;
 }
 
-.currentField {
+.currentSelection {
   position: absolute;
-  top: 30px;
-  left: 265px;
-}
-
-.scale {
-  position: absolute;
-  top: 55px;
-  left: 265px;
+  top: 45px;
+  left: 175px;
 }
 
 #doSelect {
   position: absolute;
-  top: 100px;
-  left: 425px;
+  top: 0px;
+  left: 635px;
 }
 
 /* .output is where we send text messages to explain what is going on */
@@ -116,7 +97,7 @@ button {
   position: absolute;
   top: 469px;
   height: 50px;
-  width: 728px;
+  width: 893px;
   border: 1px solid black;
   padding: 5px;
   text-align: left;

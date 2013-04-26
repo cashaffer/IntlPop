@@ -1,13 +1,9 @@
 function setCountry () {
   var myCountry = new Object;
   myCountry.name = "United States";
-  myCountry.initPop = 300000000;
   myCountry.startYear = 2010;
-  myCountry.growthRate = 1.1;
-  myCountry.fertility = 2.3;
-  myCountry.lifeExp = 75.5;
-  myCountry.netMigration = 700000;
-  myCountry.malePop = [1, 2, 4, 6, 10, 12, 12];
-  myCountry.femalePop = [1, 2, 5, 5, 8, 11, 11];
+  myCountry.netMigration = 4955;
+  myCountry.malePop = [35000, 30000, 20000, 18000, 12000, 8000, 4000, 2000, 1000];
+  myCountry.femalePop = [35000, 29000, 21000, 19000, 13000, 10000, 5000, 3000, 2000];
   return myCountry;
 }

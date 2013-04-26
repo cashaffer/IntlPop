@@ -2,7 +2,7 @@
 /*global alert*/
 (function ($) {
   var tell = function (msg) { $('p.output').text(msg); };
-  var simWindowFeatures = "height=364,width=1060";
+  var simWindowFeatures = "height=378,width=1060";
 
   // Initialize the menu of countries
   function initCountryMenu() {
@@ -50,9 +50,8 @@
   initCountryMenu();
   console.log("Country Menu value: " + $('#countrySelectMenu').val());
 
-  var rSelectPanel = new Raphael("countrySelectPanel", 550, 700);
-  rSelectPanel.rect(10, 15, 240, 120);
-  rSelectPanel.rect(10, 165, 500, 250);
+  var rSelectPanel = new Raphael("countrySelectPanel", 710, 600);
+  rSelectPanel.rect(5, 68, 700, 350);
 
   tell("Click on a country, then click 'Select It' to open a simulation window.");
   // Action callbacks for form entities

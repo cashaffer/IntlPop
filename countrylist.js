@@ -2,11 +2,11 @@
 var countryList = [];
 
 countryList[0] = {};
-countryList[0].name = "USA 0";
-countryList[0].filename = "US.js";
+countryList[0].name = "United States of America";
+countryList[0].filename = "2010_840.js";
 countryList[1] = {};
-countryList[1].name = "Canada 1";
-countryList[1].filename = "Canada.js";
+countryList[1].name = "Viet Nam";
+countryList[1].filename = "2010_704.js";
 countryList[2] = {};
 countryList[2].name = "USA 2";
 countryList[2].filename = "US.js";

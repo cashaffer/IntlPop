@@ -54,7 +54,7 @@ console.log("Data URL is: " + theURL);
 
   // Handler for Fertility button
   function fertility() {
-    tell("Clicked on Fertility button.", "red");
+    tell("TODO: Need to handle fertility button.", "red");
   }
 
   // Handler for simForward button
@@ -75,7 +75,7 @@ console.log("Data URL is: " + theURL);
     console.log("advanced: " + simState.sim[simState.currSim].pop[posit]);   
     $('#simBackButton').removeAttr('disabled');
     displayState();
-    if (posit == MaxSteps) {
+    if (posit == maxSteps) {
       $('#simForwardButton').attr('disabled', 'disabled');
     }
   }
@@ -131,12 +131,11 @@ console.log("Data URL is: " + theURL);
     simState.sim[0] = {};
     simState.sim[1] = {};
     simState.sim[2] = {};
-    simState.fertility = initCountry.fertility;
-    simState.growthRate = initCountry.growthRate;
-    simState.lifeExp = initCountry.lifeExp;
+    simState.fertility = -1; // TODO: Handle aggregate fertility value
+    simState.lifeExp = -1;   // TODO: Handle aggregate life expectancy
     simState.netMigration = initCountry.netMigration;
     initSim(0);
-    $('p.initPopField').text('Initial Population: ' + initCountry.initPop).commas();
+    $('p.initPopField').text('Initial Population: ' + initPop()).commas();
     $('p.childrenField').text(simState.fertility.toFixed(1) + ' Children');
     $('p.lifeExpField').text(simState.lifeExp.toFixed(1) + ' Years');
     $('p.netMigField').text(simState.netMigration).commas();
@@ -144,12 +143,21 @@ console.log("Data URL is: " + theURL);
     displayState();
   }
 
+  // Generate the initial population value by summing up the inputs
+  function initPop() {
+    var pop = 0;
+    for (var i = 0; i < initCountry.malePop.length; i++) {
+      pop = pop + initCountry.malePop[i] + initCountry.femalePop[i];
+    }
+    return pop;
+  }
+
   // Initialize the state for one of the three simulations
   function initSim(simNum) {
     console.log("In initSim: " + simNum);
     simState.sim[simNum].pop = [];      // One for each simulation point
     simState.sim[simNum].year = [];
-    simState.sim[simNum].pop[0] = initCountry.initPop;
+    simState.sim[simNum].pop[0] = initPop();
     simState.sim[simNum].year = []; // One for each simulation point
     simState.sim[simNum].year[0] = initCountry.startYear;
     $('#simForwardButton').removeAttr('disabled');
@@ -183,8 +191,11 @@ console.log("Data URL is: " + theURL);
       $('p.currPopField2').text('Population: ' + simState.sim[2].pop.slice(-1)[0]).commas();
     }
     console.log("Display: " + simState.currSim);
-    xArray[0] = dummyYear;
-    yArray[0] = dummyPop;
+
+    // These next values are used to set the bounds of the chart
+    xArray[0] = [initCountry.startYear+stepSize*maxSteps];
+    yArray[0] = [0];
+
     for (i=0; i<= simState.currSim; i++) {
       xArray[i+1] = simState.sim[i].year;
       yArray[i+1] = simState.sim[i].pop;
@@ -192,7 +203,7 @@ console.log("Data URL is: " + theURL);
     console.log("Chart values: |" + xArray + "|, |" + yArray + "|");
     if (rChart !== undefined) { rChart.remove(); }
     rChart = rChartPanel.linechart(70, 10, 370, 170, xArray, yArray,
-	   {axis: '0 0 1 1', axisxstep: 8,
+	   {axis: '0 0 1 1', axisxstep: maxSteps,
             symbol: ['', 'circle', 'circle', 'circle'],
             colors: ['transparent', '#995555', '#559955', '#555599']});
       // WARNING: To display raw values,
@@ -200,27 +211,28 @@ console.log("Data URL is: " + theURL);
       //   convert Male[i] to Female[i] + Male[i]
       var i;
       var mvals = [];
+      mvals.length = initCountry.malePop.length;
       var fvals = [];
-      for (i=0; i< initCountry.malePop.length; i++) {
-        mvals[i] = initCountry.malePop[i] + initCountry.femalePop[i];
-        fvals[i] = -initCountry.femalePop[i];
+      for (i=0; i< mvals.length; i++) {
+        mvals[mvals.length - (i+1)] = initCountry.malePop[i] + initCountry.femalePop[i];
+        fvals[mvals.length - (i+1)] = -initCountry.femalePop[i];
       }
       PyrValues[0] = fvals;
       PyrValues[1] = mvals;
       console.log("Pyramid: " + fvals + ", " + mvals + ", " + PyrValues);
-      rPyramid = rPyramidPanel.hbarchart(175, 25, 150, 180, PyrValues, {stacked: true});
+      rPyramid = rPyramidPanel.hbarchart(175, 25, 150, 250, PyrValues, {stacked: true});
   }
 
   // Advance the current simulation state by one year
   function advanceSimState() {
     var currSim = simState.sim[simState.currSim];
     var posit = currSim.year.length - 1;
-    console.log("advance growthRate: " + simState.growthRate);
+    console.log("advance growthRate: " + growthRate);
     currSim.year[posit]++;
     if (simState.currSim === 0) {
-      currSim.pop[posit] = Math.round(currSim.pop[posit] * simState.growthRate);
+      currSim.pop[posit] = Math.round(currSim.pop[posit] * (1.0 + growthRate));
     } else if (simState.currSim === 1) {
-      currSim.pop[posit] = Math.round(currSim.pop[posit] * simState.growthRate/2.0);
+      currSim.pop[posit] = Math.round(currSim.pop[posit] * (1.0 + growthRate/2.0));
     } else if (simState.currsim === 2) {
       currSim.pop[posit] = Math.round(currSim.pop[posit]);
     }
@@ -232,18 +244,16 @@ console.log("Data URL is: " + theURL);
   // Generic message for  output window when there is nothing special to do
   var generalMsg = "You can click on the 'Options' button to choose from among the available simulation features, click on the 'Sim' button to advance the simulation, or click on one of the other buttons to set simulation parameters.";
 
-  var initCountry;   // Initial country values from data file
-  var MaxSteps = 8;  // Total number of simulation steps supported (2010-2050)
+  var initCountry;   // Initial country data from data file
+  var maxSteps = 8;  // Total number of simulation steps supported
+  var stepSize = 5;  // Number of years between each registered step in chart
   var simState = {}; // Current simulation state object, it holds everything
   var rChart;        // graphael line chart object
   var rPyramid;      // graphael population pyramid object
   var xArray = [];
   var yArray = [];
   var PyrValues = [];
-
-  // Dummy data series used to fix x axis on rChart
-  var dummyYear = [2050];
-  var dummyPop = [0];
+  var growthRate = 0.01; // Hack for the moment
 
   // Set up the interface
 
