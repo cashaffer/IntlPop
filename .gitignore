@@ -6,5 +6,5 @@ version.js
 version.txt
 
 #Original data files
-RawData
-CSV_Files
+RawData/*.XLS
+CSV
