@@ -12,8 +12,20 @@ import os
 import csv
 import codecs
 
-inputDir = '../CSV_Files/'
-outputDir = '../JS_Files/'
+inputDir = '../CSV_Files/' # The directory containing the CSV files
+outputDir = '../JS_Files/' # Where the JS output files will be created
+
+# CSV FileNames (should be within the inputDir)
+# Edit these filenames to reflect your own naming convention if necessary
+f_POPULATION_BY_AGE_MALE = 'POPULATION_BY_AGE_MALE.CSV'
+f_POPULATION_BY_AGE_FEMALE = 'POPULATION_BY_AGE_FEMALE.CSV'
+f_DEATHS_BY_AGE_MALE = 'DEATHS_BY_AGE_MALE.CSV'
+f_DEATHS_BY_AGE_FEMALE = 'DEATHS_BY_AGE_FEMALE.CSV'
+f_BIRTHS_BY_AGE_OF_MOTHER = 'BIRTHS_BY_AGE_OF_MOTHER.CSV'
+f_IMR_BOTH_SEXES = 'IMR_BOTH_SEXES.CSV'
+f_NET_NUMBER_OF_MIGRANTS = 'NET_NUMBER_OF_MIGRANTS.CSV'
+
+
 validYears = [2000, 2005, 2010]
 
 # Checks that command line arguments are valid
@@ -50,9 +62,10 @@ def generateFiles(year):
   os.makedirs(outputDir)
   printMessage('Generating files for year %s data.' % (str(year)))
   # Make a file for each country based on the male population data
-  data = csv.reader(open(inputDir + 'MalePopulation.csv'))
+  data = csv.reader(open(inputDir + f_POPULATION_BY_AGE_MALE))
 
   for row in data:
+    if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
     if int(row[5]) == year: # Only record the requested year
       countryName = row[2]
       countryCode = row[4]
@@ -79,8 +92,9 @@ def generateFiles(year):
 def appendPopData(year):
   # Start with male population
   printMessage('Parsing male population data.')
-  dataFile = csv.reader(open(inputDir + 'MalePopulation.csv', 'r'))
+  dataFile = csv.reader(open(inputDir + f_POPULATION_BY_AGE_MALE, 'r'))
   for row in dataFile:
+    if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
     if int(row[5]) == year: # Only record the selected year
       filePath = '%s%s_%s.js' % (outputDir, str(year), row[4])
       f = open(filePath, 'a')
@@ -93,8 +107,9 @@ def appendPopData(year):
       f.close()
   # Now fill in the female population
   printMessage('Parsing female population data.')
-  dataFile = csv.reader(open(inputDir + 'FemalePopulation.csv', 'r'))
+  dataFile = csv.reader(open(inputDir + f_POPULATION_BY_AGE_FEMALE, 'r'))
   for row in dataFile:
+    if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
     if int(row[5]) == year: # Only record the selected year
       filePath = '%s%s_%s.js' % (outputDir, str(year), row[4])
       f = open(filePath, 'a')
@@ -115,8 +130,9 @@ def appendPopData(year):
 def appendBirthData(year):
   # Parse through the birth data and append it to the file
   printMessage('Parsing birth data.')
-  dataFile = csv.reader(open(inputDir + 'Births.csv', 'r'))
+  dataFile = csv.reader(open(inputDir + f_BIRTHS_BY_AGE_OF_MOTHER, 'r'))
   for row in dataFile:
+    if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
     if int(row[5].split('-')[1]) == year: # Only record the selected year
       filePath = '%s%s_%s.js' % (outputDir, str(year), row[4])
       f = open(filePath, 'a')
@@ -136,8 +152,9 @@ def appendBirthData(year):
 def appendMortalityData(year):
   # Start with the female mortality data
   printMessage('Parsing female mortality data.')
-  dataFile = csv.reader(open(inputDir + 'FemaleMortality.csv', 'r'))
+  dataFile = csv.reader(open(inputDir + f_DEATHS_BY_AGE_FEMALE, 'r'))
   for row in dataFile:
+    if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
     if int(row[5].split('-')[1]) == year: # Only record the selected year
       filePath = '%s%s_%s.js' % (outputDir, str(year), row[4])
       f = open(filePath, 'a')
@@ -150,8 +167,9 @@ def appendMortalityData(year):
       f.close()
   # Now parse and append the male mortality data
   printMessage('Parsing male mortality data.')
-  dataFile = csv.reader(open(inputDir + 'MaleMortality.csv', 'r'))
+  dataFile = csv.reader(open(inputDir + f_DEATHS_BY_AGE_MALE, 'r'))
   for row in dataFile:
+    if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
     if int(row[5].split('-')[1]) == year: # Only record the selected year
       filePath = '%s%s_%s.js' % (outputDir, str(year), row[4])
       f = open(filePath, 'a')
@@ -162,11 +180,32 @@ def appendMortalityData(year):
           f.write(',')
       f.write('];\n')
       f.close()
+  # Now parse and append the male mortality data
+  printMessage('Parsing infant mortality data.')
+  dataFile = csv.reader(open(inputDir + f_IMR_BOTH_SEXES, 'r'))
+  for row in dataFile:
+    if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
+    filePath = '%s%s_%s.js' % (outputDir, str(year), row[4])
+    f = open(filePath, 'a')
+    f.write('  mycountry.infantMortality = ') # Write an open array to file
+    
+    if year == 2000:
+      f.write(str(row[14]).strip())
+    elif year == 2005:
+      f.write(str(row[15]).strip())
+    elif year == 2010:
+      f.write(str(row[16]).strip())
+    else:
+      f.write('')
+
+    f.write(';\n')
+    f.close()
 
 def appendMigrationData(year):
   printMessage('Parsing migration data.')
-  dataFile = csv.reader(open(inputDir + 'Migration.csv', 'r'))
+  dataFile = csv.reader(open(inputDir + f_NET_NUMBER_OF_MIGRANTS, 'r'))
   for row in dataFile:
+    if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
     filePath = '%s%s_%s.js' % (outputDir, str(year), row[4])
     f = open(filePath, 'a')
     index = (((year - 1955) / 5) + 5)
@@ -195,10 +234,11 @@ def createCountryList(year):
   listFile = open(filePath, 'w') # Make the new file
   listFile.write('"use strict";\nvar countryList = [];\n\n') # Preliminaries
 
-  data = csv.reader(open(inputDir + 'MalePopulation.csv'))
+  data = csv.reader(open(inputDir + f_POPULATION_BY_AGE_MALE))
   counter = 0;
 
   for row in data:
+    if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
     if int(row[5]) == year: # Only record the requested year
       
       countryName = row[2]
