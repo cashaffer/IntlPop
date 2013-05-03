@@ -68,8 +68,8 @@ console.log("Data URL is: " + theURL);
     curr.pop[posit] = curr.pop[posit-1];
     console.log("simForward: " + simState.sim[simState.currSim].year[posit]);   
     console.log("simForward: " + simState.sim[simState.currSim].pop[posit]);   
-    for (var i = 0; i < 5; i++) { // We display every 5 years
-      advanceSimState();
+    for (var i = 0; i < stepSize; i++) { // How many years to advance
+      advanceSimState(simState.sim[simState.currSim]);
     }
     console.log("advanced: " + simState.sim[simState.currSim].year[posit]);   
     console.log("advanced: " + simState.sim[simState.currSim].pop[posit]);   
@@ -224,8 +224,7 @@ console.log("Data URL is: " + theURL);
   }
 
   // Advance the current simulation state by one year
-  function advanceSimState() {
-    var currSim = simState.sim[simState.currSim];
+  function advanceSimState(currSim) {
     var posit = currSim.year.length - 1;
     console.log("advance growthRate: " + growthRate);
     currSim.year[posit]++;
@@ -246,7 +245,7 @@ console.log("Data URL is: " + theURL);
 
   var initCountry;   // Initial country data from data file
   var maxSteps = 8;  // Total number of simulation steps supported
-  var stepSize = 5;  // Number of years between each registered step in chart
+  var stepSize = 10; // Number of years between each registered step in chart
   var simState = {}; // Current simulation state object, it holds everything
   var rChart;        // graphael line chart object
   var rPyramid;      // graphael population pyramid object

@@ -1,0 +1,24 @@
+
+// Advance the current simulation state by one year
+function advanceSimState(sim, country) {
+  // Calculate the number of children born this year
+  newborns = 0;
+  for (i=minFertilityAge; i<=maxFertilityAge; i++) {
+    newborns += sim.femalePop[i] * country.fertility[i];
+  // Remove the ones that died
+  newborns = newborns * country.infantFertilityRate;
+  // Advance the ages
+  // Got to treat the oldest bin specially
+  tempMale = sim.popMale[maxAge] * country.deathMale[maxAge];
+  tempFemale = sim.popFemale[maxAge] * country.deathFemale[maxAge];
+  for (i=maxAge; i>=1; i--) {
+    sim.popMale[i] = sim.popMale[i-1] * country.deathMale[i-1];
+    sim.popFemale[i] = sim.popFemale[i-1] * country.deathFemale[i-1];
+  }
+  // The oldest bin is actually maxAge+, so add back in the ones we saved
+  sim.popMale[maxAge] += tempMale;
+  sim.popFemale[maxAge] += tempFemale;
+  // Now put the newborns into bin 0
+  sim.popMale[0] = newborns * country.newMaleFrac;
+  sim.popFemale[0] = newborns * country.newFemalFrac;
+}
