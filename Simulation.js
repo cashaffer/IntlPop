@@ -1,6 +1,6 @@
 "use strict";
+/*global console setCountry */
 $(document).ready(function () {
-
   /* -------------------- UTILITY FUNCTIONS ----------------------- */
 
   var tell = function (msg, color) {
@@ -15,7 +15,7 @@ $(document).ready(function () {
       pair;
     if (params) {
       params = params.slice(1).split('&'); // get rid of ?
-      for (i=params.length; i--; ) {
+      for (i = params.length; i--;) {
         pair = params[i].split('='); // split to name and value
         vars[pair[0]] = decodeURIComponent(pair[1]); // decode URI
         if (name && pair[0] === name) {
@@ -26,29 +26,29 @@ $(document).ready(function () {
     if (name) // name was passed but param was not found, return undefined
       { return; }
     return vars;
-  };
+  }
 
 
   // Based on the URL of the current page, build the URL for a data file
   function buildURL(filename) {
-    var pathArray = window.location.pathname.split( '/' );
+    var pathArray = window.location.pathname.split('/');
     var theURL = window.location.protocol + "//" + window.location.host;
-    for ( var i = 0; i < pathArray.length - 1; i++ ) {
+    for (var i = 0; i < pathArray.length - 1; i++) {
       theURL += pathArray[i];
       theURL += "/";
     }
     theURL += filename;
-console.log("Data URL is: " + theURL);
+    console.log("Data URL is: " + theURL);
     return theURL;
   }
 
   // Take string with a number in it and return that string
   // with commas in the number
-  $.fn.commas = function(){ 
-    return this.each(function(){ 
-      $(this).text( $(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") ); 
-		     })
-  }
+  $.fn.commas = function () {
+    return this.each(function () {
+      $(this).text($(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
+    });
+  };
 
   /* --------------- BUTTON AND FIELD HANDLERS--------------------- */
 
@@ -62,20 +62,20 @@ console.log("Data URL is: " + theURL);
     tell("Clicked on simForward button.");
     // Copy record for next sim step
     var curr = simState.sim[simState.currSim];
-    var posit = curr.year.length;
+    curr.currstep += 1;
+    var posit = curr.currstep;
     console.log("Posit: " + posit);
-    curr.year[posit] = curr.year[posit-1];
-    curr.pop[posit] = curr.pop[posit-1];
-    console.log("simForward: " + simState.sim[simState.currSim].year[posit]);   
-    console.log("simForward: " + simState.sim[simState.currSim].pop[posit]);   
+    curr.cstep[posit] = jQuery.extend(true, {}, curr.cstep[posit-1]);
+    console.log("simForward: " + curr.cstep[posit].year);
+    console.log("simForward: " + curr.cstep[posit].pop);
     for (var i = 0; i < stepSize; i++) { // How many years to advance
-      advanceSimState(simState.sim[simState.currSim]);
+      advanceSimState(curr.cstep[posit]);
     }
-    console.log("advanced: " + simState.sim[simState.currSim].year[posit]);   
-    console.log("advanced: " + simState.sim[simState.currSim].pop[posit]);   
+    console.log("advanced: " + curr.cstep[posit].year);
+    console.log("advanced: " + curr.cstep[posit].pop);
     $('#simBackButton').removeAttr('disabled');
     displayState();
-    if (posit == maxSteps) {
+    if (posit === maxSteps) {
       $('#simForwardButton').attr('disabled', 'disabled');
     }
   }
@@ -84,12 +84,10 @@ console.log("Data URL is: " + theURL);
   function simBack() {
     tell("Clicked on simBack button.");
     // Remove the current simulation state record
-    var curr = simState.sim[simState.currSim];
-    curr.year.length = curr.year.length - 1;
-    curr.pop.length = curr.pop.length - 1;
+    simState.sim[simState.currSim].currstep -= 1;
     $('#simForwardButton').removeAttr('disabled');
     displayState();
-    if (curr.year.length === 1) {
+    if (simState.sim[simState.currSim].currstep === 0) {
       console.log("Disable Back button");
       $('#simBackButton').attr('disabled', 'disabled');
     }
@@ -113,11 +111,12 @@ console.log("Data URL is: " + theURL);
   // Handler for Another Simulation option
   function anotherSim() {
     console.log("Clicked anotherSim");
-    if (simState.currSim === 2) { 
+    if (simState.currSim === 2) {
       tell("Can only have three simulations at once. Reset if you want a new simulation.");
       return;
     }
-    initSim(++simState.currSim);
+    simState.currSim += 1;
+    initSim(simState.sim[simState.currSim].cstep[0]);
     displayState();
   }
 
@@ -129,16 +128,21 @@ console.log("Data URL is: " + theURL);
     simState.currSim = 0;
     simState.sim = [];
     simState.sim[0] = {};
+    simState.sim[0].cstep = [];
+    simState.sim[0].currstep = 0;
     simState.sim[1] = {};
+    simState.sim[1].cstep = [];
+    simState.sim[1].currstep = 0;
     simState.sim[2] = {};
-    simState.fertility = -1; // TODO: Handle aggregate fertility value
-    simState.lifeExp = -1;   // TODO: Handle aggregate life expectancy
-    simState.netMigration = initCountry.netMigration;
-    initSim(0);
+    simState.sim[2].cstep = [];
+    simState.sim[2].currstep = 0;
+    for (var i = 0; i < maxSteps; i++) {
+      simState.sim[0].cstep[i] = {};
+      simState.sim[1].cstep[i] = {};
+      simState.sim[2].cstep[i] = {};
+    }
+    initSim(simState.sim[simState.currSim].cstep[0]);
     $('p.initPopField').text('Initial Population: ' + initPop()).commas();
-    $('p.childrenField').text(simState.fertility.toFixed(1) + ' Children');
-    $('p.lifeExpField').text(simState.lifeExp.toFixed(1) + ' Years');
-    $('p.netMigField').text(simState.netMigration).commas();
     $('.anotherSim').removeAttr('disabled');
     displayState();
   }
@@ -153,13 +157,16 @@ console.log("Data URL is: " + theURL);
   }
 
   // Initialize the state for one of the three simulations
-  function initSim(simNum) {
-    console.log("In initSim: " + simNum);
-    simState.sim[simNum].pop = [];      // One for each simulation point
-    simState.sim[simNum].year = [];
-    simState.sim[simNum].pop[0] = initPop();
-    simState.sim[simNum].year = []; // One for each simulation point
-    simState.sim[simNum].year[0] = initCountry.startYear;
+  function initSim(cStep) {
+    console.log("In initSim: " + simState.currSim);
+    cStep.fertility = simState.currSim; // TODO: Handle aggregate fertility value
+    cStep.lifeExp = simState.currSim;   // TODO: Handle aggregate life expectancy
+    cStep.netMigration = initCountry.netMigration;
+    cStep.pop = initPop();
+    cStep.year = initCountry.startYear;
+    $('p.childrenField').text(cStep.fertility.toFixed(1) + ' Children');
+    $('p.lifeExpField').text(cStep.lifeExp.toFixed(1) + ' Years');
+    $('p.netMigField').text(cStep.netMigration).commas();
     $('#simForwardButton').removeAttr('disabled');
     $('#simBackButton').attr('disabled', 'disabled');
   }
@@ -172,7 +179,7 @@ console.log("Data URL is: " + theURL);
       initCountry = setCountry(); // setCountry is in the data file
       $('p.countryField').text(initCountry.name);
       initSimState();
-    }).fail(function(j, settings, exc) {
+    }).fail(function (j, settings, exc) {
       tell("Oops! This page was called with a bad country file name: " + filename, "red");
     });
   }
@@ -180,61 +187,79 @@ console.log("Data URL is: " + theURL);
   // Display the current simulation state
   function displayState() {
     var i;
-    $('p.currYearField0').text('Year: ' + simState.sim[0].year.slice(-1)[0]);
-    $('p.currPopField0').text('Population: ' + simState.sim[0].pop.slice(-1)[0]).commas();
+    var curr = simState.sim[0].currstep;
+    console.log("curr: " + curr);
+    console.log("cstep: " + simState.sim[0].cstep[curr].year);
+    $('p.currYearField0').text('Year: ' + simState.sim[0].cstep[curr].year);
+    $('p.currPopField0').text('Population: ' +
+                              simState.sim[0].cstep[curr].pop).commas();
     if (simState.currSim !== 0) {
-      $('p.currYearField1').text('Year: ' + simState.sim[1].year.slice(-1)[0]);
-      $('p.currPopField1').text('Population: ' + simState.sim[1].pop.slice(-1)[0]).commas();
+      curr = simState.sim[1].currstep;
+      console.log("curr 1: " + curr);
+      console.log("cstep: " + simState.sim[1].cstep[curr].year);
+      $('p.currYearField1').text('Year: ' + simState.sim[1].cstep[curr].year);
+      $('p.currPopField1').text('Population: ' +
+                              simState.sim[1].cstep[curr].pop).commas();
     }
     if (simState.currSim === 2) {
-      $('p.currYearField2').text('Year: ' + simState.sim[2].year.slice(-1)[0]);
-      $('p.currPopField2').text('Population: ' + simState.sim[2].pop.slice(-1)[0]).commas();
+      curr = simState.sim[2].currstep;
+      console.log("curr 2: " + curr);
+      console.log("cstep: " + simState.sim[1].cstep[curr].year);
+      $('p.currYearField2').text('Year: ' + simState.sim[2].cstep[curr].year);
+      $('p.currPopField2').text('Population: ' +
+                              simState.sim[2].cstep[curr].pop).commas();
     }
     console.log("Display: " + simState.currSim);
 
     // These next values are used to set the bounds of the chart
-    xArray[0] = [initCountry.startYear+stepSize*maxSteps];
+    xArray[0] = [initCountry.startYear + stepSize * maxSteps];
     yArray[0] = [0];
 
-    for (i=0; i<= simState.currSim; i++) {
-      xArray[i+1] = simState.sim[i].year;
-      yArray[i+1] = simState.sim[i].pop;
+    var xdum = [];
+    var ydum = [];
+    for (i = 0; i <= simState.currSim; i++) {
+      xdum[i] = []; ydum[i] = [];
+      for (var j = 0; j <= simState.sim[i].currstep; j++) {
+        xdum[i][j] = simState.sim[i].cstep[j].year;
+        ydum[i][j] = simState.sim[i].cstep[j].pop;
+      }
+      xArray[i + 1] = xdum[i];
+      yArray[i + 1] = ydum[i];
     }
     console.log("Chart values: |" + xArray + "|, |" + yArray + "|");
     if (rChart !== undefined) { rChart.remove(); }
     rChart = rChartPanel.linechart(70, 10, 370, 170, xArray, yArray,
-	   {axis: '0 0 1 1', axisxstep: maxSteps,
+           {axis: '0 0 1 1', axisxstep: maxSteps,
             symbol: ['', 'circle', 'circle', 'circle'],
             colors: ['transparent', '#995555', '#559955', '#555599']});
-      // WARNING: To display raw values,
-      //   convert Female[i] to -Female[i]
-      //   convert Male[i] to Female[i] + Male[i]
-      var i;
-      var mvals = [];
-      mvals.length = initCountry.malePop.length;
-      var fvals = [];
-      for (i=0; i< mvals.length; i++) {
-        mvals[mvals.length - (i+1)] = initCountry.malePop[i] + initCountry.femalePop[i];
-        fvals[mvals.length - (i+1)] = -initCountry.femalePop[i];
-      }
-      PyrValues[0] = fvals;
-      PyrValues[1] = mvals;
-      console.log("Pyramid: " + fvals + ", " + mvals + ", " + PyrValues);
-      rPyramid = rPyramidPanel.hbarchart(175, 25, 150, 250, PyrValues, {stacked: true});
+    // WARNING: To display raw values,
+    //   convert Female[i] to -Female[i]
+    //   convert Male[i] to Female[i] + Male[i]
+    var mvals = [];
+    mvals.length = initCountry.malePop.length;
+    var fvals = [];
+    for (i = 0; i < mvals.length; i++) {
+      mvals[mvals.length - (i + 1)] = initCountry.malePop[i] +
+                                        initCountry.femalePop[i];
+      fvals[mvals.length - (i + 1)] = -initCountry.femalePop[i];
+    }
+    PyrValues[0] = fvals;
+    PyrValues[1] = mvals;
+    console.log("Pyramid: " + fvals + ", " + mvals + ", " + PyrValues);
+    rPyramid = rPyramidPanel.hbarchart(175, 25, 150, 250, PyrValues, {stacked: true});
   }
 
   // Advance the current simulation state by one year
   function advanceSimState(currSim) {
-    var posit = currSim.year.length - 1;
-    console.log("advance growthRate: " + growthRate);
-    currSim.year[posit]++;
+    currSim.year += 1;
     if (simState.currSim === 0) {
-      currSim.pop[posit] = Math.round(currSim.pop[posit] * (1.0 + growthRate));
+      currSim.pop = Math.round(currSim.pop * (1.0 + growthRate));
     } else if (simState.currSim === 1) {
-      currSim.pop[posit] = Math.round(currSim.pop[posit] * (1.0 + growthRate/2.0));
+      currSim.pop = Math.round(currSim.pop * (1.0 + growthRate/2.0));
     } else if (simState.currsim === 2) {
-      currSim.pop[posit] = Math.round(currSim.pop[posit]);
+      // do nothing
     }
+
   }
 
 
@@ -261,7 +286,7 @@ console.log("Data URL is: " + theURL);
 
   // Population chart panel
   var rChartPanel = new Raphael("popChartPanel", 450, 270);
-  rChartPanel.rect( 27, 203, 126, 60);
+  rChartPanel.rect(27, 203, 126, 60);
   rChartPanel.rect(163, 203, 126, 60);
   rChartPanel.rect(299, 203, 126, 60);
 
