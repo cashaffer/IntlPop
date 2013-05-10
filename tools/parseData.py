@@ -12,8 +12,8 @@ import os
 import csv
 import codecs
 
-inputDir = '../CSV_Files/' # The directory containing the CSV files
-outputDir = '../JS_Files/' # Where the JS output files will be created
+inputDir = '../CSV_Files' # The directory containing the CSV files
+outputDir = '../JS_Files' # Where the JS output files will be created
 
 # CSV FileNames (should be within the inputDir)
 # Edit these filenames to reflect your own naming convention if necessary
@@ -57,20 +57,35 @@ def generateFiles(year):
   # Create output directory
   if os.path.exists(outputDir):
     printMessage('Removing old data files.')
-    shutil.rmtree(outputDir) # Remove the old output
-  printMessage('Creating output directory at ' + outputDir)
-  os.makedirs(outputDir)
+    for the_file in os.listdir(outputDir):
+      file_path = os.path.join(outputDir, the_file)
+      try:
+        if os.path.isfile(file_path):
+            os.unlink(file_path)
+      except:
+        print('There was a problem removing the old data files.')
+        exit(1)
+  else:
+    try:
+      printMessage('Creating output directory at ' + outputDir)
+      os.makedirs(outputDir)
+    except:
+      printMessage('Could not generate output file directory.')
+      exit(1)
+  
   printMessage('Generating files for year %s data.' % (str(year)))
   # Make a file for each country based on the male population data
-  data = csv.reader(open(inputDir + f_POPULATION_BY_AGE_MALE))
+  dataFile = codecs.open(os.path.join(inputDir, f_POPULATION_BY_AGE_MALE), 'r', encoding='latin1')
+  data = csv.reader(dataFile)
 
   for row in data:
+    if len(row) <= 0: continue # Just in case some "phantom" rows exist from MS CSV export
     if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
     if int(row[5]) == year: # Only record the requested year
       countryName = row[2]
       countryCode = row[4]
 
-      filePath = '%s%s_%s.js' % (outputDir, str(year), countryCode)
+      filePath = os.path.join(outputDir, '%s_%s.js' % (str(year), countryCode))
 
       f = open(filePath, 'w') # Make the new file
 
@@ -82,6 +97,7 @@ def generateFiles(year):
       f.write('  myCountry.startYear = %s;\n' % (str(year)))
 
       f.close()
+  dataFile.close()
 
 # Appends male and female population data for the given year
 # to all of the .js files in the output directory. This method
@@ -92,11 +108,13 @@ def generateFiles(year):
 def appendPopData(year):
   # Start with male population
   printMessage('Parsing male population data.')
-  dataFile = csv.reader(open(inputDir + f_POPULATION_BY_AGE_MALE, 'r'))
-  for row in dataFile:
+  dataFile = codecs.open(os.path.join(inputDir, f_POPULATION_BY_AGE_MALE), 'r', encoding='latin1')
+  data = csv.reader(dataFile)
+  for row in data:
+    if len(row) <= 0: continue
     if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
     if int(row[5]) == year: # Only record the selected year
-      filePath = '%s%s_%s.js' % (outputDir, str(year), row[4])
+      filePath = os.path.join(outputDir, '%s_%s.js' % (str(year), row[4]))
       f = open(filePath, 'a')
       f.write('  mycountry.malePop = [') # Write an open array to file
       for i in range(6, 28):
@@ -105,13 +123,16 @@ def appendPopData(year):
           f.write(',')
       f.write('];\n')
       f.close()
+  dataFile.close()
   # Now fill in the female population
   printMessage('Parsing female population data.')
-  dataFile = csv.reader(open(inputDir + f_POPULATION_BY_AGE_FEMALE, 'r'))
-  for row in dataFile:
+  dataFile = codecs.open(os.path.join(inputDir, f_POPULATION_BY_AGE_FEMALE), 'r', encoding='latin1')
+  data = csv.reader(dataFile)
+  for row in data:
+    if len(row) <= 0: continue # Just in case some "phantom" rows exist from MS CSV export
     if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
     if int(row[5]) == year: # Only record the selected year
-      filePath = '%s%s_%s.js' % (outputDir, str(year), row[4])
+      filePath = os.path.join(outputDir, '%s_%s.js' % (str(year), row[4]))
       f = open(filePath, 'a')
       f.write('  mycountry.femalePop = [') # Write an open array to file
       for i in range(6, 28):
@@ -120,6 +141,7 @@ def appendPopData(year):
           f.write(',')
       f.write('];\n')
       f.close()
+  dataFile.close()
 
 # Appends the birth data for the given year to the .js files
 # in the output directory. Make sure that `generateFiles` has
@@ -130,11 +152,13 @@ def appendPopData(year):
 def appendBirthData(year):
   # Parse through the birth data and append it to the file
   printMessage('Parsing birth data.')
-  dataFile = csv.reader(open(inputDir + f_BIRTHS_BY_AGE_OF_MOTHER, 'r'))
-  for row in dataFile:
+  dataFile = codecs.open(os.path.join(inputDir, f_BIRTHS_BY_AGE_OF_MOTHER), 'r', encoding='latin1')
+  data = csv.reader(dataFile)
+  for row in data:
+    if len(row) <= 0: continue # Just in case some "phantom" rows exist from MS CSV export
     if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
     if int(row[5].split('-')[1]) == year: # Only record the selected year
-      filePath = '%s%s_%s.js' % (outputDir, str(year), row[4])
+      filePath = os.path.join(outputDir, '%s_%s.js' % (str(year), row[4]))
       f = open(filePath, 'a')
       f.write('  mycountry.births = [') # Write an open array to file
       for i in range(6, 13):
@@ -143,6 +167,7 @@ def appendBirthData(year):
           f.write(',')
       f.write('];\n')
       f.close()
+  dataFile.close()
 
 # Appends both the male and female mortality data to the .js files
 # in the outputDir. Make sure that `generateFiles` has been called.
@@ -152,11 +177,13 @@ def appendBirthData(year):
 def appendMortalityData(year):
   # Start with the female mortality data
   printMessage('Parsing female mortality data.')
-  dataFile = csv.reader(open(inputDir + f_DEATHS_BY_AGE_FEMALE, 'r'))
-  for row in dataFile:
+  dataFile = codecs.open(os.path.join(inputDir, f_DEATHS_BY_AGE_FEMALE), 'r', encoding='latin1')
+  data = csv.reader(dataFile)
+  for row in data:
+    if len(row) <= 0: continue # Just in case some "phantom" rows exist from MS CSV export
     if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
     if int(row[5].split('-')[1]) == year: # Only record the selected year
-      filePath = '%s%s_%s.js' % (outputDir, str(year), row[4])
+      filePath = os.path.join(outputDir, '%s_%s.js' % (str(year), row[4]))
       f = open(filePath, 'a')
       f.write('  mycountry.femaleMortality = [') # Write an open array to file
       for i in range(6, 26):
@@ -165,13 +192,17 @@ def appendMortalityData(year):
           f.write(',')
       f.write('];\n')
       f.close()
+  dataFile.close()
+
   # Now parse and append the male mortality data
   printMessage('Parsing male mortality data.')
-  dataFile = csv.reader(open(inputDir + f_DEATHS_BY_AGE_MALE, 'r'))
-  for row in dataFile:
+  dataFile = codecs.open(os.path.join(inputDir, f_DEATHS_BY_AGE_MALE), 'r', encoding='latin1')
+  data = csv.reader(dataFile)
+  for row in data:
+    if len(row) <= 0: continue # Just in case some "phantom" rows exist from MS CSV export
     if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
     if int(row[5].split('-')[1]) == year: # Only record the selected year
-      filePath = '%s%s_%s.js' % (outputDir, str(year), row[4])
+      filePath = os.path.join(outputDir, '%s_%s.js' % (str(year), row[4]))
       f = open(filePath, 'a')
       f.write('  mycountry.maleMortality = [') # Write an open array to file
       for i in range(6, 26):
@@ -180,12 +211,16 @@ def appendMortalityData(year):
           f.write(',')
       f.write('];\n')
       f.close()
-  # Now parse and append the male mortality data
+  dataFile.close()
+
+  # Now parse and append the infant mortality data
   printMessage('Parsing infant mortality data.')
-  dataFile = csv.reader(open(inputDir + f_IMR_BOTH_SEXES, 'r'))
-  for row in dataFile:
+  dataFile = codecs.open(os.path.join(inputDir, f_IMR_BOTH_SEXES), 'r', encoding='latin1')
+  data = csv.reader(dataFile)
+  for row in data:
+    if len(row) <= 0: continue # Just in case some "phantom" rows exist from MS CSV export
     if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
-    filePath = '%s%s_%s.js' % (outputDir, str(year), row[4])
+    filePath = os.path.join(outputDir, '%s_%s.js' % (str(year), row[4]))
     f = open(filePath, 'a')
     f.write('  mycountry.infantMortality = ') # Write an open array to file
     
@@ -200,25 +235,28 @@ def appendMortalityData(year):
 
     f.write(';\n')
     f.close()
+  dataFile.close()
 
 def appendMigrationData(year):
   printMessage('Parsing migration data.')
-  dataFile = csv.reader(open(inputDir + f_NET_NUMBER_OF_MIGRANTS, 'r'))
-  for row in dataFile:
+  dataFile = codecs.open(os.path.join(inputDir, f_NET_NUMBER_OF_MIGRANTS), 'r', encoding='latin1')
+  data = csv.reader(dataFile)
+  for row in data:
+    if len(row) <= 0: continue # Just in case some "phantom" rows exist from MS CSV export
     if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
-    filePath = '%s%s_%s.js' % (outputDir, str(year), row[4])
+    filePath = os.path.join(outputDir, '%s_%s.js' % (str(year), row[4]))
     f = open(filePath, 'a')
-    index = (((year - 1955) / 5) + 5)
-    f.write('  mycountry.netMigration = %s;\n' % (str(int(row[int(index)]))))
+    index = int(((year - 1955) / 5) + 5)
+    f.write('  mycountry.netMigration = %i;\n' % int(str(row[index]).replace(' ','')))
     f.close()
-    
+  dataFile.close()
 
 # Iterates through all of the files in the output directory
 # and closes them all with an unindented right curly brace
 def endFiles():
   printMessage('Finishing up country files.')
   for fileName in os.listdir(outputDir):
-    f = open(outputDir + fileName, 'a')
+    f = open(os.path.join(outputDir, fileName), 'a')
     f.write('  return myCountry;\n')
     f.write('}\n')
     f.close
@@ -230,14 +268,16 @@ def endFiles():
 def createCountryList(year):
   printMessage('Generating the country list.')
 
-  filePath = '%scountrylist.js' % (outputDir)
+  filePath = os.path.join(outputDir, 'countrylist.js')
   listFile = open(filePath, 'w') # Make the new file
   listFile.write('"use strict";\nvar countryList = [];\n\n') # Preliminaries
-
-  data = csv.reader(open(inputDir + f_POPULATION_BY_AGE_MALE))
+  
+  dataFile = codecs.open(os.path.join(inputDir, f_POPULATION_BY_AGE_MALE), 'r', encoding='latin1')
+  data = csv.reader(dataFile)
   counter = 0;
 
   for row in data:
+    if len(row) <= 0: continue # Just in case some "phantom" rows exist from MS CSV export
     if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
     if int(row[5]) == year: # Only record the requested year
       
@@ -250,6 +290,7 @@ def createCountryList(year):
       listFile.write('countryList[%i].filename = "%s"\n' % (counter, fileName))
 
       counter += 1
+  dataFile.close()
 
 ##################
 #  Main Program  #
