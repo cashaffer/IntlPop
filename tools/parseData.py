@@ -45,6 +45,18 @@ def printUsage():
 def printMessage(message):
   print('IntlPop!: ' + str(message))
 
+# Takes a string of numerical characters and removes spaces, etc.
+# to turn them into proper integers. Returns an int value
+# 
+# @param value The numerical value read from the CSV file. This number
+# may contain negatives, spaces, commas, etc.
+#
+# @return int An integer interpretation of the value parameter
+def intify(value):
+  newInt = int(str(value).strip().replace(' ',''))
+  return newInt
+
+
 #################################
 #  Country File Helper Methods  #
 #################################
@@ -118,7 +130,7 @@ def appendPopData(year):
       f = open(filePath, 'a')
       f.write('  myCountry.malePop = [') # Write an open array to file
       for i in range(6, 28):
-        f.write(str(row[i]).strip())
+        f.write(str(intify(row[i])))
         if i < 27:
           f.write(',')
       f.write('];\n')
@@ -136,7 +148,7 @@ def appendPopData(year):
       f = open(filePath, 'a')
       f.write('  myCountry.femalePop = [') # Write an open array to file
       for i in range(6, 28):
-        f.write(str(row[i]).strip())
+        f.write(str(intify(row[i])))
         if i < 27:
           f.write(',')
       f.write('];\n')
@@ -162,7 +174,7 @@ def appendBirthData(year):
       f = open(filePath, 'a')
       f.write('  myCountry.births = [') # Write an open array to file
       for i in range(6, 13):
-        f.write(str(row[i]).strip())
+        f.write(str(intify(row[i])))
         if i < 12:
           f.write(',')
       f.write('];\n')
@@ -187,7 +199,7 @@ def appendMortalityData(year):
       f = open(filePath, 'a')
       f.write('  myCountry.femaleMortality = [') # Write an open array to file
       for i in range(6, 26):
-        f.write(str(row[i]).strip())
+        f.write(str(intify(row[i])))
         if i < 25:
           f.write(',')
       f.write('];\n')
@@ -206,7 +218,7 @@ def appendMortalityData(year):
       f = open(filePath, 'a')
       f.write('  myCountry.maleMortality = [') # Write an open array to file
       for i in range(6, 26):
-        f.write(str(row[i]).strip())
+        f.write(str(intify(row[i])))
         if i < 25:
           f.write(',')
       f.write('];\n')
@@ -222,18 +234,8 @@ def appendMortalityData(year):
     if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
     filePath = os.path.join(outputDir, '%s_%s.js' % (str(year), row[4]))
     f = open(filePath, 'a')
-    f.write('  myCountry.infantMortality = ') # Write an open array to file
-    
-    if year == 2000:
-      f.write(str(row[14]).strip())
-    elif year == 2005:
-      f.write(str(row[15]).strip())
-    elif year == 2010:
-      f.write(str(row[16]).strip())
-    else:
-      f.write('')
-
-    f.write(';\n')
+    index = int(((year - 1955) / 5) + 5)
+    f.write('  myCountry.infantMortality = %i;\n' % intify(row[index]))
     f.close()
   dataFile.close()
 
@@ -247,7 +249,7 @@ def appendMigrationData(year):
     filePath = os.path.join(outputDir, '%s_%s.js' % (str(year), row[4]))
     f = open(filePath, 'a')
     index = int(((year - 1955) / 5) + 5)
-    f.write('  myCountry.netMigration = %i;\n' % int(str(row[index]).replace(' ','')))
+    f.write('  myCountry.netMigration = %i;\n' % intify(row[index]))
     f.close()
   dataFile.close()
 
