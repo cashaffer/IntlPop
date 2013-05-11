@@ -92,7 +92,7 @@ def generateFiles(year):
       # Write some preliminary stuff
       f.write('function setCountry () {\n')
       f.write('  var myCountry = new Object;\n')
-      f.write('  myCountry.name = %s;\n' % (countryName))
+      f.write('  myCountry.name = "%s";\n' % (countryName))
       f.write('  myCountry.code = %s;\n' % (str(countryCode)))
       f.write('  myCountry.startYear = %s;\n' % (str(year)))
 
@@ -116,7 +116,7 @@ def appendPopData(year):
     if int(row[5]) == year: # Only record the selected year
       filePath = os.path.join(outputDir, '%s_%s.js' % (str(year), row[4]))
       f = open(filePath, 'a')
-      f.write('  mycountry.malePop = [') # Write an open array to file
+      f.write('  myCountry.malePop = [') # Write an open array to file
       for i in range(6, 28):
         f.write(str(row[i]).strip())
         if i < 27:
@@ -134,7 +134,7 @@ def appendPopData(year):
     if int(row[5]) == year: # Only record the selected year
       filePath = os.path.join(outputDir, '%s_%s.js' % (str(year), row[4]))
       f = open(filePath, 'a')
-      f.write('  mycountry.femalePop = [') # Write an open array to file
+      f.write('  myCountry.femalePop = [') # Write an open array to file
       for i in range(6, 28):
         f.write(str(row[i]).strip())
         if i < 27:
@@ -160,7 +160,7 @@ def appendBirthData(year):
     if int(row[5].split('-')[1]) == year: # Only record the selected year
       filePath = os.path.join(outputDir, '%s_%s.js' % (str(year), row[4]))
       f = open(filePath, 'a')
-      f.write('  mycountry.births = [') # Write an open array to file
+      f.write('  myCountry.births = [') # Write an open array to file
       for i in range(6, 13):
         f.write(str(row[i]).strip())
         if i < 12:
@@ -185,7 +185,7 @@ def appendMortalityData(year):
     if int(row[5].split('-')[1]) == year: # Only record the selected year
       filePath = os.path.join(outputDir, '%s_%s.js' % (str(year), row[4]))
       f = open(filePath, 'a')
-      f.write('  mycountry.femaleMortality = [') # Write an open array to file
+      f.write('  myCountry.femaleMortality = [') # Write an open array to file
       for i in range(6, 26):
         f.write(str(row[i]).strip())
         if i < 25:
@@ -204,7 +204,7 @@ def appendMortalityData(year):
     if int(row[5].split('-')[1]) == year: # Only record the selected year
       filePath = os.path.join(outputDir, '%s_%s.js' % (str(year), row[4]))
       f = open(filePath, 'a')
-      f.write('  mycountry.maleMortality = [') # Write an open array to file
+      f.write('  myCountry.maleMortality = [') # Write an open array to file
       for i in range(6, 26):
         f.write(str(row[i]).strip())
         if i < 25:
@@ -222,7 +222,7 @@ def appendMortalityData(year):
     if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
     filePath = os.path.join(outputDir, '%s_%s.js' % (str(year), row[4]))
     f = open(filePath, 'a')
-    f.write('  mycountry.infantMortality = ') # Write an open array to file
+    f.write('  myCountry.infantMortality = ') # Write an open array to file
     
     if year == 2000:
       f.write(str(row[14]).strip())
@@ -247,7 +247,7 @@ def appendMigrationData(year):
     filePath = os.path.join(outputDir, '%s_%s.js' % (str(year), row[4]))
     f = open(filePath, 'a')
     index = int(((year - 1955) / 5) + 5)
-    f.write('  mycountry.netMigration = %i;\n' % int(str(row[index]).replace(' ','')))
+    f.write('  myCountry.netMigration = %i;\n' % int(str(row[index]).replace(' ','')))
     f.close()
   dataFile.close()
 

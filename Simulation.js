@@ -37,7 +37,7 @@ $(document).ready(function () {
       theURL += pathArray[i];
       theURL += "/";
     }
-    theURL += filename;
+    theURL += "JS_Files/" + filename;
     console.log("Data URL is: " + theURL);
     return theURL;
   }
