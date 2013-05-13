@@ -82,8 +82,8 @@ button {
 
 .currentSelection {
   position: absolute;
-  top: 45px;
-  left: 175px;
+  top: 25px;
+  left: 5px;
 }
 
 #doSelect {

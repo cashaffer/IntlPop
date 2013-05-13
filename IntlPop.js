@@ -40,8 +40,9 @@
 
   // Handler for clicking on country in country select menu
   function countryClick(el) {
-    console.log("In countryClick, value: " + $('#countrySelectMenu').val() + ", element: " + el);
-    $('p.currentField').text("Current Selection: " + countryList[$('#countrySelectMenu').val()].name);
+    console.log("In countryClick, value: " + $('#countrySelectMenu').val() +
+                ", name: " + countryList[$('#countrySelectMenu').val()].name);
+    $('p.currentSelection').text("Current Selection: " + countryList[$('#countrySelectMenu').val()].name);
   }
 
   console.log("This page's URL is: " + window.location.protocol + "//" +

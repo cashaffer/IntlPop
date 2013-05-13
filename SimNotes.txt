@@ -22,3 +22,11 @@ function advanceSimState(sim, country) {
   sim.popMale[0] = newborns * country.newMaleFrac;
   sim.popFemale[0] = newborns * country.newFemalFrac;
 }
+
+* Need to calculate the TFR.
+* Need to calculate the life expectancy.
+* Need to verify that those calculation match expected values from other
+  data files.
+* Need to check that the new births we generate in the first year of
+the simulation generally match the number of 0-year-olds on initial
+country data load.
