@@ -153,17 +153,29 @@ $(document).ready(function () {
     for (var i = 0; i < initCountry.malePop.length; i++) {
       pop = pop + initCountry.malePop[i] + initCountry.femalePop[i];
     }
-    return pop;
+    return pop*1000;
   }
 
   // Initialize the state for one of the three simulations
   function initSim(cStep) {
+    var i, j;
     console.log("In initSim: " + simState.currSim);
     cStep.fertility = simState.currSim; // TODO: Handle aggregate fertility value
     cStep.lifeExp = simState.currSim;   // TODO: Handle aggregate life expectancy
     cStep.netMigration = initCountry.netMigration;
     cStep.pop = initPop();
     cStep.year = initCountry.startYear;
+    // Now calculate the yearly birth rates
+    cStep.birthrate = [];
+    for (i = 0; i < initCountry.births.length; i++) {
+      var currBRate = initCountry.births[i] / initCountry.femalePop[i + 3];
+      for (j = 0; j < 5; j++) {
+        cStep.birthrate[15 + i * 5 + j] = currBRate;
+      }
+    }
+    // Now calculate the yearly death rates (male and female)
+
+    // Now calculate the yearly populations (male and female)
     $('p.childrenField').text(cStep.fertility.toFixed(1) + ' Children');
     $('p.lifeExpField').text(cStep.lifeExp.toFixed(1) + ' Years');
     $('p.netMigField').text(cStep.netMigration).commas();
