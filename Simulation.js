@@ -158,7 +158,7 @@ $(document).ready(function () {
 
   // Initialize the state for one of the three simulations
   function initSim(cStep) {
-    var i, j;
+    var i, j, ipos;
     console.log("In initSim: " + simState.currSim);
     cStep.fertility = simState.currSim; // TODO: Handle aggregate fertility value
     cStep.lifeExp = simState.currSim;   // TODO: Handle aggregate life expectancy
@@ -167,15 +167,51 @@ $(document).ready(function () {
     cStep.year = initCountry.startYear;
     // Now calculate the yearly birth rates
     cStep.birthrate = [];
+    for (i = 0; i < 15; i++) {
+      cStep.birthrate[i] = 0;
+    }
     for (i = 0; i < initCountry.births.length; i++) {
-      var currBRate = initCountry.births[i] / initCountry.femalePop[i + 3];
+      var currBRate = (initCountry.births[i] / initCountry.femalePop[i + 3]) * 0.2;
       for (j = 0; j < 5; j++) {
         cStep.birthrate[15 + i * 5 + j] = currBRate;
       }
     }
     // Now calculate the yearly death rates (male and female)
+    cStep.maleMortality = [];
+    cStep.femaleMortality = [];
+    for (i = 0; i < initCountry.maleMortality.length; i++) {
+      var currMMRate = 1.0 - (initCountry.maleMortality[i] / initCountry.malePop[i]);
+      var currFMRate = 1.0 - (initCountry.femaleMortality[i] / initCountry.femalePop[i]);
+      for (j = 0; j < 5; j++) {
+        cStep.maleMortality[i * 5 + j] = currMMRate;
+        cStep.femaleMortality[i * 5 + j] = currFMRate;
+      }
+    }
+    // UN data only goes up to 95+, so 100+ bin needs special handling
+    cStep.maleMortality[100] = currMMRate;
+    cStep.femaleMortality[100] = currFMRate;
+    // We have the IMR, so set it explicitly
+    cStep.maleMortality[0] = 1.0 - (initCountry.infantMortality/1000.0);
+    cStep.femaleMortality[0] = 1.0 - (initCountry.infantMortality/1000.0);
 
     // Now calculate the yearly populations (male and female)
+    cStep.malePop = [];
+    cStep.femalePop = [];
+    for (i = 0; i < (initCountry.malePop.length - 1); i++) {
+      ipos = i;
+      if (i !== 16) { // Position 16 is a special "80+" value, skip it
+	if (ipos > 16) { // Again, this is to handle the "80+" column
+          ipos = ipos - 1;
+	}
+	for (j = 0; j < 5; j++) {
+          cStep.malePop[ipos * 5 + j] = initCountry.malePop[i] * 200;
+          cStep.femalePop[ipos * 5 + j] = initCountry.femalePop[i] * 200;
+	}
+      }
+    }
+    cStep.malePop[100] = initCountry.malePop[21] * 1000;
+    cStep.femalePop[100] = initCountry.femalePop[21] * 1000;
+
     $('p.childrenField').text(cStep.fertility.toFixed(1) + ' Children');
     $('p.lifeExpField').text(cStep.lifeExp.toFixed(1) + ' Years');
     $('p.netMigField').text(cStep.netMigration).commas();
@@ -244,17 +280,33 @@ $(document).ready(function () {
            {axis: '0 0 1 1', axisxstep: maxSteps,
             symbol: ['', 'circle', 'circle', 'circle'],
             colors: ['transparent', '#995555', '#559955', '#555599']});
+
     // WARNING: To display raw values,
     //   convert Female[i] to -Female[i]
     //   convert Male[i] to Female[i] + Male[i]
+    var mtemp;
+    var ftemp;
+    curr = simState.sim[simState.currSim].currstep;
+    var cSim = simState.sim[simState.currSim].cstep[curr];
+console.log("Male Population: ");
+console.log(cSim.malePop);
+console.log("Female Population: ");
+console.log(cSim.femalePop);
     var mvals = [];
     mvals.length = initCountry.malePop.length;
     var fvals = [];
-    for (i = 0; i < mvals.length; i++) {
-      mvals[mvals.length - (i + 1)] = initCountry.malePop[i] +
-                                        initCountry.femalePop[i];
-      fvals[mvals.length - (i + 1)] = -initCountry.femalePop[i];
+    for (i = 0; i < mvals.length - 1; i++) {
+      mtemp = 0;
+      ftemp = 0;
+      for (j = 0; j < 5; j++) {
+        mtemp += cSim.malePop[i * 5 + j];
+        ftemp += cSim.femalePop[i * 5 + j];
+	mvals[mvals.length - (i + 1)] = mtemp + ftemp;
+	fvals[mvals.length - (i + 1)] = -ftemp;
+      }
     }
+    mvals[0] = cSim.malePop[100];
+    mvals[0] = cSim.femalePop[100];
     PyrValues[0] = fvals;
     PyrValues[1] = mvals;
     console.log("Pyramid: " + fvals + ", " + mvals + ", " + PyrValues);
@@ -263,17 +315,29 @@ $(document).ready(function () {
 
   // Advance the current simulation state by one year
   function advanceSimState(currSim) {
+    var i;
     currSim.year += 1;
-    if (simState.currSim === 0) {
-      currSim.pop = Math.round(currSim.pop * (1.0 + growthRate));
-    } else if (simState.currSim === 1) {
-      currSim.pop = Math.round(currSim.pop * (1.0 + growthRate/2.0));
-    } else if (simState.currsim === 2) {
-      // do nothing
+    currSim.malePop[100] = Math.round(currSim.malePop[100] * currSim.maleMortality[100]
+                             + currSim.malePop[99] * currSim.maleMortality[99]);
+    currSim.femalePop[100] = Math.round(currSim.femalePop[100] * currSim.femaleMortality[100]
+                               + currSim.femalePop[99] * currSim.femaleMortality[99]);
+    for (i = 99; i > 0; i--) {
+      currSim.malePop[i] = Math.round(currSim.malePop[i-1] * currSim.maleMortality[i-1]);
+      currSim.femalePop[i] = Math.round(currSim.femalePop[i-1] * currSim.femaleMortality[i-1]);
     }
-
+    var totalbirths = 0;
+    for (i = 15; i < 50; i++) {
+      totalbirths += currSim.femalePop[i] * currSim.birthrate[i];
+    }
+    totalbirths = totalbirths * currSim.maleMortality[0]; // IMR
+    currSim.malePop[0] = Math.round(totalbirths/2.0);
+    currSim.femalePop[0] = Math.round(totalbirths/2.0);
+    currSim.pop = 0;
+    for (i = 0; i <= 100; i++) {
+      currSim.pop += currSim.malePop[i];
+      currSim.pop += currSim.femalePop[i];
+    }
   }
-
 
   /* ------------------ START HERE ---------------------------- */
 
