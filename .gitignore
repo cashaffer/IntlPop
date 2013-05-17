@@ -1,5 +1,6 @@
 # Temp files
 *~
+.DS_Store
 
 #Generated files
 version.js
