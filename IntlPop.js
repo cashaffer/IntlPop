@@ -15,7 +15,7 @@
 
   // Process about button: Pop up an alert
   function about() {
-    alert("IntlPop Version 3.0\nWritten by Cliff Shaffer, 2013\nFor more information, see http://geosim.cs.vt.edu/IntlPop\nSource and development history available at\nhttps://github.com/cashaffer/IntlPop\nThis is Version " + version());
+    alert("IntlPop Version 3.0\nSimulation by Cliff Shaffer, data conversion and map interface by Nate Beatty, map data preparation by Bill Carstensen, 2013\nFor more information, see http://geosim.cs.vt.edu/IntlPop\nSource and development history available at\nhttps://github.com/cashaffer/IntlPop\nThis is Version " + version());
   }
 
   // Process new button: Create a new instance of a simulation
