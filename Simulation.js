@@ -153,7 +153,7 @@ $(document).ready(function () {
     for (i = 0; i < initCountry.maleMortality.length; i++) {
       tdeaths += initCountry.maleMortality[i] + initCountry.femaleMortality[i];
     }
-    console.log("Reality check: Total births is claimed: " + tbirths + ", total deaths is claimed " + tdeaths);
+    console.log("Reality check: Over 5 years, the total births claimed is " + (tbirths * 1000) + ", and the total deaths claimed is " + (tdeaths * 1000));
     displayState();
   }
 
@@ -171,37 +171,42 @@ $(document).ready(function () {
   // Initialize the state for one of the three simulations
   function initSim(cStep) {
     var i, j, ipos;
+    var currBRate;
+    var leTemp, leDeaths;
+
     console.log("In initSim: " + simState.currSim);
-    cStep.fertility = simState.currSim; // TODO: Handle aggregate fertility value
-    cStep.lifeExp = simState.currSim;   // TODO: Handle aggregate life expectancy
-    cStep.netMigration = initCountry.netMigration;
+    cStep.netMigration = initCountry.netMigration * 1000;
     cStep.pop = initPop();
     cStep.year = initCountry.startYear;
-    // Now calculate the yearly birth rates
+
+    // Calculate the yearly birth rates, and the TFR
+    cStep.fertility = 0.0;
     cStep.birthrate = [];
-    for (i = 0; i < 15; i++) {
+    for (i = 0; i < 15; i++) { // The UN data show no births for ages 0-14
       cStep.birthrate[i] = 0;
     }
     for (i = 0; i < initCountry.births.length; i++) {
-      var currBRate = (initCountry.births[i] / initCountry.femalePop[i + 3]) * 0.2;
+      cStep.fertility += (initCountry.births[i] / initCountry.femalePop[i + 3]);
+      currBRate = (initCountry.births[i] / initCountry.femalePop[i + 3] * 0.2);
       for (j = 0; j < 5; j++) {
         cStep.birthrate[15 + i * 5 + j] = currBRate;
       }
     }
-    // Now calculate the yearly death rates (male and female)
+
+    // Calculate the yearly death rates (male and female)
     cStep.maleMortality = [];
     cStep.femaleMortality = [];
     for (i = 1; i < initCountry.maleMortality.length; i++) {
-      var currMMRate = 1.0 - (initCountry.maleMortality[i] / initCountry.malePop[i]);
-      var currFMRate = 1.0 - (initCountry.femaleMortality[i] / initCountry.femalePop[i]);
+      var currMMRate = 1.0 - (initCountry.maleMortality[i] / initCountry.malePop[i] * 0.2);
+      var currFMRate = 1.0 - (initCountry.femaleMortality[i] / initCountry.femalePop[i] * 0.2);
       for (j = 0; j < 5; j++) {
         cStep.maleMortality[i * 5 + j] = currMMRate;
         cStep.femaleMortality[i * 5 + j] = currFMRate;
       }
     }
-    // UN data only goes up to 95+, so 100+ bin needs special handling
-    cStep.maleMortality[100] = currMMRate;
-    cStep.femaleMortality[100] = currFMRate;
+    // UN data only goes up to 95+, so the 100+ bin needs special handling
+    cStep.maleMortality[100] = 1.0 - ((1.0 - currMMRate) * 2.0);
+    cStep.femaleMortality[100] = 1.0 - ((1.0 - currFMRate) * 2.0);
     // We have the IMR, so set it explicitly
     cStep.maleMortality[0] = 1.0 - (initCountry.infantMortality/1000.0);
     cStep.femaleMortality[0] = 1.0 - (initCountry.infantMortality/1000.0);
@@ -224,7 +229,25 @@ $(document).ready(function () {
     console.log(cStep.femaleMortality);
     console.log("Mortality would have been " + 
 		(1.0 - (initCountry.maleMortality[0] / initCountry.malePop[0])));
-    // Now calculate the yearly populations (male and female)
+
+    // Calculate the life expectancy
+    cStep.lifeExp = 0.0;
+    var alive = 1000000.0; // A population to age to calculate life expectancy
+    //    alive = alive * cStep.maleMortality[0]; // infant deaths don't contribute
+    for (i = 1; i <= 100; i++) {
+      leTemp = alive * ((cStep.maleMortality[i] + cStep.femaleMortality[i])/2.0);
+      leDeaths = alive - leTemp;
+      alive = leTemp;
+      cStep.lifeExp += (leDeaths / 1000000.0) * (i - 0.5);
+    }
+    for (i = 0; i < 20; i++) { // Calculate a few more years for people over 100
+      leTemp = alive * ((cStep.maleMortality[100] + cStep.femaleMortality[100])/2.0);
+      leDeaths = alive - leTemp;
+      alive = leTemp;
+      cStep.lifeExp += (leDeaths / 1000000.0) * (100.5 + i);
+    }
+
+    // Calculate the yearly populations (male and female)
     cStep.malePop = [];
     cStep.femalePop = [];
     for (i = 0; i < (initCountry.malePop.length - 1); i++) {
@@ -339,7 +362,9 @@ $(document).ready(function () {
     PyrValues[0] = fvals;
     PyrValues[1] = mvals;
     console.log("Pyramid: " + fvals + ", " + mvals + ", " + PyrValues);
+    if (rPyramid !== undefined) { rPyramid.remove(); }
     rPyramid = rPyramidPanel.hbarchart(175, 25, 150, 250, PyrValues, {stacked: true});
+rPyramid.label([['J','F','M','A','M','J','J','A', 'S', 'O', 'N','D']], true);
   }
 
   // Advance the current simulation state by one year
