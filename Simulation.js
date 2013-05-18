@@ -144,16 +144,6 @@ $(document).ready(function () {
     initSim(simState.sim[simState.currSim].cstep[0]);
     $('p.initPopField').text('Initial Population: ' + initPop()).commas();
     $('.anotherSim').removeAttr('disabled');
-    var tbirths = 0;
-    var tdeaths = 0;
-    var i;
-    for (i = 0; i < initCountry.births.length; i++) {
-      tbirths += initCountry.births[i];
-    }
-    for (i = 0; i < initCountry.maleMortality.length; i++) {
-      tdeaths += initCountry.maleMortality[i] + initCountry.femaleMortality[i];
-    }
-    console.log("Reality check: Over 5 years, the total births claimed is " + (tbirths * 1000) + ", and the total deaths claimed is " + (tdeaths * 1000));
     displayState();
   }
 
@@ -217,18 +207,13 @@ $(document).ready(function () {
     }
     var deaths = (initCountry.maleMortality[0] * 1000.0) - (births * initCountry.infantMortality/2.0);
     currMMRate = 1.0 - (deaths/4.0)/(initCountry.malePop[0] * 200.0);
-    console.log("Deaths: " + deaths);
-    var deaths = (initCountry.femaleMortality[0] * 1000.0) - (births * initCountry.infantMortality/2.0);
+    deaths = (initCountry.femaleMortality[0] * 1000.0) - (births * initCountry.infantMortality/2.0);
     currFMRate = 1.0 - (deaths/4.0)/(initCountry.femalePop[0] * 200.0);
     console.log("Deaths: " + deaths);
     for (i = 1; i <= 4; i++) {
       cStep.maleMortality[i] = currMMRate;
       cStep.femaleMortality[i] = currFMRate;
     }
-    console.log(cStep.maleMortality);
-    console.log(cStep.femaleMortality);
-    console.log("Mortality would have been " + 
-		(1.0 - (initCountry.maleMortality[0] / initCountry.malePop[0])));
 
     // Calculate the life expectancy
     cStep.lifeExp = 0.0;
@@ -408,10 +393,6 @@ $(document).ready(function () {
     }
     console.log("Year end pop: " + currSim.pop);
     console.log("Net change was: " + (currSim.pop - temp));
-    console.log("Male population:");
-    console.log(currSim.malePop);
-    console.log("Female population:");
-    console.log(currSim.femalePop);
   }
 
   /* ------------------ START HERE ---------------------------- */
