@@ -364,7 +364,6 @@ $(document).ready(function () {
     console.log("Pyramid: " + fvals + ", " + mvals + ", " + PyrValues);
     if (rPyramid !== undefined) { rPyramid.remove(); }
     rPyramid = rPyramidPanel.hbarchart(175, 25, 150, 250, PyrValues, {stacked: true});
-rPyramid.label([['J','F','M','A','M','J','J','A', 'S', 'O', 'N','D']], true);
   }
 
   // Advance the current simulation state by one year
