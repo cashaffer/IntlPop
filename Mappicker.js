@@ -170,7 +170,7 @@ function onEachFeature(feature, layer) {
 		var countryID = feature.properties["CountryID"];
 
 		/* The JS that will be called when 'select' is clicked */
-		var jsString = 'console.log(' + countryID + ')'; // Edit this line.
+		var jsString = 'selectCountry(' + countryID + ')'; // Edit this line.
 
 		popupContent += '<br><a class="" href="#" onclick="' + jsString + '">Select</a>'; // Call onclick here with a country id
 	}
@@ -195,4 +195,23 @@ function universalLayerChange() {
 			lst = i;
 		}
 	}			
-};
+}
+
+// Country Selection
+function selectCountry(id) {
+
+	var simWindowFeatures = "height=378,width=1060";
+	var filename = "";
+	// for (var i = countryList.length - 1; i >= 0; i--) {
+	// 	if (countryList[i].countrycode == id) {
+	// 		filename = countryList[i].filename;
+	// 		break;
+	// 	}
+	// };
+	filename = $.grep(countryList, function(e){ return e.countrycode == id; })[0].filename;
+	console.log("File selected is: " + filename);
+	var myRef = window.open("Simulation.html?filename=" + filename, '', simWindowFeatures);
+	if (myRef === null) {
+		console.log("Unable to open simulation window");
+	}
+}

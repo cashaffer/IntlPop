@@ -287,9 +287,10 @@ def createCountryList(year):
       countryCode = row[4]
       fileName = '%s_%s.js' % (str(year), countryCode)
 
-      listFile.write('countryList[%i] = {}\n' % (counter))
-      listFile.write('countryList[%i].name = "%s"\n' % (counter, countryName))
-      listFile.write('countryList[%i].filename = "%s"\n' % (counter, fileName))
+      listFile.write('countryList[%i] = {};\n' % (counter))
+      listFile.write('countryList[%i].name = "%s";\n' % (counter, countryName))
+      listFile.write('countryList[%i].countrycode = %i;\n' % (counter, int(countryCode)))
+      listFile.write('countryList[%i].filename = "%s";\n' % (counter, fileName))
 
       counter += 1
   dataFile.close()
