@@ -97,13 +97,11 @@ var Countries_style = function(feature) {
 	}
 }
 
-
-
 // load map layers
 var lyrSourceCollection = [];
-lyrSourceCollection.push(["Countries", "layers/Countries.json", Countries_style, "Name"]);
-lyrSourceCollection.push(["Regions", "layers/Regions.json", Regions_style, "Name"]);
-lyrSourceCollection.push(["Continents", "layers/Continents.json", Continent_style, "Name"]);
+lyrSourceCollection.push(["Countries", "MappickerLayers/Countries.json", Countries_style, "Name"]);
+lyrSourceCollection.push(["Regions", "MappickerLayers/Regions.json", Regions_style, "Name"]);
+lyrSourceCollection.push(["Continents", "MappickerLayers/Continents.json", Continent_style, "Name"]);
 
 var lyrCollectionObject = {};
 
@@ -181,8 +179,6 @@ function onEachFeature(feature, layer) {
 		console.log('Feature clicked: ');
 	});
 }
-
-
 
 function universalLayerChange() {
 	var radioOptions = document.getElementsByName("LayerChooser");
