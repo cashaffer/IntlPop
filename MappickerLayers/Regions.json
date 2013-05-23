@@ -3471,7 +3471,8 @@
 		},
 		"properties": {
 			"FID": 9,
-			"Name": "Middle Africa"
+			"Name": "Middle Africa",
+			"CountryID": 911
 		}
 	}, {
 		"type": "Feature",
@@ -5377,7 +5378,8 @@
 		},
 		"properties": {
 			"FID": 10,
-			"Name": "North America"
+			"Name": "North America",
+			"CountryID": 905
 		}
 	}, {
 		"type": "Feature",
@@ -5575,7 +5577,8 @@
 		},
 		"properties": {
 			"FID": 11,
-			"Name": "Northern Africa"
+			"Name": "Northern Africa",
+			"CountryID": 912
 		}
 	}, {
 		"type": "Feature",
@@ -6492,7 +6495,8 @@
 		},
 		"properties": {
 			"FID": 12,
-			"Name": "Northern Europe"
+			"Name": "Northern Europe",
+			"CountryID": 924
 		}
 	}, {
 		"type": "Feature",
@@ -6617,7 +6621,8 @@
 		},
 		"properties": {
 			"FID": 13,
-			"Name": "Polynesia"
+			"Name": "Polynesia",
+			"CountryID": 957
 		}
 	}, {
 		"type": "Feature",
@@ -7133,7 +7138,8 @@
 		},
 		"properties": {
 			"FID": 14,
-			"Name": "South-Eastern Asia"
+			"Name": "South-Eastern Asia",
+			"CountryID": 920
 		}
 	}, {
 		"type": "Feature",
@@ -7689,7 +7695,8 @@
 		},
 		"properties": {
 			"FID": 15,
-			"Name": "South America"
+			"Name": "South America",
+			"CountryID": 931
 		}
 	}, {
 		"type": "Feature",
@@ -7753,7 +7760,8 @@
 		},
 		"properties": {
 			"FID": 16,
-			"Name": "Southern Africa"
+			"Name": "Southern Africa",
+			"CountryID": 913
 		}
 	}, {
 		"type": "Feature",
@@ -8076,7 +8084,8 @@
 		},
 		"properties": {
 			"FID": 17,
-			"Name": "Southern Asia"
+			"Name": "Southern Asia",
+			"CountryID": 5501
 		}
 	}, {
 		"type": "Feature",
@@ -8301,7 +8310,8 @@
 		},
 		"properties": {
 			"FID": 18,
-			"Name": "Southern Europe"
+			"Name": "Southern Europe",
+			"CountryID": 925
 		}
 	}, {
 		"type": "Feature",
@@ -8516,7 +8526,8 @@
 		},
 		"properties": {
 			"FID": 19,
-			"Name": "Western Africa"
+			"Name": "Western Africa",
+			"CountryID": 914
 		}
 	}, {
 		"type": "Feature",
@@ -8735,7 +8746,8 @@
 		},
 		"properties": {
 			"FID": 20,
-			"Name": "Western Asia"
+			"Name": "Western Asia",
+			"CountryID": 922
 		}
 	}, {
 		"type": "Feature",
@@ -8904,7 +8916,8 @@
 		},
 		"properties": {
 			"FID": 21,
-			"Name": "Western Europe"
+			"Name": "Western Europe",
+			"CountryID": 926
 		}
 	}]
 }
