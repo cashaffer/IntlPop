@@ -1,3 +1,16 @@
+/* 
+* Mappicker.js
+* Written by Nate Beatty for the IntlPop! Project
+* Based on a leaflet prototype by Bill Carstensen
+* May 2013
+*/
+
+/* 
+* Map Styles 
+* Styles by Bill Carstensen
+*/
+
+
 var Continent_style = function(feature) {
 	if (feature.properties.Name =="Africa") {
 		return {
@@ -97,104 +110,135 @@ var Countries_style = function(feature) {
 	}
 }
 
-// load map layers
-var lyrSourceCollection = [];
-lyrSourceCollection.push(["Countries", "MappickerLayers/Countries.json", Countries_style, "Name"]);
-lyrSourceCollection.push(["Regions", "MappickerLayers/Regions.json", Regions_style, "Name"]);
-lyrSourceCollection.push(["Continents", "MappickerLayers/Continents.json", Continent_style, "Name"]);
+/* 
+* Layer loading and other behaviors
+* 
+*/
 
-var lyrCollectionObject = {};
+var layerSources = [{
+	name: "Countries",
+	geoJsonPath: "MappickerLayers/Countries.json",
+	style: Countries_style
+}, {
+	name: "Regions",
+	geoJsonPath: "MappickerLayers/Regions.json",
+	style: Regions_style
+}, {
+	name: "Continents",
+	geoJsonPath: "MappickerLayers/Continents.json",
+	style: Continent_style
+}];
+
+// HTTP GET for GeoJSON files
+var httpRequest = new XMLHttpRequest();
 
 // other global variables
 var map;
-var currentlyAddingLyrName;
-var currentlyAddingLyrSrc;
-var currentlyAddingLyrStyle;
-var currentlyAddingLyrPopUp;
-var lst = -1;
+var mapLayers = {};
+var currentLayer;
 
-// new http request to get layers
-var myxmlhttp = new XMLHttpRequest();
 
 function init() {
+	loadLayers();
 	map = L.map('map', {
 		center:[25.0, 0.0],
-		zoom: 1.25
+		zoom: 1.25,
+		layers: [mapLayers.Countries]
 	});
-	loadLayers_oneatatime();
+
+	var layers = {
+		"Countries" : mapLayers.Countries,
+		"Regions" : mapLayers.Regions,
+		"Continents" : mapLayers.Continents
+	};
+
+	L.control.layers(layers, null, {
+		position: 'bottomleft',
+		collapsed: false
+	}).addTo(map);
+
+	currentLayer = mapLayers.Countries;
+
+	// Bind a listener to determine layer changes
+	map.on('baselayerchange', function(e) {
+		currentLayer = e.layer;
+	});
 }
 
-function loadLayers_oneatatime() {
-	if (lyrSourceCollection.length > 0) {
-		console.log("adding a new layer");
-		var listitem = lyrSourceCollection.pop();
-		currentlyAddingLyrName = listitem[0];
-		currentlyAddingLyrSrc = listitem[1];
-		currentlyAddingLyrStyle = listitem[2];
-		if (listitem[3]) {
-			currentlyAddingLyrPopUp = listitem[3];
-		}
-		else {
-			currentlyAddingLyrPopUp = null;
-		}
-		myxmlhttp.open("GET", currentlyAddingLyrSrc, false);
-		myxmlhttp.send();
-		loadLayer_completion_oneatatime();
-	}
-	else {
-		console.log("Layer source collection exhausted. Adding loaded layers to the map.");
-		currentlyAddingLyrName = null;
-		currentlyAddingLyrSrc = null;
-		currentlyAddingLyrStyle = null;
-		currentlyAddingLyrPopUp = null;
-	}
+function layerWasChanged(currentLayerName) {
+	console.log('Visible layer changed to: ' + currentLayerName);
 }
 
-function loadLayer_completion_oneatatime() {
-	console.log("http request for " + currentlyAddingLyrName + " complete");
-	var responseJson = JSON.parse(myxmlhttp.responseText);
-	if (responseJson) {
-		lyrCollectionObject[currentlyAddingLyrName] = L.geoJson(responseJson, { 
-			onEachFeature: onEachFeature, style: currentlyAddingLyrStyle });
-	}
-	loadLayers_oneatatime();
-	universalLayerChange()
+function loadLayers() {
+	for (var i = 0; i < layerSources.length; i++) {
+		var lyrName = layerSources[i].name;
+		var lyrStyle = layerSources[i].style;
+		httpRequest.open("GET", layerSources[i].geoJsonPath, false);
+		httpRequest.send();
+		var responseJson = JSON.parse(httpRequest.responseText);
+		saveMapLayer(responseJson, lyrName, lyrStyle);
+	};
+	// httpRequest.open("GET", layerSources[1].geoJsonPath, false);
+	// httpRequest.send();
+	// var responseJson = JSON.parse(httpRequest.responseText);
+	// saveMapLayer(responseJson, layerSources[1].name, layerSources[1].style);
+}
+
+function saveMapLayer(json, layerName, layerStyle) {
+	console.log('Saving ' + layerName);
+	mapLayers[layerName] = L.geoJson(json, {
+		style: layerStyle,
+		onEachFeature: onEachFeature
+	});
+	// regionLayer = L.geoJson(json, {
+	// 	style: layerStyle,
+	// 	onEachFeature: onEachFeature
+	// });
 }
 
 function onEachFeature(feature, layer) {
-	var popupContent = "";
-	if (feature.properties["Name"]) {
-		popupContent += feature.properties["Name"];
-	}
-	if (feature.properties["CountryID"]) {
-		var countryID = feature.properties["CountryID"];
 
-		/* The JS that will be called when 'select' is clicked */
-		var jsString = 'selectCountry(' + countryID + ')'; // Edit this line.
-
-		popupContent += '<br><a class="" href="#" onclick="' + jsString + '">Select</a>'; // Call onclick here with a country id
-	}
-	layer.bindPopup(popupContent);
-	layer.on('click', function() {
-		console.log('Feature clicked: ');
+	layer.on({
+		mouseover: highlightFeature,
+		mouseout: resetHighlight,
+		click: countryClicked
 	});
 }
 
-function universalLayerChange() {
-	var radioOptions = document.getElementsByName("LayerChooser");
+// Should be called on mouseover
+function highlightFeature(e) {
+	var layer = e.target;
 
-	/* remove the layer that is currently present */
-	if (lst != -1) {
-		map.removeLayer(lyrCollectionObject[radioOptions[lst].value]);
+	layer.setStyle({
+		fillOpacity: 0.7
+	});
+
+	currentHover(layer.feature.properties.Name, layer.feature.properties.CountryID);
+
+	if (!L.Browser.ie && !L.Browser.opera) {
+		layer.bringToFront();
 	}
+}
 
-	/* iterate over the radio options and add the selected layer */
-	for (var i = 0; i < radioOptions.length;  i++) {
-		if (radioOptions[i].checked == true) {
-			map.addLayer(lyrCollectionObject[radioOptions[i].value]);
-			lst = i;
-		}
-	}			
+// Should be called on mouseout
+function resetHighlight(e) {
+	currentLayer.resetStyle(e.target);
+	currentHover();
+}
+
+// Called on click?
+function zoomToFeature(e) {
+	map.fitBounds(e.target.getBounds());
+}
+
+function countryClicked(e) {
+	selectCountry(e.target.feature.properties.CountryID);
+}
+
+function currentHover(name, id) {
+	if(typeof(name)==='undefined') name = "";
+	// Update the currently update hover
+	$('p.hover').text("Current Hover: " + name);
 }
 
 // Country Selection
@@ -202,12 +246,7 @@ function selectCountry(id) {
 
 	var simWindowFeatures = "height=378,width=1060";
 	var filename = "";
-	// for (var i = countryList.length - 1; i >= 0; i--) {
-	// 	if (countryList[i].countrycode == id) {
-	// 		filename = countryList[i].filename;
-	// 		break;
-	// 	}
-	// };
+	
 	filename = $.grep(countryList, function(e){ return e.countrycode == id; })[0].filename;
 	console.log("File selected is: " + filename);
 	var myRef = window.open("Simulation.html?filename=" + filename, '', simWindowFeatures);
