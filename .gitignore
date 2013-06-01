@@ -9,3 +9,4 @@ version.txt
 #Original data files
 RawData/*.XLS
 CSV_Files
+JS_Files

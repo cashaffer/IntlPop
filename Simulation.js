@@ -342,13 +342,14 @@ $(document).ready(function () {
       mvals[mvals.length - (i + 1)] = mtemp + ftemp;
       fvals[mvals.length - (i + 1)] = -ftemp;
     }
-    mvals[0] = cSim.malePop[100];
+    mvals[0] = cSim.malePop[100] + cSim.femalePop[100];
     fvals[0] = -cSim.femalePop[100];
     PyrValues[0] = fvals;
     PyrValues[1] = mvals;
     console.log("Pyramid: " + fvals + ", " + mvals + ", " + PyrValues);
     if (rPyramid !== undefined) { rPyramid.remove(); }
-    rPyramid = rPyramidPanel.hbarchart(175, 25, 150, 250, PyrValues, {stacked: true});
+    rPyramid = rPyramidPanel.hbarchart(175, 25, 150, 250, PyrValues, {stacked: true}).hover(fin,fout);
+    //    rPyramid.label(true, true);  // Puts up values to the right of bars
   }
 
   // Advance the current simulation state by one year
@@ -414,7 +415,13 @@ $(document).ready(function () {
   // Set up the interface
 
   // Pyramid Panel
-  var rPyramidPanel = new Raphael("pyramidPanel", 350, 300);
+  var rPyramidPanel = new Raphael("pyramidPanel", 350, 300),
+fin = function () {
+  this.flag = rPyramidPanel.popup(this.bar.x, this.bar.y, this.bar.value || "0").insertBefore(this);
+},
+fout = function () {
+  this.flag.animate({opacity: 0}, 300, function () {this.remove();});
+};
 
   // Population chart panel
   var rChartPanel = new Raphael("popChartPanel", 450, 270);
