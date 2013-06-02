@@ -387,6 +387,15 @@ $(document).ready(function () {
     var femalefract = 0.5;
     currSim.malePop[0] = Math.round(totalbirths * malefract);
     currSim.femalePop[0] = Math.round(totalbirths * femalefract);
+
+    // Add (or subtract) for migration
+    for (i = 0; i <= 16; i++) {
+      for (var j = 0; j <= 4; j++) {
+	currSim.malePop[5 * i + j] += Math.round(migMale[i] * currSim.netMigration/5000.0);
+	currSim.femalePop[5 * i + j] += Math.round(migFemale[i] * currSim.netMigration/5000.0);
+      }    
+    }
+    // Now, sum it all up and report it
     currSim.pop = 0;
     for (i = 0; i <= 100; i++) {
       currSim.pop += currSim.malePop[i];
@@ -410,7 +419,15 @@ $(document).ready(function () {
   var xArray = [];
   var yArray = [];
   var PyrValues = [];
-  var growthRate = 0.01; // Hack for the moment
+  // These next two arrays contain the distribution for migrants by sex
+  // and cohort. Each entry is for a 5-year cohort, starting with 0-4 and ending with 80+.
+  // The numbers indicate migrants of that catagory out of
+  // a total of 1000 migrants.  The total of all 34 numbers should be 1000.
+  // Values are derived by averaging Figures 7 and 8 (p. 4-5) of 
+  // http://pewhispanic.org/files/reports/107.pdf
+
+  var migMale =   [ 6, 11, 14, 28, 48, 72, 70, 66, 60, 46, 36, 27, 17, 13,  9,  6,  6];
+  var migFemale = [ 5, 13, 16, 23, 35, 48, 54, 55, 49, 39, 33, 27, 20, 15, 13, 10, 13];
 
   // Set up the interface
 
