@@ -8,5 +8,6 @@ version.txt
 
 #Original data files
 RawData/*.XLS
+tools/tmp/
 CSV_Files
 JS_Files
