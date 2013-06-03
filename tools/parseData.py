@@ -17,9 +17,13 @@
 # $ python3 parseData.py -d 2010
 #
 # Note that downloading all of the data from the UN will take a while
-# and download speeds depend on your internet connection. 
+# and download speeds depend on your internet connection.
+#
+# Also note that the data download requires the `requests` and `xlrd`
+# python packages. You can install these using pip or your preferred
+# python package manager.
 
-# Standard python packages
+# import packages available in the Python Standard Library
 import sys
 import os
 import shutil
@@ -27,18 +31,12 @@ import codecs
 import csv
 import json
 
-TMP_DIR = 'tmp' # The directory containing the CSV files
-OUT_DIR = '../api/countrydata' # Where the JSON output files will be created
+###########################
+#  User Editable Options  #
+###########################
 
-# CSV FileNames (should be within the TMP_DIR)
-# Edit these filenames to reflect your own naming convention if necessary
-f_POPULATION_BY_AGE_MALE = 'POPULATION_BY_AGE_MALE.CSV'
-f_POPULATION_BY_AGE_FEMALE = 'POPULATION_BY_AGE_FEMALE.CSV'
-f_DEATHS_BY_AGE_MALE = 'DEATHS_BY_AGE_MALE.CSV'
-f_DEATHS_BY_AGE_FEMALE = 'DEATHS_BY_AGE_FEMALE.CSV'
-f_BIRTHS_BY_AGE_OF_MOTHER = 'BIRTHS_BY_AGE_OF_MOTHER.CSV'
-f_IMR_BOTH_SEXES = 'IMR_BOTH_SEXES.CSV'
-f_NET_NUMBER_OF_MIGRANTS = 'NET_NUMBER_OF_MIGRANTS.CSV'
+TMP_DIR = 'tmp' # The directory containing the CSV files
+OUT_DIR = '../CountryData' # Where the JSON output files will be created
 
 UNDataFiles = [
   ['POPULATION_BY_AGE_MALE', 'http://esa.un.org/unpd/wpp/Excel-Data/DB03_Population_ByAgeSex_Quinquennial/WPP2010_DB3_F2_POPULATION_BY_AGE_MALE.XLS'],
@@ -50,23 +48,25 @@ UNDataFiles = [
   ['NET_NUMBER_OF_MIGRANTS', 'http://esa.un.org/unpd/wpp/Excel-Data/DB01_Period_Indicators/WPP2010_DB1_F19_NET_NUMBER_OF_MIGRANTS.XLS']
 ]
 
-POPULATION_BY_AGE_MALE = 'POPULATION_BY_AGE_MALE'
-POPULATION_BY_AGE_FEMALE = 'POPULATION_BY_AGE_FEMALE'
-DEATHS_BY_AGE_MALE = 'DEATHS_BY_AGE_MALE'
-DEATHS_BY_AGE_FEMALE = 'DEATHS_BY_AGE_FEMALE'
-BIRTHS_BY_AGE_OF_MOTHER = 'BIRTHS_BY_AGE_OF_MOTHER'
-IMR_BOTH_SEXES = 'IMR_BOTH_SEXES'
-NET_NUMBER_OF_MIGRANTS = 'NET_NUMBER_OF_MIGRANTS'
-
-
 validYears = [2000, 2005, 2010]
 validOptions = ['-d', '-c']
+
+# You shouldn't need to edit below this line:
+#======================================================#
+
+f_POPULATION_BY_AGE_MALE = UNDataFiles[0][0] + '.CSV'
+f_POPULATION_BY_AGE_FEMALE = UNDataFiles[1][0] + '.CSV'
+f_DEATHS_BY_AGE_MALE = UNDataFiles[2][0] + '.CSV'
+f_DEATHS_BY_AGE_FEMALE = UNDataFiles[3][0] + '.CSV'
+f_BIRTHS_BY_AGE_OF_MOTHER = UNDataFiles[4][0] + '.CSV'
+f_IMR_BOTH_SEXES = UNDataFiles[5][0] + '.CSV'
+f_NET_NUMBER_OF_MIGRANTS = UNDataFiles[6][0] + '.CSV'
 
 # Checks that command line arguments are valid
 # 
 # @return true if valid, false otherwise.
 def validArgs():
-  if len(sys.argv) not in [2, 3, 4] or int(sys.argv[-1]) not in validYears:
+  if len(sys.argv) not in [2, 5] or int(sys.argv[-1]) not in validYears:
     return False
   if len(sys.argv) == 3 and sys.argv[1] not in validOptions:
     return False

@@ -8,6 +8,10 @@ version.txt
 
 #Original data files
 RawData/*.XLS
-tools/tmp/
 CSV_Files
 JS_Files
+
+# Generated Data Files
+tools/tmp/
+CountryData
+countrylist.json
