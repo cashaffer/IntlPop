@@ -52,9 +52,52 @@ $(document).ready(function () {
 
   /* --------------- BUTTON AND FIELD HANDLERS--------------------- */
 
-  // Handler for Fertility button
+  // Handler for Fertility Rate button
   function fertility() {
-    tell("TODO: Need to handle fertility button.", "red");
+    tell("Open the fertility rate popup");
+    $('#fertilityTargetValue').val("200");
+    $('#fertilityTargetYear').val("1975");
+    $('#fertilityPopup').show();
+  }
+
+  // Handler for Fertility Rate close button
+  function fertilityclose() {
+    tell("Close the fertility rate popup");
+    console.log("Target value is " + $('#fertilityTargetValue').val());
+    console.log("Target year is " + $('#fertilityTargetYear').val());
+    $('#fertilityPopup').hide();
+  }
+
+  // Handler for Life Expectancy button
+  function lifeexp() {
+    tell("Open the life expectancy popup");
+    $('#lifeExpTargetValue').val("300");
+    $('#lifeExpTargetYear').val("1990");
+    $('#lifeExpPopup').show();
+  }
+
+  // Handler for Fertility Rate close button
+  function lifeexpclose() {
+    tell("Close the life expectancy popup");
+    console.log("Target value is " + $('#lifeExpTargetValue').val());
+    console.log("Target year is " + $('#lifeExpTargetYear').val());
+    $('#lifeExpPopup').hide();
+  }
+
+  // Handler for Net Migration button
+  function netmig() {
+    tell("Open the net migration popup");
+    $('#migTargetValue').val("100");
+    $('#migTargetYear').val("1950");
+    $('#migPopup').show();
+  }
+
+  // Handler for Net Migration close button
+  function netmigclose() {
+    tell("Close the migration popup");
+    console.log("Target value is " + $('#migTargetValue').val());
+    console.log("Target year is " + $('#migTargetYear').val());
+    $('#migPopup').hide();
   }
 
   // Handler for simForward button
@@ -465,6 +508,11 @@ fout = function () {
 
   /* ------------------ Button Callbacks ------------------------- */
   $('#fertilityButton').click(fertility);
+  $('#fertilityPopupclose').click(fertilityclose);
+  $('#lifeExpButton').click(lifeexp);
+  $('#lifeExpPopupclose').click(lifeexpclose);
+  $('#netMigButton').click(netmig);
+  $('#migPopupclose').click(netmigclose);
   $('#simForwardButton').click(simForward);
   $('#simBackButton').click(simBack);
   $('.reset').click(reset);
