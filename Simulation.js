@@ -54,14 +54,16 @@ $(document).ready(function () {
 
   // Handler for Fertility Rate button
   function fertility() {
+    var curr = simState.sim[simState.currSim];
     tell("Open the fertility rate popup");
-    $('#fertilityTargetValue').val("200");
-    $('#fertilityTargetYear').val("1975");
+    $('#fertilityTargetValue').val(curr.cstep[curr.currstep].targetFertilityValue);
+    $('#fertilityTargetYear').val(curr.cstep[curr.currstep].targetFertilityYear);
     $('#fertilityPopup').show();
   }
 
   // Handler for Fertility Rate close button
   function fertilityclose() {
+    var curr = simState.sim[simState.currSim];
     tell("Close the fertility rate popup");
     console.log("Target value is " + $('#fertilityTargetValue').val());
     console.log("Target year is " + $('#fertilityTargetYear').val());
@@ -70,14 +72,16 @@ $(document).ready(function () {
 
   // Handler for Life Expectancy button
   function lifeexp() {
+    var curr = simState.sim[simState.currSim];
     tell("Open the life expectancy popup");
-    $('#lifeExpTargetValue').val("300");
-    $('#lifeExpTargetYear').val("1990");
+    $('#lifeExpTargetValue').val(curr.cstep[curr.currstep].targetLifeExpValue);
+    $('#lifeExpTargetYear').val(curr.cstep[curr.currstep].targetLifeExpYear);
     $('#lifeExpPopup').show();
   }
 
   // Handler for Fertility Rate close button
   function lifeexpclose() {
+    var curr = simState.sim[simState.currSim];
     tell("Close the life expectancy popup");
     console.log("Target value is " + $('#lifeExpTargetValue').val());
     console.log("Target year is " + $('#lifeExpTargetYear').val());
@@ -86,17 +90,19 @@ $(document).ready(function () {
 
   // Handler for Net Migration button
   function netmig() {
+    var curr = simState.sim[simState.currSim];
     tell("Open the net migration popup");
-    $('#migTargetValue').val("100");
-    $('#migTargetYear').val("1950");
+    $('#migTargetValue').val(curr.cstep[curr.currstep].targetMigValue);
+    $('#migTargetYear').val(curr.cstep[curr.currstep].targetMigYear);
     $('#migPopup').show();
   }
 
   // Handler for Net Migration close button
   function netmigclose() {
+    var curr = simState.sim[simState.currSim];
     tell("Close the migration popup");
-    console.log("Target value is " + $('#migTargetValue').val());
-    console.log("Target year is " + $('#migTargetYear').val());
+    curr.cstep[curr.currstep].targetMigValue = $('#migTargetValue').val();
+    curr.cstep[curr.currstep].targetMigYear = $('#migTargetYear').val();
     $('#migPopup').hide();
   }
 
@@ -296,6 +302,15 @@ $(document).ready(function () {
     console.log(cStep.malePop);
     console.log("Initial Female population:");
     console.log(cStep.femalePop);
+
+    // Initialize target values for scenarios
+    cStep.targetMigValue = cStep.netMigration;
+    cStep.targetMigYear = cStep.year;
+    cStep.targetFertilityValue = cStep.fertility;
+    cStep.targetFertilityYear = cStep.year;
+    cStep.targetLifeExpValue = cStep.lifeExp;
+    cStep.targetLifeExpYear = cStep.year;
+
     $('p.childrenField').text(cStep.fertility.toFixed(1) + ' Children');
     $('p.lifeExpField').text(cStep.lifeExp.toFixed(1) + ' Years');
     $('p.netMigField').text(cStep.netMigration).commas();
@@ -393,6 +408,10 @@ $(document).ready(function () {
     if (rPyramid !== undefined) { rPyramid.remove(); }
     rPyramid = rPyramidPanel.hbarchart(175, 25, 150, 250, PyrValues, {stacked: true}).hover(fin,fout);
     //    rPyramid.label(true, true);  // Puts up values to the right of bars
+
+    $('p.childrenField').text(cSim.fertility.toFixed(1) + ' Children');
+    $('p.lifeExpField').text(cSim.lifeExp.toFixed(1) + ' Years');
+    $('p.netMigField').text(cSim.netMigration).commas();
   }
 
   // Advance the current simulation state by one year
@@ -404,6 +423,35 @@ $(document).ready(function () {
       temp += currSim.malePop[i] + currSim.femalePop[i];
     }
     console.log("Year start pop: " + temp);
+    console.log("Target Migration Value: " + currSim.targetMigValue);
+    console.log("Target Migration Year: " + currSim.targetMigYear);
+
+    // Make any changes required by "scenarios"
+    if (currSim.targetMigValue !== currSim.netMigration) {
+      console.log("Updating Migration Scenario");
+      if (currSim.targetMigYear < currSim.year) {
+        console.log("Immediate migration change");
+        currSim.netMigration = currSim.targetMigValue;
+      } else {
+        console.log("Need to support other years on migration");
+      }
+    }
+    if (currSim.targetMigYear < currSim.year) {
+      currSim.targetMigYear = currSim.year;
+    }
+    if (currSim.targetFertilityValue !== currSim.fertility) {
+      console.log("Updating Fertility Scenario");
+    }
+    if (currSim.targetFertilityYear < currSim.year) {
+      currSim.targetFertilityYear = currSim.year;
+    }
+    if (currSim.targetLifeExpValue !== currSim.lifeExp) {
+      console.log("Updating Life Expectancy Scenario");
+    }
+    if (currSim.targetLifeExpYear < currSim.year) {
+      currSim.targetLifeExpYear = currSim.year;
+    }
+
     var deaths = 0;
     for (i = 0; i <= 99; i++) {
       deaths += currSim.malePop[i] * currSim.maleMortality[i+1];
