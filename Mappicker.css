@@ -10,14 +10,15 @@
 #map-box { /* A box that contains the map view */
 	/* IMPORTANT: Change the size of the map container below */
 	position: absolute;
-	width: 700px;
-	height: 350px;
+	width: 698px;
+	height: 418px;
 	top: 69px;
 	left: 5px;
+	border: 1px solid gray; /* Set to match border on #countrySelectMenu */
 }
 
 #map {
-	background: #777;
+	background: #eee;
 	height: 100%;
 	width: 100%;
 }

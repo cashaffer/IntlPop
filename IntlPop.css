@@ -50,7 +50,7 @@ button {
 #countrySelectPanel {
   position: relative;
   top: -15px;
-  height: 436px;
+  height: 500px;
   width: 728px;
 }
 
@@ -58,7 +58,7 @@ button {
   position: absolute;
   top: 0px;
   left: 710px;
-  height: 420px;
+  height: 488px;
   width: 190px;
 }
 

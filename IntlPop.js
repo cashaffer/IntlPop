@@ -51,8 +51,8 @@
   initCountryMenu();
   console.log("Country Menu value: " + $('#countrySelectMenu').val());
 
-  var rSelectPanel = new Raphael("countrySelectPanel", 710, 600);
-  rSelectPanel.rect(5, 68, 700, 350);
+  // var rSelectPanel = new Raphael("countrySelectPanel", 710, 600);
+  // rSelectPanel.rect(5, 68, 700, 350); // Why is this here?? - TNB
 
   tell("Click on a country, then click 'Select It' to open a simulation window.");
   // Action callbacks for form entities

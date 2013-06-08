@@ -1,112 +1,16 @@
 /* 
 * Mappicker.js
 * Written by Nate Beatty for the IntlPop! Project
-* Based on a leaflet prototype by Bill Carstensen
 * May 2013
 */
 
-/* 
-* Map Styles 
-* Styles by Bill Carstensen
-*/
-
-
-var Continent_style = function(feature) {
-	if (feature.properties.Name =="Africa") {
-		return {
-			color: "#000000",
-			weight: 1,
-			opacity: 1,
-			fillColor: "#FFFF33",
-			fillOpacity: 1
-		}
-	}
-	else if (feature.properties.Name == "Asia") {
-		return {
-			color: "#000000",
-			weight: 1,
-			opacity: 1,
-			fillColor: "#FFCC00",
-			fillOpacity: 1
-		}
-	}
-	else if (feature.properties.Name == "Europe") {
-		return {
-			color: "#000000",
-			weight: 1,
-			opacity: 1,
-			fillColor: "#FF9900",
-			fillOpacity: 1
-		}
-	}
-	else if (feature.properties.Name == "Latin Am. & Carib.") {
-		return {
-			color: "#000000",
-			weight: 1,
-			opacity: 1,
-			fillColor: "#993300",
-			fillOpacity: 1
-		}
-	}
-	else if (feature.properties.Name == "Northern America") {
-		return {
-			color: "#000000",
-			weight: 1,
-			opacity: 1,
-			fillColor: "#660000",
-			fillOpacity: 1
-		}
-	}
-	else {
-		return {
-			color: "#000000",
-			weight: 1,
-			opacity: 1,
-			fillColor: "#FFFF99",
-			fillOpacity: 1
-		}
-	}
-}
-
-var Regions_style = function(feature) {
-	if (feature.properties.Name != "") {
-		return {
-			color: "#000000",
-			weight: 1,
-			opacity: 1,
-			fillColor: "#00FF00",
-			fillOpacity: 1
-		}
-	}
-	else {
-		return {
-			color: "#000000",
-			weight: 1,
-			opacity: 1,
-			fillColor: "#FFFFFF",
-			fillOpacity: 1
-		}
-	}
-}
-
-var Countries_style = function(feature) {
-	if (feature.properties.Name != "") {
-		return {
-			color: "#000000",
-			weight: 1,
-			opacity: 1,
-			fillColor: "#FF0000",
-			fillOpacity: 1
-		}
-	}
-	else {
-		return {
-			color: "#000000",
-			weight: 1,
-			opacity: 1,
-			fillColor: "#FFFFFF",
-			fillOpacity: 1
-		}
+var map_style = function(feature) {
+	return {
+		color: "#000000",
+		weight: 1,
+		opacity: 1,
+		fillColor: "#BBB",
+		fillOpacity: 1
 	}
 }
 
@@ -118,15 +22,12 @@ var Countries_style = function(feature) {
 var layerSources = [{
 	name: "Countries",
 	geoJsonPath: "MappickerLayers/Countries.json",
-	style: Countries_style
 }, {
 	name: "Regions",
 	geoJsonPath: "MappickerLayers/Regions.json",
-	style: Regions_style
 }, {
 	name: "Continents",
 	geoJsonPath: "MappickerLayers/Continents.json",
-	style: Continent_style
 }];
 
 // HTTP GET for GeoJSON files
@@ -143,6 +44,8 @@ function init() {
 	map = L.map('map', {
 		center:[25.0, 0.0],
 		zoom: 1.25,
+		minZoom: 1,
+		maxZoom: 10,
 		layers: [mapLayers.Countries]
 	});
 
@@ -172,28 +75,19 @@ function layerWasChanged(currentLayerName) {
 function loadLayers() {
 	for (var i = 0; i < layerSources.length; i++) {
 		var lyrName = layerSources[i].name;
-		var lyrStyle = layerSources[i].style;
 		httpRequest.open("GET", layerSources[i].geoJsonPath, false);
 		httpRequest.send();
 		var responseJson = JSON.parse(httpRequest.responseText);
-		saveMapLayer(responseJson, lyrName, lyrStyle);
+		saveMapLayer(responseJson, lyrName);
 	};
-	// httpRequest.open("GET", layerSources[1].geoJsonPath, false);
-	// httpRequest.send();
-	// var responseJson = JSON.parse(httpRequest.responseText);
-	// saveMapLayer(responseJson, layerSources[1].name, layerSources[1].style);
 }
 
-function saveMapLayer(json, layerName, layerStyle) {
+function saveMapLayer(json, layerName) {
 	console.log('Saving ' + layerName);
 	mapLayers[layerName] = L.geoJson(json, {
-		style: layerStyle,
+		style: map_style, // All map styles are the same
 		onEachFeature: onEachFeature
 	});
-	// regionLayer = L.geoJson(json, {
-	// 	style: layerStyle,
-	// 	onEachFeature: onEachFeature
-	// });
 }
 
 function onEachFeature(feature, layer) {
