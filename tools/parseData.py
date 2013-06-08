@@ -409,6 +409,7 @@ def createCountryList(year):
       fileName = '%s_%s.json' % (str(year), countryCode)
       country = dict()
       country['id'] = int(float(countryCode))
+      country['countrycode'] = int(float(countryCode))
       country['name'] = countryName
       country['alias'] = countryName
       country['filename'] = fileName
