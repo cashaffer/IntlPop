@@ -406,10 +406,10 @@ def createCountryList(year):
     if int(float(row[5])) == year: # Only record the requested year
       countryName = row[2]
       countryCode = row[4]
-      fileName = '%s_%s.json' % (str(year), countryCode)
+      fileName = '%s_%s.json' % (str(year), intify(countryCode))
       country = dict()
-      country['id'] = int(float(countryCode))
-      country['countrycode'] = int(float(countryCode))
+      country['id'] = intify(countryCode)
+      country['countrycode'] = intify(countryCode)
       country['name'] = countryName
       country['alias'] = countryName
       country['filename'] = fileName

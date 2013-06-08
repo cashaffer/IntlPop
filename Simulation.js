@@ -37,7 +37,7 @@ $(document).ready(function () {
       theURL += pathArray[i];
       theURL += "/";
     }
-    theURL += "JS_Files/" + filename;
+    theURL += "CountryData/" + filename;
     console.log("Data URL is: " + theURL);
     return theURL;
   }
@@ -322,11 +322,15 @@ $(document).ready(function () {
   function initCountryObject(filename) {
     var dataURL = buildURL(filename);
     console.log("dataURL: " + dataURL);
-    $.getScript(dataURL, function () { // getScript fetches the file
-      initCountry = setCountry(); // setCountry is in the data file
+    $.ajax({
+      url: dataURL,
+      async: false,
+      dataType: 'json'
+    }).done( function (response) {
+      initCountry = response;
       $('p.countryField').text(initCountry.name);
       initSimState();
-    }).fail(function (j, settings, exc) {
+    }).fail( function () {
       tell("Oops! This page was called with a bad country file name: " + filename, "red");
     });
   }
