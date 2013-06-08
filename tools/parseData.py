@@ -66,17 +66,24 @@ f_NET_NUMBER_OF_MIGRANTS = UNDataFiles[6][0] + '.CSV'
 # 
 # @return true if valid, false otherwise.
 def validArgs():
-  if len(sys.argv) not in [2, 5] or int(sys.argv[-1]) not in validYears:
+  # print('Checking args: ' + str(sys.argv)) # For debugging
+  if len(sys.argv) not in range(2, 5):
+    print('Arguments invalid.')
     return False
-  if len(sys.argv) == 3 and sys.argv[1] not in validOptions:
+  if int(sys.argv[-1]) not in validYears:
+    print('Year specified invalid.')
     return False
-  if len(sys.argv) == 4 and sys.argv[2] not in validOptions:
+  if len(sys.argv) >= 3 and sys.argv[1] not in validOptions:
+    print('Invalid flag: ' + sys.argv[1])
+    return False
+  if len(sys.argv) >= 4 and sys.argv[2] not in validOptions:
+    print('Invalid flag: ' + sys.argv[2])
     return False
   return True
 
 # Prints a usage message
 def printUsage():
-  print('Usage: python parseData date\nDate can be 2000, 2005, or 2010.')
+  print('Usage: python parseData.py date\nDate can be 2000, 2005, or 2010.')
 
 # Takes a string of numerical characters and removes spaces, etc.
 # to turn them into proper integers. Returns an int value
@@ -399,11 +406,27 @@ def createCountryList(year):
       countries.append(country)
   dataFile.close()
 
+  countries = sortCountryList(countries)
+
   output_dir = os.path.split(OUT_DIR)[0]
   filePath = os.path.join(output_dir, 'countrylist.json')
+  print('Writing the country list to file: ' + filePath)
   listFile = open(filePath, 'w') # Make the new file
   json.dump(countries, listFile)
   listFile.close()
+
+def sortCountryList(countryList):
+  print('Sorting the country list by name.')
+
+  countryList_sorted = []
+
+  try:
+    countryList_sorted = sorted(countryList, key=lambda k: k['name'])
+  except:
+    print('There was an error sorting the country list.\nWriting countries in UN order instead.')
+    countryList_sorted = countryList
+
+  return countryList_sorted
 
 ##################
 #  Main Program  #
@@ -427,9 +450,11 @@ if '-d' in sys.argv:
   removeTmpFiles()
   downloadXLSData()
   makeCSVFiles()
+  print()
 
 if '-c' in sys.argv:
   createCountryList(dataYear)
+  print()
 
 generateFiles(dataYear) # Start the files
 # Add data
