@@ -1,4 +1,5 @@
 "use strict";
+
 /*global alert*/
 (function ($) {
   var tell = function (msg) { $('p.output').text(msg); };
@@ -41,12 +42,12 @@
   // Handler for clicking on country in country select menu
   function countryClick(el) {
     console.log("In countryClick, value: " + $('#countrySelectMenu').val() +
-                ", name: " + countryList[$('#countrySelectMenu').val()].alias);
+      ", name: " + countryList[$('#countrySelectMenu').val()].alias);
     $('p.currentSelection').text("Current Selection: " + countryList[$('#countrySelectMenu').val()].alias);
   }
 
   console.log("This page's URL is: " + window.location.protocol + "//" +
-              window.location.host + "/" + window.location.pathname);
+    window.location.host + "/" + window.location.pathname);
 
   initCountryMenu();
   console.log("Country Menu value: " + $('#countrySelectMenu').val());
@@ -61,3 +62,33 @@
   $('#doSelect').click(newsim);
   $('#countrySelectMenu').click(countryClick);
 }(jQuery));
+
+/*********************
+**  Search Support  **
+**********************/
+
+$(document).ready(function() {
+
+  $('#countrySearchBox').keyup(function(e) {
+    var query = $('#countrySearchBox').val();
+    console.log('Query change detected: ' + query);
+    reloadCountryMenu();
+    $('option').filter(function(index){
+      query = query.toLowerCase();
+      var option = $(this).text().toLowerCase();
+      return (option.indexOf(query) === -1);
+    }).remove();
+  });
+
+  function reloadCountryMenu() {
+    console.log('Reloading country menu.');
+    var html = "";
+    for (var i = 0; i < countryList.length; i++) {
+      html += '<option value="' + i + '">' + countryList[i].alias + '</option>';
+    }
+    $('#countrySelectMenu').html(html);
+  }
+
+});
+
+/* helper methods */
