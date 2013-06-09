@@ -1,6 +1,4 @@
-# parseData.py | python3
-# Nate Beatty | February, 2013
-# For the IntlPop project
+# parseData.py | python3 Nate Beatty | February, 2013 For the IntlPop project
 #
 # Parses CSV data from the given input directory
 # and outputs a series of javascript files appropriate
