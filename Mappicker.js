@@ -14,11 +14,6 @@ var map_style = function(feature) {
 	}
 }
 
-/* 
-* Layer loading and other behaviors
-* 
-*/
-
 var layerSources = [{
 	name: "Countries",
 	geoJsonPath: "MappickerLayers/Countries.json",
@@ -37,10 +32,11 @@ var httpRequest = new XMLHttpRequest();
 var map;
 var mapLayers = {};
 var currentLayer;
-
+var countrylist;
 
 function init() {
 	loadLayers();
+	loadCountryList();
 	map = L.map('map', {
 		center:[25.0, 0.0],
 		zoom: 1.25,
@@ -68,8 +64,20 @@ function init() {
 	});
 }
 
-function layerWasChanged(currentLayerName) {
-	console.log('Visible layer changed to: ' + currentLayerName);
+/*******************************
+**  Initialization Functions  **
+********************************/
+
+function loadCountryList() {
+	$.ajax({
+		url: 'countrylist.json',
+		async: false,
+		dataType: 'json'
+	}).done( function (response) {
+		countrylist = response;
+	}).fail( function () {
+		console.log('Countrylist failed to load.');
+	});
 }
 
 function loadLayers() {
@@ -91,7 +99,6 @@ function saveMapLayer(json, layerName) {
 }
 
 function onEachFeature(feature, layer) {
-
 	layer.on({
 		mouseover: highlightFeature,
 		mouseout: resetHighlight,
@@ -99,16 +106,22 @@ function onEachFeature(feature, layer) {
 	});
 }
 
+/*********************
+**  Event Handlers  **
+**********************/
+
+// Called when the user selects a new map layer to display
+function layerWasChanged(currentLayerName) {
+	console.log('Visible layer changed to: ' + currentLayerName);
+}
+
 // Should be called on mouseover
 function highlightFeature(e) {
 	var layer = e.target;
-
 	layer.setStyle({
 		fillOpacity: 0.7
 	});
-
-	currentHover(layer.feature.properties.Name, layer.feature.properties.CountryID);
-
+	updateCurrentHover(layer.feature.properties.Name, layer.feature.properties.CountryID);
 	if (!L.Browser.ie && !L.Browser.opera) {
 		layer.bringToFront();
 	}
@@ -117,27 +130,41 @@ function highlightFeature(e) {
 // Should be called on mouseout
 function resetHighlight(e) {
 	currentLayer.resetStyle(e.target);
-	currentHover();
+	updateCurrentHover();
 }
+
+// Should be called on click
+function countryClicked(e) {
+	selectCountry(e.target.feature.properties.CountryID);
+}
+
+/*********************
+**  Helper Methods  **
+**********************/
 
 // Called on click?
 function zoomToFeature(e) {
 	map.fitBounds(e.target.getBounds());
 }
 
-function countryClicked(e) {
-	selectCountry(e.target.feature.properties.CountryID);
-}
-
-function currentHover(name, id) {
-	if(typeof(name)==='undefined') name = "";
+function updateCurrentHover(name, id) { // Updates the current hover text
+	if (typeof(name)==='undefined' || typeof(id)==='undefined') {
+		name = "";
+	} else {
+		name = countryNameForIndex(id);
+	}
 	// Update the currently update hover
 	$('p.hover').text("Current Hover: " + name);
 }
 
-// Country Selection
-function selectCountry(id) {
+function countryNameForIndex(id) {
+	var countryName = $.grep(countryList, function(e){ return e.countrycode == id})[0].alias;
+	return countryName;
+}
 
+// Called upon country selection:
+// Spawns a new simulation window
+function selectCountry(id) {
 	var simWindowFeatures = "height=378,width=1060";
 	var filename = "";
 	

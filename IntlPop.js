@@ -8,7 +8,7 @@
   function initCountryMenu() {
     var html = "";
     for (var i = 0; i < countryList.length; i++) {
-      html += '<option value="' + i + '">' + countryList[i].name + '</option>';
+      html += '<option value="' + i + '">' + countryList[i].alias + '</option>';
     }
     $('#countrySelectMenu').html(html);
   }
@@ -41,8 +41,8 @@
   // Handler for clicking on country in country select menu
   function countryClick(el) {
     console.log("In countryClick, value: " + $('#countrySelectMenu').val() +
-                ", name: " + countryList[$('#countrySelectMenu').val()].name);
-    $('p.currentSelection').text("Current Selection: " + countryList[$('#countrySelectMenu').val()].name);
+                ", name: " + countryList[$('#countrySelectMenu').val()].alias);
+    $('p.currentSelection').text("Current Selection: " + countryList[$('#countrySelectMenu').val()].alias);
   }
 
   console.log("This page's URL is: " + window.location.protocol + "//" +
