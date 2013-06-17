@@ -8,11 +8,11 @@
 # which are automatically placed in the web application directory.
 # The following will generate 2010 files from csv's in the tmp dir:
 #
-# $ python3 parseData.py 2010 
+# $ python parseData.py 2010 
 #
 # If you need to download the data from the UN, run with the -d option:
 #
-# $ python3 parseData.py -d 2010
+# $ python parseData.py -d 2010
 #
 # Note that downloading all of the data from the UN will take a while
 # and download speeds depend on your internet connection.
@@ -34,16 +34,18 @@ import json
 ###########################
 
 TMP_DIR = 'tmp' # The directory containing the CSV files
+CSV_DIR = '../CSV_Files' # Where the converted CSV files will be stored
+RAW_DIR = '../RawData_Files' # Where the raw xml files will be stored
 OUT_DIR = '../CountryData' # Where the JSON output files will be created
 
 UNDataFiles = [
-  ['POPULATION_BY_AGE_MALE', 'http://esa.un.org/unpd/wpp/Excel-Data/DB03_Population_ByAgeSex_Quinquennial/WPP2010_DB3_F2_POPULATION_BY_AGE_MALE.XLS'],
-  ['POPULATION_BY_AGE_FEMALE','http://esa.un.org/unpd/wpp/Excel-Data/DB03_Population_ByAgeSex_Quinquennial/WPP2010_DB3_F3_POPULATION_BY_AGE_FEMALE.XLS'],
-  ['DEATHS_BY_AGE_MALE', 'http://esa.un.org/unpd/wpp/Excel-Data/DB05_Mortality_IndicatorsByAge/WPP2010_DB5_F2_DEATHS_BY_AGE_MALE.XLS'],
-  ['DEATHS_BY_AGE_FEMALE', 'http://esa.un.org/unpd/wpp/Excel-Data/DB05_Mortality_IndicatorsByAge/WPP2010_DB5_F3_DEATHS_BY_AGE_FEMALE.XLS'],
-  ['BIRTHS_BY_AGE_OF_MOTHER', 'http://esa.un.org/unpd/wpp/Excel-Data/DB06_Fertility_IndicatorsByAge/WPP2010_DB6_F1_BIRTHS_BY_AGE_OF_MOTHER.XLS'],
-  ['IMR_BOTH_SEXES', 'http://esa.un.org/unpd/wpp/Excel-Data/DB01_Period_Indicators/WPP2010_DB1_F06_1_IMR_BOTH_SEXES.XLS'],
-  ['NET_NUMBER_OF_MIGRANTS', 'http://esa.un.org/unpd/wpp/Excel-Data/DB01_Period_Indicators/WPP2010_DB1_F19_NET_NUMBER_OF_MIGRANTS.XLS']
+  ['POPULATION_BY_AGE_MALE', 'http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/1_Population/WPP2012_POP_F07_2_POPULATION_BY_AGE_MALE.XLS'],
+  ['POPULATION_BY_AGE_FEMALE','http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/1_Population/WPP2012_POP_F07_3_POPULATION_BY_AGE_FEMALE.XLS'],
+  ['DEATHS_BY_AGE_MALE', 'http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/3_Mortality/WPP2012_MORT_F04_2_DEATHS_BY_AGE_MALE.XLS'],
+  ['DEATHS_BY_AGE_FEMALE', 'http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/3_Mortality/WPP2012_MORT_F04_3_DEATHS_BY_AGE_FEMALE.XLS'],
+  ['BIRTHS_BY_AGE_OF_MOTHER', 'http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/2_Fertility/WPP2012_FERT_F06_BIRTHS_BY_AGE_OF_MOTHER.XLS'],
+  ['IMR_BOTH_SEXES', 'http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/3_Mortality/WPP2012_MORT_F01_1_IMR_BOTH_SEXES.XLS'],
+  ['NET_NUMBER_OF_MIGRANTS', 'http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/4_Migration/WPP2012_MIGR_F01_NET_MIGRATION_RATE.XLS'],
 ]
 
 validYears = [2000, 2005, 2010]
@@ -112,14 +114,14 @@ def removeTmpFiles():
         if os.path.isfile(file_path):
             os.unlink(file_path)
       except:
-        print('There was a problem removing the old data files.')
+        print('There was a problem removing the old temp data files.')
         exit(1)
   else:
     try:
       print('Creating temp directory at ' + TMP_DIR)
       os.makedirs(TMP_DIR)
     except:
-      print('Could not generate output file directory.')
+      print('Could not generate temp file directory.')
       exit(1)
 
 
@@ -164,19 +166,64 @@ def downloadXLSData():
     if file_size <= 0:
       print('There was a problem downloading the data files.')
       exit(1)
+  # move the completed files to the raw file directory
+  # replacing any files that are already there.
+  if os.path.exists(RAW_DIR):
+    print('Removing old raw data files.')
+    for the_file in os.listdir(RAW_DIR):
+      file_path = os.path.join(RAW_DIR, the_file)
+      try:
+        if os.path.isfile(file_path):
+            os.unlink(file_path)
+      except:
+        print('There was a problem removing the old raw data files.')
+        exit(1)
+  else:
+    try:
+      print('Creating raw data directory at ' + RAW_DIR)
+      os.makedirs(RAW_DIR)
+    except:
+      print('Could not create the raw data directory.')
+      exit(1)
+  for item in UNDataFiles:
+    file_path_tmp = os.path.join(TMP_DIR, item[0] + '.xls')
+    file_path_new = os.path.join(RAW_DIR, item[0] + '.xls')
+    shutil.move(file_path_tmp, file_path_new)
 
 
 def makeCSVFiles():
   for item in UNDataFiles:
     print('Generating CSV file for ' + item[0])
-    xls_path = os.path.join(TMP_DIR, item[0] + '.xls')
-    csv_path = os.path.join(TMP_DIR, item[0] + '.csv')
+    xls_path = os.path.join(RAW_DIR, item[0] + '.xls')
+    tmp_path = os.path.join(TMP_DIR, item[0] + '.csv')
     with xlrd.open_workbook(xls_path) as wb:
       sh = wb.sheet_by_index(0)
-      with open(csv_path, 'w', newline='') as f:
+      with open(tmp_path, 'w', newline='') as f:
         c = csv.writer(f)
         for r in range(sh.nrows):
           c.writerow(sh.row_values(r))
+  # Move the CSV files to the CSV_DIR, replacing any old files there
+  if os.path.exists(CSV_DIR):
+    print('Removing old raw data files.')
+    for the_file in os.listdir(CSV_DIR):
+      file_path = os.path.join(CSV_DIR, the_file)
+      try:
+        if os.path.isfile(file_path):
+            os.unlink(file_path)
+      except:
+        print('There was a problem removing the old CSV data files.')
+        exit(1)
+  else:
+    try:
+      print('Creating CSV directory at ' + CSV_DIR)
+      os.makedirs(CSV_DIR)
+    except:
+      print('Could not generate CSV data output directory.')
+      exit(1)
+  for item in UNDataFiles:
+    file_path_tmp = os.path.join(TMP_DIR, item[0] + '.csv')
+    file_path_new = os.path.join(CSV_DIR, item[0] + '.csv')
+    shutil.move(file_path_tmp, file_path_new)
 
 
 ##################################
@@ -209,7 +256,7 @@ def generateFiles(year):
   
   print('Generating files for year %s data.' % (str(year)))
   # Make a file for each country based on the male population data
-  dataFile = codecs.open(os.path.join(TMP_DIR, f_POPULATION_BY_AGE_MALE), 'r', encoding='latin1')
+  dataFile = codecs.open(os.path.join(CSV_DIR, f_POPULATION_BY_AGE_MALE), 'r', encoding='latin1')
   data = csv.reader(dataFile)
 
   for row in data:
@@ -241,7 +288,7 @@ def generateFiles(year):
 def appendPopData(year):
   # Start with male population
   print('Parsing male population data.')
-  dataFile = codecs.open(os.path.join(TMP_DIR, f_POPULATION_BY_AGE_MALE), 'r', encoding='latin1')
+  dataFile = codecs.open(os.path.join(CSV_DIR, f_POPULATION_BY_AGE_MALE), 'r', encoding='latin1')
   data = csv.reader(dataFile)
   for row in data:
     if len(row) <= 0: continue
@@ -259,7 +306,7 @@ def appendPopData(year):
   dataFile.close()
   # Now fill in the female population
   print('Parsing female population data.')
-  dataFile = codecs.open(os.path.join(TMP_DIR, f_POPULATION_BY_AGE_FEMALE), 'r', encoding='latin1')
+  dataFile = codecs.open(os.path.join(CSV_DIR, f_POPULATION_BY_AGE_FEMALE), 'r', encoding='latin1')
   data = csv.reader(dataFile)
   for row in data:
     if len(row) <= 0: continue # Just in case some "phantom" rows exist from MS CSV export
@@ -285,7 +332,7 @@ def appendPopData(year):
 def appendBirthData(year):
   # Parse through the birth data and append it to the file
   print('Parsing birth data.')
-  dataFile = codecs.open(os.path.join(TMP_DIR, f_BIRTHS_BY_AGE_OF_MOTHER), 'r', encoding='latin1')
+  dataFile = codecs.open(os.path.join(CSV_DIR, f_BIRTHS_BY_AGE_OF_MOTHER), 'r', encoding='latin1')
   data = csv.reader(dataFile)
   for row in data:
     if len(row) <= 0: continue # Just in case some "phantom" rows exist from MS CSV export
@@ -310,7 +357,7 @@ def appendBirthData(year):
 def appendMortalityData(year):
   # Start with the female mortality data
   print('Parsing female mortality data.')
-  dataFile = codecs.open(os.path.join(TMP_DIR, f_DEATHS_BY_AGE_FEMALE), 'r', encoding='latin1')
+  dataFile = codecs.open(os.path.join(CSV_DIR, f_DEATHS_BY_AGE_FEMALE), 'r', encoding='latin1')
   data = csv.reader(dataFile)
   for row in data:
     if len(row) <= 0: continue # Just in case some "phantom" rows exist from MS CSV export
@@ -326,10 +373,9 @@ def appendMortalityData(year):
       f.write('],\n')
       f.close()
   dataFile.close()
-
   # Now parse and append the male mortality data
   print('Parsing male mortality data.')
-  dataFile = codecs.open(os.path.join(TMP_DIR, f_DEATHS_BY_AGE_MALE), 'r', encoding='latin1')
+  dataFile = codecs.open(os.path.join(CSV_DIR, f_DEATHS_BY_AGE_MALE), 'r', encoding='latin1')
   data = csv.reader(dataFile)
   for row in data:
     if len(row) <= 0: continue # Just in case some "phantom" rows exist from MS CSV export
@@ -345,10 +391,9 @@ def appendMortalityData(year):
       f.write('],\n')
       f.close()
   dataFile.close()
-
   # Now parse and append the infant mortality data
   print('Parsing infant mortality data.')
-  dataFile = codecs.open(os.path.join(TMP_DIR, f_IMR_BOTH_SEXES), 'r', encoding='latin1')
+  dataFile = codecs.open(os.path.join(CSV_DIR, f_IMR_BOTH_SEXES), 'r', encoding='latin1')
   data = csv.reader(dataFile)
   for row in data:
     if len(row) <= 0: continue # Just in case some "phantom" rows exist from MS CSV export
@@ -362,7 +407,7 @@ def appendMortalityData(year):
 
 def appendMigrationData(year):
   print('Parsing migration data.')
-  dataFile = codecs.open(os.path.join(TMP_DIR, f_NET_NUMBER_OF_MIGRANTS), 'r', encoding='latin1')
+  dataFile = codecs.open(os.path.join(CSV_DIR, f_NET_NUMBER_OF_MIGRANTS), 'r', encoding='latin1')
   data = csv.reader(dataFile)
   for row in data:
     if len(row) <= 0: continue # Just in case some "phantom" rows exist from MS CSV export
@@ -392,7 +437,7 @@ def createCountryList(year):
 
   countries = []
   
-  dataFile = codecs.open(os.path.join(TMP_DIR, f_POPULATION_BY_AGE_MALE), 'r', encoding='latin1')
+  dataFile = codecs.open(os.path.join(CSV_DIR, f_POPULATION_BY_AGE_MALE), 'r', encoding='latin1')
   data = csv.reader(dataFile)
   for row in data:
     if len(row) <= 0: continue # Just in case some "phantom" rows exist from MS CSV export

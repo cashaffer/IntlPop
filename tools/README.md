@@ -4,7 +4,7 @@ IntlPop Tools
 parseData.py
 ---
 
-The data for IntlPop 3 comes from the UN's [World Population Prospects database](http://esa.un.org/unpd/wpp/index.htm).
+The data for IntlPop 3 comes from the UN's [World Population Prospects database](
 
 We do not redistribute this database as the large files are not necessary to run the program. We generate our country data files, located in the `CountryData` directory, by first converting a series of UN Excel files to CSV and then running the script `parseData.py`.
 
@@ -38,10 +38,10 @@ Raw Data
 
 Please find links to the original UN Excel data files below:
 
-* [Population by Age Groups - Female](http://esa.un.org/unpd/wpp/Excel-Data/DB03_Population_ByAgeSex_Quinquennial/WPP2010_DB3_F3_POPULATION_BY_AGE_FEMALE.XLS)
-* [Population by Age Groups - Male](http://esa.un.org/unpd/wpp/Excel-Data/DB03_Population_ByAgeSex_Quinquennial/WPP2010_DB3_F2_POPULATION_BY_AGE_MALE.XLS)
-* [Births by Age of Mother](http://esa.un.org/unpd/wpp/Excel-Data/DB06_Fertility_IndicatorsByAge/WPP2010_DB6_F1_BIRTHS_BY_AGE_OF_MOTHER.XLS)
-* [Deaths by Age Groups - Female](http://esa.un.org/unpd/wpp/Excel-Data/DB05_Mortality_IndicatorsByAge/WPP2010_DB5_F3_DEATHS_BY_AGE_FEMALE.XLS)
-* [Deaths by Age Groups - Male](http://esa.un.org/unpd/wpp/Excel-Data/DB05_Mortality_IndicatorsByAge/WPP2010_DB5_F2_DEATHS_BY_AGE_MALE.XLS)
-* [Net Number of Migrants](http://esa.un.org/unpd/wpp/Excel-Data/DB01_Period_Indicators/WPP2010_DB1_F19_NET_NUMBER_OF_MIGRANTS.XLS)
-* [Infant Mortality Rate (IMR)](http://esa.un.org/unpd/wpp/Excel-Data/DB01_Period_Indicators/WPP2010_DB1_F06_1_IMR_BOTH_SEXES.XLS)
+* [Population by Age Groups - Female](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/1_Population/WPP2012_POP_F07_3_POPULATION_BY_AGE_FEMALE.XLS)
+* [Population by Age Groups - Male](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/1_Population/WPP2012_POP_F07_2_POPULATION_BY_AGE_MALE.XLS)
+* [Births by Age of Mother](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/2_Fertility/WPP2012_FERT_F06_BIRTHS_BY_AGE_OF_MOTHER.XLS)
+* [Deaths by Age Groups - Female](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/3_Mortality/WPP2012_MORT_F04_3_DEATHS_BY_AGE_FEMALE.XLS)
+* [Deaths by Age Groups - Male](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/3_Mortality/WPP2012_MORT_F04_2_DEATHS_BY_AGE_MALE.XLS)
+* [Net Number of Migrants](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/4_Migration/WPP2012_MIGR_F01_NET_MIGRATION_RATE.XLS)
+* [Infant Mortality Rate (IMR)](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/3_Mortality/WPP2012_MORT_F01_1_IMR_BOTH_SEXES.XLS)

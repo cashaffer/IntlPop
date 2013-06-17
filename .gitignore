@@ -6,12 +6,9 @@
 version.js
 version.txt
 
-#Original data files
-RawData/*.XLS
-CSV_Files
-JS_Files
-
 # Generated Data Files
+RawData_Files
+CSV_Files
 tools/tmp/
 CountryData
 countrylist.json
