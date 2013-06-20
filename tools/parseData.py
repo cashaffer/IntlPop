@@ -28,6 +28,7 @@ import shutil
 import codecs
 import csv
 import json
+import math
 
 ###########################
 #  User Editable Options  #
@@ -129,29 +130,24 @@ def downloadXLSData():
   for item in UNDataFiles:
     file_url = item[1]
     file_path = os.path.join(TMP_DIR, item[0] + '.xls')
-    with open(file_path, "wb") as f:
-      print("Downloading %s" % item[0])
-      response = requests.get(file_url, stream=True)
-      total_length = intify(response.headers.get('content-length'))
-      encoding = response.headers.get('content-encoding')
-      cache_control = response.headers.get('cache-control')
 
-      if total_length is None:
-        f.write(response.content)
-      elif encoding == 'gzip' or cache_control == 'private':
-        print(' Some fields in the response headers were invalid.\n Attempting to download anyway.')
-        f.write(response.content)
-      else:
-        dl = 0
-        total_length = int(total_length)
-        for data in response.iter_content():
-          dl += len(data)
-          f.write(data)
-          done = int(50 * dl / total_length)
-          sys.stdout.write("\r Progress: " + str(total_length) + " /%10d  [%3.2f%%]" % (dl, dl * 100. / total_length))
-          sys.stdout.flush()
-      f.close()
-      print('')
+    http = urllib3.PoolManager()
+    with open(file_path, 'wb') as f:
+      print('Downloading %s' % item[0])
+      response = http.request('GET', file_url, preload_content=False)
+      headers = response.getheaders()
+      filesize = int(headers['content-length'])
+      if filesize is None or headers['content-type'] != 'application/vnd.ms-excel':
+        print('There was a problem downloading this file.')
+      print('Expected Filesize: %s' % sizeString(int(filesize)))
+      blocksize = int(math.ceil(filesize/100.))
+      for progress in range(100):
+        sys.stdout.write("\r Progress: [%s] %.1f%%" % (('#' * math.ceil(progress / 5) + ' ' * math.floor(20 - progress/5) ), progress + 1))
+        sys.stdout.flush()
+        f.write(response.read(blocksize))
+    print('')
+    f.close()
+
   # make sure the files are valid
   for item in UNDataFiles:
     file_path = os.path.join(TMP_DIR, item[0] + '.xls')
@@ -492,6 +488,31 @@ def intify(value):
   newInt = int(float(str(value).strip().replace(' ','')))
   return newInt
 
+# Takes an int value number of bytes and returns a more readable
+# string that states the size in KB, MB, GB, etc.
+#
+# @param bytes The number of bytes to convert. Assumes a positive value.
+# 
+# @return string A string representing the number of bytes passed
+# as a parameter.
+def sizeString(bytes):
+  conversionFactor = 1024 # Could set to 1000 if you want
+  sizeStr = ''
+  if bytes < 1024:
+    sizeStr = '%.2f B' % (bytes)
+  elif bytes < math.pow(1024, 2):
+    sizeStr = '%.2f KB' % (bytes / conversionFactor)
+  elif bytes < math.pow(1024, 3):
+    sizeStr = '%.2f MB' % (bytes / math.pow(conversionFactor, 2))
+  elif bytes < math.pow(1024, 4):
+    sizeStr = '%.2f GB' % (bytes / math.pow(conversionFactor, 3))
+  else:
+    sizeStr = 'Really Big.'
+  return sizeStr
+
+
+
+
 ##################
 #  Main Program  #
 ##################
@@ -506,7 +527,7 @@ dataYear = int(sys.argv[-1])
 
 if '-d' in sys.argv or '--download' in sys.argv:
   try:
-    import requests
+    import urllib3
     import xlrd
   except:
     print('You are missing python packages that are required to download the population data from the United Nations. Please run `$ pip install requests` and `$ pip install xlrd` before trying again.')

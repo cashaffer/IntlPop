@@ -26,9 +26,9 @@ If you have not previously downloaded the raw data from the united nations, you 
 
 	$ python parseData.py -d -c 2010
 
-Note that for the -d option to work properly, you will need to have the 'requests' and 'xlrd' python packages installed. Using PIP, you can install these packages by running the following in a terminal window:
+Note that for the -d option to work properly, you will need to have the 'urllib3' and 'xlrd' python packages installed. Using PIP, you can install these packages by running the following in a terminal window:
 
-	$ pip install requests
+	$ pip install urllib3
 	$ pip install xlrd
 
 All other packages used by this script are part of the standard python library.
