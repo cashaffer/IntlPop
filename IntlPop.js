@@ -255,8 +255,7 @@ $(document).ready(function() {
   // Called upon country selection:
   // Spawns a new simulation window
   function selectCountryInList(countryId) {
-    countryId = typeof countryId !== 'undefined' ? countryId : 900;
-
+    // countryId = typeof countryId !== 'undefined' ? countryId : 900; // Uncomment to make non-id'd polygons default to world selection
     var countryObject = $.grep(countryList, function(e){ return e.countrycode == countryId})[0];
     var countryIndex = $.inArray(countryObject, countryList);
     if (countryIndex == -1) {

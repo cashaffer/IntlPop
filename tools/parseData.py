@@ -59,6 +59,7 @@ validOptions = ['-d', '--download', '-c', '--countrylist']
 #  Usage and Preliminaries  #
 #############################
 
+# The following define the CSV filenames
 f_POPULATION_BY_AGE_MALE = UNDataFiles[0][0] + '.CSV'
 f_POPULATION_BY_AGE_FEMALE = UNDataFiles[1][0] + '.CSV'
 f_DEATHS_BY_AGE_MALE = UNDataFiles[2][0] + '.CSV'
@@ -147,10 +148,10 @@ def downloadXLSData():
         f.write(response.read(blocksize))
     print('')
     f.close()
-
   # make sure the files are valid
   for item in UNDataFiles:
     file_path = os.path.join(TMP_DIR, item[0] + '.xls')
+    # print(os.stat(file_path))
     if not os.path.exists(file_path) or not os.path.isfile(file_path):
       print('Some data files were not downloaded.')
       exit(1)
@@ -534,19 +535,19 @@ if '-d' in sys.argv or '--download' in sys.argv:
     exit(1)
   removeTmpFiles()
   downloadXLSData()
-  makeCSVFiles()
-  print()
+#   makeCSVFiles()
+#   print()
 
-if '-c' in sys.argv or '--countrylist' in sys.argv:
-  createCountryList(dataYear)
-  print()
+# if '-c' in sys.argv or '--countrylist' in sys.argv:
+#   createCountryList(dataYear)
+#   print()
 
-generateFiles(dataYear) # Start the files
-# Add data
-appendPopData(dataYear)
-appendBirthData(dataYear)
-appendMortalityData(dataYear)
-appendMigrationData(dataYear)
-endFiles() # End the files
+# generateFiles(dataYear) # Start the files
+# # Add data
+# appendPopData(dataYear)
+# appendBirthData(dataYear)
+# appendMortalityData(dataYear)
+# appendMigrationData(dataYear)
+# endFiles() # End the files
 
 print()
