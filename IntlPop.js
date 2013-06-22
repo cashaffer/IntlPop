@@ -106,13 +106,13 @@ $(document).ready(function() {
 
   var layerSources = [{
     name: "Countries",
-    geoJsonPath: "MappickerLayers/Countries.json",
+    geoJsonPath: "MappickerLayers/Countries.geojson",
   }, {
     name: "Regions",
-    geoJsonPath: "MappickerLayers/Regions.json",
+    geoJsonPath: "MappickerLayers/Regions.geojson",
   }, {
     name: "Continents",
-    geoJsonPath: "MappickerLayers/Continents.json",
+    geoJsonPath: "MappickerLayers/Continents.geojson",
   }];
 
   // HTTP GET for GeoJSON files
@@ -129,9 +129,8 @@ $(document).ready(function() {
     loadLayers();
     loadCountryList();
     map = L.map('map', {
-      crs: crs,
       center:[25.0, 0.0],
-      zoom: 2,
+      zoom: 1.25,
       minZoom: 1,
       maxZoom: 10,
       layers: [mapLayers.Countries]
