@@ -125,11 +125,13 @@ $(document).ready(function() {
   var countrylist;
 
   function initMap() {
+
     loadLayers();
     loadCountryList();
     map = L.map('map', {
+      crs: crs,
       center:[25.0, 0.0],
-      zoom: 1.25,
+      zoom: 2,
       minZoom: 1,
       maxZoom: 10,
       layers: [mapLayers.Countries]
