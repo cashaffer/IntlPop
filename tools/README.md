@@ -1,16 +1,46 @@
 IntlPop Tools
 ===
 
+Raw Data
+---
+
+The data for IntlPop 3 comes from the UN's [World Population Prospects database](http://esa.un.org/wpp/index.htm).
+
+We do not redistribute this database as the large files from the UN are not necessary to run the program. We generate our country data files, located in the `CountryData` directory, by first converting a series of UN Excel files to CSV and then running the script `parseData.py`.
+
+Please find links to the original UN Excel data files below:
+
+* [Population by Age Groups - Female](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/1_Population/WPP2012_POP_F07_3_POPULATION_BY_AGE_FEMALE.XLS)
+* [Population by Age Groups - Male](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/1_Population/WPP2012_POP_F07_2_POPULATION_BY_AGE_MALE.XLS)
+* [Births by Age of Mother](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/2_Fertility/WPP2012_FERT_F06_BIRTHS_BY_AGE_OF_MOTHER.XLS)
+* [Deaths by Age Groups - Female](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/3_Mortality/WPP2012_MORT_F04_3_DEATHS_BY_AGE_FEMALE.XLS)
+* [Deaths by Age Groups - Male](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/3_Mortality/WPP2012_MORT_F04_2_DEATHS_BY_AGE_MALE.XLS)
+* [Net Number of Migrants](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/4_Migration/WPP2012_MIGR_F01_NET_MIGRATION_RATE.XLS)
+* [Infant Mortality Rate (IMR)](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/3_Mortality/WPP2012_MORT_F01_1_IMR_BOTH_SEXES.XLS)
+
 parseData.py
 ---
 
-The data for IntlPop 3 comes from the UN's [World Population Prospects database](
+The script `parseData.py` is written in Python v3. Run without the optional flags, the parseData script takes CSV files as input and outputs a series of JSON files, each of which contains a compilation of demographic data unique to a specific country or region. Options exist to download the data directly from the UN or to create the `countrylist.json` file.
 
-We do not redistribute this database as the large files are not necessary to run the program. We generate our country data files, located in the `CountryData` directory, by first converting a series of UN Excel files to CSV and then running the script `parseData.py`.
+### Script Actions
 
-Run without the optional flags, the parseData script takes CSV files as input and outputs a series of JSON files, each of which contains a compilation of demographic data unique to a specific country or region. Options exist to download the data directly from the UN or to create the `countrylist.json` file.
+The script performs the following actions in order:
 
-the parseData usage is as follows:
+1. Checks for a `-d` flag. If found:
+	1. Checks for a temporary directory at `/tools/tmp`, removes old tmp files if found or creates a new one if not found.
+	2. Downloads the Excel files from the URLs given above and places them in the temp directory.
+	3. Checks the validity of the downloaded files and moves them to `/RawData_Files`, creating a directory with that name in the rood directory of the application if necessary. Any old files will be overwritten.
+	4. Converts the Excel files to CSV, one at a time, storing each in the temp directory.
+	5. Moves the converted CSV files to `/CSV_Files`, creating a directory with that name in the rood directory of the application if necessary. Any old files will be overwritten.
+2. Creates the directory `/CountryData` in the root application directory, replacing any previously existing directory by the same name.
+3. Builds the country files from the contents of the CSV files located in `/CSV_Files`.
+4. Checks for a `-c` flag. If found:
+	1. Generates a `countrylist.json` file in the root directory.
+
+### Usage
+
+The parseData usage is as follows:
 
 	Usage: python parseData.py [-d|--download] [-c|--countrylist] <date>
 	Date can be 2000, 2005, or 2010.
@@ -26,22 +56,11 @@ If you have not previously downloaded the raw data from the united nations, you 
 
 	$ python parseData.py -d -c 2010
 
+### Dependencies
+
 Note that for the -d option to work properly, you will need to have the 'urllib3' and 'xlrd' python packages installed. Using PIP, you can install these packages by running the following in a terminal window:
 
 	$ pip install urllib3
 	$ pip install xlrd
 
 All other packages used by this script are part of the standard python library.
-
-Raw Data
----
-
-Please find links to the original UN Excel data files below:
-
-* [Population by Age Groups - Female](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/1_Population/WPP2012_POP_F07_3_POPULATION_BY_AGE_FEMALE.XLS)
-* [Population by Age Groups - Male](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/1_Population/WPP2012_POP_F07_2_POPULATION_BY_AGE_MALE.XLS)
-* [Births by Age of Mother](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/2_Fertility/WPP2012_FERT_F06_BIRTHS_BY_AGE_OF_MOTHER.XLS)
-* [Deaths by Age Groups - Female](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/3_Mortality/WPP2012_MORT_F04_3_DEATHS_BY_AGE_FEMALE.XLS)
-* [Deaths by Age Groups - Male](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/3_Mortality/WPP2012_MORT_F04_2_DEATHS_BY_AGE_MALE.XLS)
-* [Net Number of Migrants](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/4_Migration/WPP2012_MIGR_F01_NET_MIGRATION_RATE.XLS)
-* [Infant Mortality Rate (IMR)](http://esa.un.org/unpd/wpp/Excel-Data/EXCEL_FILES/3_Mortality/WPP2012_MORT_F01_1_IMR_BOTH_SEXES.XLS)

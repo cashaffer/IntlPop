@@ -535,19 +535,19 @@ if '-d' in sys.argv or '--download' in sys.argv:
     exit(1)
   removeTmpFiles()
   downloadXLSData()
-#   makeCSVFiles()
-#   print()
+  makeCSVFiles()
+  print()
 
-# if '-c' in sys.argv or '--countrylist' in sys.argv:
-#   createCountryList(dataYear)
-#   print()
+if '-c' in sys.argv or '--countrylist' in sys.argv:
+  createCountryList(dataYear)
+  print()
 
-# generateFiles(dataYear) # Start the files
-# # Add data
-# appendPopData(dataYear)
-# appendBirthData(dataYear)
-# appendMortalityData(dataYear)
-# appendMigrationData(dataYear)
-# endFiles() # End the files
+generateFiles(dataYear) # Start the files
+# Add data
+appendPopData(dataYear)
+appendBirthData(dataYear)
+appendMortalityData(dataYear)
+appendMigrationData(dataYear)
+endFiles() # End the files
 
 print()
