@@ -1,7 +1,7 @@
 IntlPop Tools
 ===
 
-Raw Data
+Raw Data <a id="data"></a>
 ---
 
 The data for IntlPop 3 comes from the UN's [World Population Prospects database](http://esa.un.org/wpp/index.htm).
@@ -56,7 +56,23 @@ If you have not previously downloaded the raw data from the united nations, you 
 
 	$ python parseData.py -d -c 2010
 
-### Dependencies
+As the download `-d | --download` option requires the use of some third-party python packages (see also [Dependencies](#dependencies)), some users may be unable to run the script with this option. If that is the case, you can download the data manually. Follow the steps below to download the raw data files and convert them to CSV.
+
+1. Download the seven excel files listed at the [top](#data) of this page.
+2. Using Microsoft Excel or a similar program (like Macintosh iWork Numbers), export the "Estimates" worksheet of each raw data file to CSV format.
+	* If you are using Macintosh Numbers, this can be done by selecting 'File > Export > CSV', then clicking on 'Next' and then 'Export'.
+	* If you are using Microsoft Excel, you are on your own until I get to a Windows machine tomorrow morning and figure it out.
+3. Rename the exported files respectively according to the following naming convention:
+	* POPULATION_BY_AGE_FEMALE.csv
+	* POPULATION_BY_AGE_MALE.csv
+	* BIRTHS_BY_AGE_OF_MOTHER.csv
+	* DEATHS_BY_AGE_FEMALE.csv
+	* DEATHS_BY_AGE_MALE.csv
+	* NET_NUMBER_OF_MIGRANTS.csv
+	* IMR_BOTH_SEXES.csv
+4. Finally, create a directory within the root directory of the IntlPop application named `CSV_Files`. Move all of the CSV files that you just created to the new `CSV_Files` directory.
+
+### Dependencies <a id="dependencies"></a>
 
 Note that for the -d option to work properly, you will need to have the 'urllib3' and 'xlrd' python packages installed. Using PIP, you can install these packages by running the following in a terminal window:
 
