@@ -212,6 +212,8 @@ $(document).ready(function () {
     var i, j, ipos;
     var currBRate;
     var leTemp, leDeaths;
+    var currMMRate = 1.0;
+    var currFMRate = 1.0;
 
     console.log("In initSim: " + simState.currSim);
     cStep.netMigration = initCountry.netMigration * 1000;
@@ -236,8 +238,12 @@ $(document).ready(function () {
     cStep.maleMortality = [];
     cStep.femaleMortality = [];
     for (i = 1; i < initCountry.maleMortality.length; i++) {
-      var currMMRate = 1.0 - (initCountry.maleMortality[i] / initCountry.malePop[i] * 0.2);
-      var currFMRate = 1.0 - (initCountry.femaleMortality[i] / initCountry.femalePop[i] * 0.2);
+      if (initCountry.malePop[i] !== 0) {
+        currMMRate = 1.0 - (initCountry.maleMortality[i] / initCountry.malePop[i] * 0.2);
+      } // Otherwise, leave it at the last calcuated value (default 1.0)
+      if (initCountry.femalePop[i] !== 0) {
+	currFMRate = 1.0 - (initCountry.femaleMortality[i] / initCountry.femalePop[i] * 0.2);
+      } // Otherwise, leave it at the last calcuated value (default 1.0)
       for (j = 0; j < 5; j++) {
         cStep.maleMortality[i * 5 + j] = currMMRate;
         cStep.femaleMortality[i * 5 + j] = currFMRate;
@@ -254,9 +260,11 @@ $(document).ready(function () {
     for (i = 0; i < initCountry.births.length; i++) {
       births += initCountry.births[i];
     }
-    var deaths = (initCountry.maleMortality[0] * 1000.0) - (births * initCountry.infantMortality/2.0);
+    var deaths = (initCountry.maleMortality[0] * 1000.0) -
+                 (births * initCountry.infantMortality/2.0);
     currMMRate = 1.0 - (deaths/4.0)/(initCountry.malePop[0] * 200.0);
-    deaths = (initCountry.femaleMortality[0] * 1000.0) - (births * initCountry.infantMortality/2.0);
+    deaths = (initCountry.femaleMortality[0] * 1000.0) -
+             (births * initCountry.infantMortality/2.0);
     currFMRate = 1.0 - (deaths/4.0)/(initCountry.femalePop[0] * 200.0);
     console.log("Deaths: " + deaths);
     for (i = 1; i <= 4; i++) {
@@ -267,7 +275,8 @@ $(document).ready(function () {
     // Calculate the life expectancy
     cStep.lifeExp = 0.0;
     var alive = 1000000.0; // A population to age to calculate life expectancy
-    //    alive = alive * cStep.maleMortality[0]; // infant deaths don't contribute
+    // Note that infant mortality deaths do not reduce the population,
+    // because I assume that they were already factored into the births count.
     for (i = 1; i <= 100; i++) {
       leTemp = alive * ((cStep.maleMortality[i] + cStep.femaleMortality[i])/2.0);
       leDeaths = alive - leTemp;
