@@ -290,7 +290,7 @@ def appendPopData(year):
   for row in data:
     if len(row) <= 0: continue
     if (row[0] == '' or row[0] == 'Index'): continue # Only parse rows that contain data
-    if int(float(row[5])) == year: # Only record the selected year
+    if intify(row[5]) == year: # Only record the selected year
       filePath = os.path.join(OUT_DIR, '%s_%s.json' % (str(year), int(float(row[4]))))
       f = open(filePath, 'a')
       f.write('  "malePop": [') # Write an open array to file
@@ -486,7 +486,13 @@ def sortCountryList(countryList):
 #
 # @return int An integer interpretation of the value parameter
 def intify(value):
-  newInt = int(float(str(value).strip().replace(' ','')))
+  newInt = 0;
+  try:
+    newInt = int(float(str(value).strip().replace(' ','')))
+  except:
+    # print('Unable to parse character: %s', value)
+    pass
+  
   return newInt
 
 # Takes an int value number of bytes and returns a more readable
