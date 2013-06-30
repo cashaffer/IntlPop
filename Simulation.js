@@ -10,9 +10,9 @@ $(document).ready(function () {
   // From JSAV utils: Get parameters from the URL
   function getQueryParameter(name) {
     var params = window.location.search,
-      vars = {},
-      i,
-      pair;
+    vars = {},
+    i,
+    pair;
     if (params) {
       params = params.slice(1).split('&'); // get rid of ?
       for (i = params.length; i--;) {
@@ -28,9 +28,8 @@ $(document).ready(function () {
     return vars;
   }
 
-
   // Based on the URL of the current page, build the URL for a data file
-  function buildURL(filename) {
+  function urlForDataFile(filename) {
     var pathArray = window.location.pathname.split('/');
     var theURL = window.location.protocol + "//" + window.location.host;
     for (var i = 0; i < pathArray.length - 1; i++) {
@@ -42,9 +41,10 @@ $(document).ready(function () {
     return theURL;
   }
 
-  // Take string with a number in it and return that string
-  // with commas in the number
-  $.fn.commas = function () {
+  // Formats a string with a large number
+  // adds commas in the appropriate places
+  // Returns a string
+  $.fn.formatNumberCommas = function () {
     return this.each(function () {
       $(this).text($(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
     });
@@ -53,7 +53,7 @@ $(document).ready(function () {
   /* --------------- BUTTON AND FIELD HANDLERS--------------------- */
 
   // Handler for Fertility Rate button
-  function fertility() {
+  function fertilityButtonClick() {
     var curr = simState.sim[simState.currSim];
     tell("Open the fertility rate popup");
     $('#fertilityTargetValue').val(curr.cstep[curr.currstep].targetFertilityValue);
@@ -62,7 +62,7 @@ $(document).ready(function () {
   }
 
   // Handler for Fertility Rate close button
-  function fertilityclose() {
+  function fertilityCloseButtonClick() {
     var curr = simState.sim[simState.currSim];
     tell("Close the fertility rate popup");
     console.log("Target value is " + $('#fertilityTargetValue').val());
@@ -71,7 +71,7 @@ $(document).ready(function () {
   }
 
   // Handler for Life Expectancy button
-  function lifeexp() {
+  function lifeexpButtonClick() {
     var curr = simState.sim[simState.currSim];
     tell("Open the life expectancy popup");
     $('#lifeExpTargetValue').val(curr.cstep[curr.currstep].targetLifeExpValue);
@@ -80,7 +80,7 @@ $(document).ready(function () {
   }
 
   // Handler for Fertility Rate close button
-  function lifeexpclose() {
+  function lifeexpCloseButtonClick() {
     var curr = simState.sim[simState.currSim];
     tell("Close the life expectancy popup");
     console.log("Target value is " + $('#lifeExpTargetValue').val());
@@ -89,7 +89,7 @@ $(document).ready(function () {
   }
 
   // Handler for Net Migration button
-  function netmig() {
+  function netmigButtonClick() {
     var curr = simState.sim[simState.currSim];
     tell("Open the net migration popup");
     $('#migTargetValue').val(curr.cstep[curr.currstep].targetMigValue);
@@ -98,7 +98,7 @@ $(document).ready(function () {
   }
 
   // Handler for Net Migration close button
-  function netmigclose() {
+  function netmigCloseButtonClick() {
     var curr = simState.sim[simState.currSim];
     tell("Close the migration popup");
     curr.cstep[curr.currstep].targetMigValue = $('#migTargetValue').val();
@@ -107,7 +107,7 @@ $(document).ready(function () {
   }
 
   // Handler for simForward button
-  function simForward() {
+  function simForwardButtonClick() {
     tell("Clicked on simForward button.");
     // Copy record for next sim step
     var curr = simState.sim[simState.currSim];
@@ -130,7 +130,7 @@ $(document).ready(function () {
   }
 
   // Handler for simBack button
-  function simBack() {
+  function simBackButtonClick() {
     tell("Clicked on simBack button.");
     // Remove the current simulation state record
     simState.sim[simState.currSim].currstep -= 1;
@@ -143,7 +143,7 @@ $(document).ready(function () {
   }
 
   // Handler for Reset option
-  function reset() {
+  function resetButtonClick() {
     console.log("Clicked reset");
     $('p.currYearField1').text('');
     $('p.currPopField1').text('');
@@ -158,7 +158,7 @@ $(document).ready(function () {
   }
 
   // Handler for Another Simulation option
-  function anotherSim() {
+  function anotherSimButtonClick() {
     console.log("Clicked anotherSim");
     if (simState.currSim === 2) {
       tell("Can only have three simulations at once. Reset if you want a new simulation.");
@@ -191,17 +191,17 @@ $(document).ready(function () {
       simState.sim[2].cstep[i] = {};
     }
     initSim(simState.sim[simState.currSim].cstep[0]);
-    $('p.initPopField').text('Initial Population: ' + initPop()).commas();
+    $('p.initialPopField').text('Initial Population: ' + initialPop()).formatNumberCommas();
     $('.anotherSim').removeAttr('disabled');
     displayState();
   }
 
   // Generate the initial population value by summing up the inputs
-  function initPop() {
+  function initialPop() {
     var pop = 0;
     for (var i = 0; i < initCountry.malePop.length; i++) {
-      if (i != 16) { // That column is for "80+"
-	pop = pop + initCountry.malePop[i] + initCountry.femalePop[i];
+      if (i != 16) {
+        pop = pop + initCountry.malePop[i] + initCountry.femalePop[i];
       }
     }
     return pop*1000;
@@ -217,7 +217,7 @@ $(document).ready(function () {
 
     console.log("In initSim: " + simState.currSim);
     cStep.netMigration = initCountry.netMigration * 1000;
-    cStep.pop = initPop();
+    cStep.pop = initialPop();
     cStep.year = initCountry.startYear;
 
     // Calculate the yearly birth rates, and the TFR
@@ -242,7 +242,7 @@ $(document).ready(function () {
         currMMRate = 1.0 - (initCountry.maleMortality[i] / initCountry.malePop[i] * 0.2);
       } // Otherwise, leave it at the last calcuated value (default 1.0)
       if (initCountry.femalePop[i] !== 0) {
-	currFMRate = 1.0 - (initCountry.femaleMortality[i] / initCountry.femalePop[i] * 0.2);
+       currFMRate = 1.0 - (initCountry.femaleMortality[i] / initCountry.femalePop[i] * 0.2);
       } // Otherwise, leave it at the last calcuated value (default 1.0)
       for (j = 0; j < 5; j++) {
         cStep.maleMortality[i * 5 + j] = currMMRate;
@@ -261,10 +261,10 @@ $(document).ready(function () {
       births += initCountry.births[i];
     }
     var deaths = (initCountry.maleMortality[0] * 1000.0) -
-                 (births * initCountry.infantMortality/2.0);
+    (births * initCountry.infantMortality/2.0);
     currMMRate = 1.0 - (deaths/4.0)/(initCountry.malePop[0] * 200.0);
     deaths = (initCountry.femaleMortality[0] * 1000.0) -
-             (births * initCountry.infantMortality/2.0);
+    (births * initCountry.infantMortality/2.0);
     currFMRate = 1.0 - (deaths/4.0)/(initCountry.femalePop[0] * 200.0);
     console.log("Deaths: " + deaths);
     for (i = 1; i <= 4; i++) {
@@ -296,21 +296,22 @@ $(document).ready(function () {
     for (i = 0; i < (initCountry.malePop.length - 1); i++) {
       ipos = i;
       if (i !== 16) { // Position 16 is a special "80+" value, skip it
-	if (ipos > 16) { // Again, this is to handle the "80+" column
-          ipos = ipos - 1;
-	}
-	for (j = 0; j < 5; j++) {
-          cStep.malePop[ipos * 5 + j] = initCountry.malePop[i] * 200;
-          cStep.femalePop[ipos * 5 + j] = initCountry.femalePop[i] * 200;
-	}
-      }
-    }
-    cStep.malePop[100] = initCountry.malePop[21] * 1000;
-    cStep.femalePop[100] = initCountry.femalePop[21] * 1000;
-    console.log("Initial Male population:");
-    console.log(cStep.malePop);
-    console.log("Initial Female population:");
-    console.log(cStep.femalePop);
+	if (ipos > 16) {
+    // Again, this is to handle the "80+" column
+    ipos = ipos - 1;
+}
+for (j = 0; j < 5; j++) {
+  cStep.malePop[ipos * 5 + j] = initCountry.malePop[i] * 200;
+  cStep.femalePop[ipos * 5 + j] = initCountry.femalePop[i] * 200;
+}
+}
+}
+cStep.malePop[100] = initCountry.malePop[21] * 1000;
+cStep.femalePop[100] = initCountry.femalePop[21] * 1000;
+console.log("Initial Male population:");
+console.log(cStep.malePop);
+console.log("Initial Female population:");
+console.log(cStep.femalePop);
 
     // Initialize target values for scenarios
     cStep.targetMigValue = cStep.netMigration;
@@ -322,14 +323,14 @@ $(document).ready(function () {
 
     $('p.childrenField').text(cStep.fertility.toFixed(1) + ' Children');
     $('p.lifeExpField').text(cStep.lifeExp.toFixed(1) + ' Years');
-    $('p.netMigField').text(cStep.netMigration).commas();
+    $('p.netMigField').text(cStep.netMigration).formatNumberCommas();
     $('#simForwardButton').removeAttr('disabled');
     $('#simBackButton').attr('disabled', 'disabled');
   }
 
   // Trigger reading the country file and check for errors
   function initCountryObject(filename) {
-    var dataURL = buildURL(filename);
+    var dataURL = urlForDataFile(filename);
     console.log("dataURL: " + dataURL);
     $.ajax({
       url: dataURL,
@@ -352,14 +353,14 @@ $(document).ready(function () {
     console.log("cstep: " + simState.sim[0].cstep[curr].year);
     $('p.currYearField0').text('Year: ' + simState.sim[0].cstep[curr].year);
     $('p.currPopField0').text('Population: ' +
-                              simState.sim[0].cstep[curr].pop).commas();
+      simState.sim[0].cstep[curr].pop).formatNumberCommas();
     if (simState.currSim !== 0) {
       curr = simState.sim[1].currstep;
       console.log("curr 1: " + curr);
       console.log("cstep: " + simState.sim[1].cstep[curr].year);
       $('p.currYearField1').text('Year: ' + simState.sim[1].cstep[curr].year);
       $('p.currPopField1').text('Population: ' +
-                              simState.sim[1].cstep[curr].pop).commas();
+        simState.sim[1].cstep[curr].pop).formatNumberCommas();
     }
     if (simState.currSim === 2) {
       curr = simState.sim[2].currstep;
@@ -367,7 +368,7 @@ $(document).ready(function () {
       console.log("cstep: " + simState.sim[1].cstep[curr].year);
       $('p.currYearField2').text('Year: ' + simState.sim[2].cstep[curr].year);
       $('p.currPopField2').text('Population: ' +
-                              simState.sim[2].cstep[curr].pop).commas();
+        simState.sim[2].cstep[curr].pop).formatNumberCommas();
     }
     console.log("Display: " + simState.currSim);
 
@@ -389,9 +390,9 @@ $(document).ready(function () {
     console.log("Chart values: |" + xArray + "|, |" + yArray + "|");
     if (rChart !== undefined) { rChart.remove(); }
     rChart = rChartPanel.linechart(70, 10, 370, 170, xArray, yArray,
-           {axis: '0 0 1 1', axisxstep: maxSteps,
-            symbol: ['', 'circle', 'circle', 'circle'],
-            colors: ['transparent', '#995555', '#559955', '#555599']});
+     {axis: '0 0 1 1', axisxstep: maxSteps,
+     symbol: ['', 'circle', 'circle', 'circle'],
+     colors: ['transparent', '#995555', '#559955', '#555599']});
 
     // WARNING: To display raw values,
     //   convert Female[i] to -Female[i]
@@ -420,11 +421,11 @@ $(document).ready(function () {
     console.log("Pyramid: " + fvals + ", " + mvals + ", " + PyrValues);
     if (rPyramid !== undefined) { rPyramid.remove(); }
     rPyramid = rPyramidPanel.hbarchart(175, 25, 150, 250, PyrValues, {stacked: true}).hover(fin,fout);
-    //    rPyramid.label(true, true);  // Puts up values to the right of bars
+    rPyramid.label(false, false);  // Puts up values to the right of bars
 
     $('p.childrenField').text(cSim.fertility.toFixed(1) + ' Children');
     $('p.lifeExpField').text(cSim.lifeExp.toFixed(1) + ' Years');
-    $('p.netMigField').text(cSim.netMigration).commas();
+    $('p.netMigField').text(cSim.netMigration).formatNumberCommas();
   }
 
   // Advance the current simulation state by one year
@@ -474,9 +475,9 @@ $(document).ready(function () {
     deaths += currSim.femalePop[100] * currSim.femaleMortality[100];
     console.log("Deaths should be: " + (temp - Math.round(deaths)));
     currSim.malePop[100] = Math.round(currSim.malePop[100] * currSim.maleMortality[100]
-                             + currSim.malePop[99] * currSim.maleMortality[99]);
+     + currSim.malePop[99] * currSim.maleMortality[99]);
     currSim.femalePop[100] = Math.round(currSim.femalePop[100] * currSim.femaleMortality[100]
-                               + currSim.femalePop[99] * currSim.femaleMortality[99]);
+     + currSim.femalePop[99] * currSim.femaleMortality[99]);
     for (i = 99; i > 0; i--) {
       currSim.malePop[i] = Math.round(currSim.malePop[i-1] * currSim.maleMortality[i]);
       currSim.femalePop[i] = Math.round(currSim.femalePop[i-1] * currSim.femaleMortality[i]);
@@ -495,10 +496,10 @@ $(document).ready(function () {
     // Add (or subtract) for migration
     for (i = 0; i <= 16; i++) {
       for (var j = 0; j <= 4; j++) {
-	currSim.malePop[5 * i + j] += Math.round(migMale[i] * currSim.netMigration/5000.0);
-	currSim.femalePop[5 * i + j] += Math.round(migFemale[i] * currSim.netMigration/5000.0);
-      }    
-    }
+       currSim.malePop[5 * i + j] += Math.round(migMale[i] * currSim.netMigration/5000.0);
+       currSim.femalePop[5 * i + j] += Math.round(migFemale[i] * currSim.netMigration/5000.0);
+     }    
+   }
     // Now, sum it all up and report it
     currSim.pop = 0;
     for (i = 0; i <= 100; i++) {
@@ -537,12 +538,12 @@ $(document).ready(function () {
 
   // Pyramid Panel
   var rPyramidPanel = new Raphael("pyramidPanel", 350, 300),
-fin = function () {
-  this.flag = rPyramidPanel.popup(this.bar.x, this.bar.y, this.bar.value || "0").insertBefore(this);
-},
-fout = function () {
-  this.flag.animate({opacity: 0}, 300, function () {this.remove();});
-};
+  fin = function () {
+    this.flag = rPyramidPanel.popup(this.bar.x, this.bar.y, this.bar.value || "0").insertBefore(this);
+  },
+  fout = function () {
+    this.flag.animate({opacity: 0}, 300, function () {this.remove();});
+  };
 
   // Population chart panel
   var rChartPanel = new Raphael("popChartPanel", 450, 270);
@@ -554,7 +555,7 @@ fout = function () {
   var rSim = new Raphael("simPanel", 255, 300);
   rSim.rect(5, 20, 245, 200);
   rSim.path("M20 50 L230 50");
-  $('p.initPopField').text("Initial Population:");
+  $('p.initialPopField').text("Initial Population:");
 
   tell(generalMsg);
 
@@ -568,14 +569,14 @@ fout = function () {
   }
 
   /* ------------------ Button Callbacks ------------------------- */
-  $('#fertilityButton').click(fertility);
-  $('#fertilityPopupclose').click(fertilityclose);
-  $('#lifeExpButton').click(lifeexp);
-  $('#lifeExpPopupclose').click(lifeexpclose);
-  $('#netMigButton').click(netmig);
-  $('#migPopupclose').click(netmigclose);
-  $('#simForwardButton').click(simForward);
-  $('#simBackButton').click(simBack);
-  $('.reset').click(reset);
-  $('.anotherSim').click(anotherSim);
+  $('#fertilityButton').click(fertilityButtonClick);
+  $('#fertilityPopupclose').click(fertilitycloseButtonClick);
+  $('#lifeExpButton').click(lifeexpButtonClick);
+  $('#lifeExpPopupclose').click(lifeexpCloseButtonClick);
+  $('#netMigButton').click(netmigButtonClick);
+  $('#migPopupclose').click(netmigCloseButtonClick);
+  $('#simForwardButton').click(simForwardButtonClick);
+  $('#simBackButton').click(simBackButtonClick);
+  $('.reset').click(resetButtonClick);
+  $('.anotherSim').click(anotherSimButtonClick);
 });
