@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>IntlPop Simulation Window</title>
+
+	<link rel="stylesheet" href="lib/jquery-ui.css">
+	<link rel="stylesheet" href="Simulation2.css" />
+	<link rel="stylesheet" href="lib/tipsy.css">
+	<link rel="stylesheet" href="lib/pyramid.css" />
+
+</head>
+<body>
+	<div id="container">
+		<div id="header"><h2 class="countryField">France</h2></div>
+		<div id="main">
+			<div id="pyramidPanel"><div class="pyramid"></div></div>
+			<div id="chartPanel">
+				<div class="fieldBox">
+					<button id="fertilityButton">Fertility Rate</button>
+					<p>2.0 Children</p>
+				</div>
+				<div class="fieldBox">
+					<button id="lifeExpButton">Life Expectancy</button>
+					<p>79.4 Years</p>
+				</div>
+				<div class="fieldBox">
+					<button id="netMigButton">Net Migration</button>
+					<p>3,000</p>
+				</div>
+			</div>
+			<div id="simPanel"></div>
+		</div>
+		<div id="output"><p class="output">Output text field.</p></div>
+	</div>
+
+	<!-- Load Javascripts -->
+	<script src="lib/jquery.min.js"></script>
+	<script src="lib/jquery-ui.min.js"></script>
+	<script src="lib/raphael-min.js"></script>
+	<script src="lib/g.raphael-min.js"></script>
+	<script src="lib/g.line-min.js"></script> 
+	<script src="lib/pyramid.js"></script>
+	<script src="lib/tipsy.js"></script>
+
+	<script src="Simulation2.js"></script>
+
+</body>
+</html>

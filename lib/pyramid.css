@@ -1,0 +1,33 @@
+/*
+* pyramid.css
+* Nate Beatty
+*/
+.pyramid #P-container {
+  height: 300px;
+  width: 350px;
+  float: left;
+  margin: 0; }
+  .pyramid #P-container #lheader, .pyramid #P-container #rheader {
+    width: 175px;
+    height: 20px;
+    float: left;
+    text-align: center;
+    font-size: small; }
+  .pyramid #P-container #lcontainer, .pyramid #P-container #rcontainer {
+    height: 280px;
+    width: 175px;
+    float: left; }
+.pyramid .P-bar {
+  height: 8px;
+  width: 100%;
+  margin-top: 3px;
+  position: relative; }
+.pyramid .P-lbar, .pyramid .P-rbar {
+  height: 8px;
+  width: 150px;
+  display: block;
+  position: absolute; }
+.pyramid .P-lbar {
+  background: #2f69bf; }
+.pyramid .P-rbar {
+  background: #a2bf2f; }

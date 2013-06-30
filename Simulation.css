@@ -98,7 +98,7 @@ button {
   font-size: 16px;
 }
 
-.initPopField {
+.initialPopField {
   position: absolute;
   width: 255px;
   top: 27px;

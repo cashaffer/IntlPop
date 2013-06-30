@@ -1,0 +1,87 @@
+/* Generic element styling */
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body, input, select, button {
+  font-size: 12px;
+  font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
+}
+
+p {
+  font-size: 14px;
+}
+
+button {
+  padding: 1px 4px;
+}
+
+/* Layout */
+
+#container {
+  width: 1060px;
+  height: 375px;
+  background: #efe;
+}
+
+#main {
+  overflow: auto;
+}
+
+#header {
+  height: 20px;
+  text-align: center;
+}
+
+#header h2 {
+  font-weight: lighter;
+  color: purple;
+}
+
+#pyramidPanel, #chartPanel, #simPanel {
+  float: left;
+  height: 300px;
+}
+
+#pyramidPanel {
+  width: 350px;
+  background: red;
+}
+
+#chartPanel {
+  width: 450px;
+  background: white;
+  overflow: auto;
+}
+
+#chartPanel .fieldBox {
+  float: left;
+  height: 56px;
+  width: 126px;
+  margin: 0px 10px;
+  border: 2px solid #888;
+}
+
+#chartPanel .fieldBox button {
+  width: 126px;
+}
+
+#chartPanel .fieldBox p {
+  text-align: center;
+  padding-top: 10px;
+}
+
+#simPanel {
+  width: 260px;
+  background: blue;
+}
+
+#output {
+  height: 50px;
+  border: 1px solid #888;
+  padding: 2px 2px 2px 1px;
+}
+
+/* Elements */
