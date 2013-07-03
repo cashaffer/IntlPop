@@ -113,14 +113,11 @@ button {padding: 1px 4px;}
   border: 4px solid red;
   background-color:#DEDFDE;
   z-index: 1000;
+  text-align: center;
   border-radius: 20px;
   -webkit-border-radius: 20px;
   -moz-border-radius: 20px;
 }
 
-.targetPopup p {margin-top: 10px;}
-
-/*
-.targetPopup .targetLabel {float: left;}
-.targetPopup .targetInput {float: left;}
-*/
+.targetPopup p {margin-bottom: 10px;}
+.targetPopup .closeButton {margin: 10px auto;}
