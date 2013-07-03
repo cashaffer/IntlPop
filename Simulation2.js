@@ -57,51 +57,51 @@ $(document).ready(function() {
   /* --------------- BUTTON AND FIELD HANDLERS --------------------- */
 
   function fertilityButtonClick() {
-    // var curr = simState.sim[simState.currSim];
+    var curr = simState.sim[simState.currSim];
     tell("Opened the fertility rate popup");
-    // $('#fertilityTargetValue').val(curr.cstep[curr.currstep].targetFertilityValue);
-    // $('#fertilityTargetYear').val(curr.cstep[curr.currstep].targetFertilityYear);
+    $('#fertilityTargetValue').val(curr.cstep[curr.currstep].targetFertilityValue);
+    $('#fertilityTargetYear').val(curr.cstep[curr.currstep].targetFertilityYear);
     $('#fertilityPopup').show();
   }
 
   function fertilityCloseButtonClick() {
-    // var curr = simState.sim[simState.currSim];
+    var curr = simState.sim[simState.currSim];
     tell("Closed the fertility rate popup");
-    // console.log("Target value is " + $('#fertilityTargetValue').val());
-    // console.log("Target year is " + $('#fertilityTargetYear').val());
+    console.log("Target value is " + $('#fertilityTargetValue').val());
+    console.log("Target year is " + $('#fertilityTargetYear').val());
     $('#fertilityPopup').hide();
   }
 
   function lifeExpButtonClick() {
-    // var curr = simState.sim[simState.currSim];
+    var curr = simState.sim[simState.currSim];
     tell("Opened the life expectancy popup");
-    // $('#lifeExpTargetValue').val(curr.cstep[curr.currstep].targetLifeExpValue);
-    // $('#lifeExpTargetYear').val(curr.cstep[curr.currstep].targetLifeExpYear);
+    $('#lifeExpTargetValue').val(curr.cstep[curr.currstep].targetLifeExpValue);
+    $('#lifeExpTargetYear').val(curr.cstep[curr.currstep].targetLifeExpYear);
     $('#lifeExpPopup').show();
   }
 
   function lifeExpCloseButtonClick() {
-    // var curr = simState.sim[simState.currSim];
+    var curr = simState.sim[simState.currSim];
     tell("Closed the life expectancy popup");
-    // console.log("Target value is " + $('#lifeExpTargetValue').val());
-    // console.log("Target year is " + $('#lifeExpTargetYear').val());
+    console.log("Target value is " + $('#lifeExpTargetValue').val());
+    console.log("Target year is " + $('#lifeExpTargetYear').val());
     $('#lifeExpPopup').hide();
   }
 
   function netMigButtonClick() {
-    // var curr = simState.sim[simState.currSim];
+    var curr = simState.sim[simState.currSim];
     tell("Opened the net migration popup");
-    // $('#migTargetValue').val(curr.cstep[curr.currstep].targetMigValue);
-    // $('#migTargetYear').val(curr.cstep[curr.currstep].targetMigYear);
-    $('#migPopup').show();
+    $('#netMigTargetValue').val(curr.cstep[curr.currstep].targetMigValue);
+    $('#netMigTargetYear').val(curr.cstep[curr.currstep].targetMigYear);
+    $('#netMigPopup').show();
   }
 
   function netMigCloseButtonClick() {
-    // var curr = simState.sim[simState.currSim];
+    var curr = simState.sim[simState.currSim];
     tell("Closed the migration popup");
-    // curr.cstep[curr.currstep].targetMigValue = $('#migTargetValue').val();
-    // curr.cstep[curr.currstep].targetMigYear = $('#migTargetYear').val();
-    $('#migPopup').hide();
+    curr.cstep[curr.currstep].targetMigValue = $('#netMigTargetValue').val();
+    curr.cstep[curr.currstep].targetMigYear = $('#netMigTargetYear').val();
+    $('#netMigPopup').hide();
   }
 
   function simForwardButtonClick() {
@@ -199,7 +199,7 @@ $(document).ready(function() {
       simState.sim[2].cstep[i] = {};
     }
     initSim(simState.sim[simState.currSim].cstep[0]); // Initialize the first simulation
-    $('p.initialPopField').text('Initial Population: ' + initialPop()).formatNumberCommas();
+    $('p#initialPopField').text('Initial Population: ' + initialPop()).formatNumberCommas();
     $('.anotherSim').removeAttr('disabled');
     displayState();
   }
@@ -365,23 +365,23 @@ $(document).ready(function() {
     var curr = simState.sim[0].currstep;
     console.log("curr: " + curr);
     console.log("cstep: " + simState.sim[0].cstep[curr].year);
-    $('p.currYearField0').text('Year: ' + simState.sim[0].cstep[curr].year);
-    $('p.currPopField0').text('Population: ' +
+    $('p.currYearField.field0').text('Year: ' + simState.sim[0].cstep[curr].year);
+    $('p.currPopField.field0').text('Population: ' +
       simState.sim[0].cstep[curr].pop).formatNumberCommas();
     if (simState.currSim !== 0) {
       curr = simState.sim[1].currstep;
       console.log("curr 1: " + curr);
       console.log("cstep: " + simState.sim[1].cstep[curr].year);
-      $('p.currYearField1').text('Year: ' + simState.sim[1].cstep[curr].year);
-      $('p.currPopField1').text('Population: ' +
+      $('p.currYearField.field1').text('Year: ' + simState.sim[1].cstep[curr].year);
+      $('p.currPopField.field1').text('Population: ' +
         simState.sim[1].cstep[curr].pop).formatNumberCommas();
     }
     if (simState.currSim === 2) {
       curr = simState.sim[2].currstep;
       console.log("curr 2: " + curr);
       console.log("cstep: " + simState.sim[1].cstep[curr].year);
-      $('p.currYearField2').text('Year: ' + simState.sim[2].cstep[curr].year);
-      $('p.currPopField2').text('Population: ' +
+      $('p.currYearField.field2').text('Year: ' + simState.sim[2].cstep[curr].year);
+      $('p.currPopField.field2').text('Population: ' +
         simState.sim[2].cstep[curr].pop).formatNumberCommas();
     }
     console.log("Display: " + simState.currSim);

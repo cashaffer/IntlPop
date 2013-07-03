@@ -36,16 +36,16 @@
       
       <div id="simPanel">
         <div id="box">
-          <p id="initialPopField">Initial Population: 312,227,000</p>
+          <p id="initialPopField">Initial Population:</p>
           <hr>
-          <p class="currYearField field0">Year: 2010</p>
-          <p class="currPopField field0">Population: 312,227,000</p>
+          <p class="currYearField field0"></p>
+          <p class="currPopField field0"></p>
           <br />
-          <p class="currYearField field1">Year: 2010</p>
-          <p class="currPopField field1">Population: 312,227,000</p>
+          <p class="currYearField field1"></p>
+          <p class="currPopField field1"></p>
           <br />
-          <p class="currYearField field2">Year: 2010</p>
-          <p class="currPopField field2">Population: 312,227,000</p>
+          <p class="currYearField field2"></p>
+          <p class="currPopField field2"></p>
           <br />
         </div>
         <button id="simBackButton" disabled="disabled" autocomplete="off">&lt; Sim</button>
@@ -67,18 +67,24 @@
     <p class="targetLabel">Target Year:&nbsp;<input id="fertilityTargetYear" class="targetInput" type="text"/></p>
     <input class="closeButton" id="fertilityCloseButton" type="Button" value="Close"/>
   </div>
-
   <div id="lifeExpPopup" class="targetPopup">
     <p>Adjust the Life Expectancy</p>
     <p class="targetLabel">Target Value:&nbsp;<input id="lifeExpTargetValue" class="targetInput" type="text"/></p>
     <p class="targetLabel">Target Year:&nbsp;<input id="lifeExpTargetYear" class="targetInput" type="text"/></p>
     <input class="closeButton" id="lifeExpCloseButton" type="Button" value="Close"/>   
   </div>
-  <div id="migPopup" class="targetPopup">
+  <div id="netMigPopup" class="targetPopup">
     <p>Adjust the Net Migration</p>
     <p class="targetLabel">Target Value:&nbsp;<input id="netMigTargetValue" class="targetInput" type="text"/></p>
     <p class="targetLabel">Target Year:&nbsp;<input id="netMigTargetYear" class="targetInput" type="text"/></p>
     <input class="closeButton" id="netMigCloseButton" type="Button" value="Close"/>
+  </div>
+  <div id="optionsDropDown" class="dropdown-menu">
+    <ul>
+      <li id="newSimButton"><a href="#">Run another simulation</a></li>
+      <li><a href="#">View birth and death rate buttons</a></li>
+      <li id="resetButton"><a href="#">Reset the simulation</a></li>
+    </ul>
   </div>
 
   <!-- Load Javascripts -->
