@@ -104,8 +104,9 @@ button {padding: 1px 4px;}
 .targetPopup {
   display: none;
   position: fixed;
-  width: 300px;
-  height: 150px;
+  width: 280px;
+  height: 130px;
+  padding: 10px;
   top: 100px;
   left: 50%;
   margin-left: -150px;
@@ -116,6 +117,8 @@ button {padding: 1px 4px;}
   -webkit-border-radius: 20px;
   -moz-border-radius: 20px;
 }
+
+.targetPopup p {margin-top: 10px;}
 
 /*
 .targetPopup .targetLabel {float: left;}

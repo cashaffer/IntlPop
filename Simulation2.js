@@ -352,7 +352,7 @@ $(document).ready(function() {
       dataType: 'json'
     }).done(function(response) {
       initCountry = response;
-      $('p.countryField').text(initCountry.name);
+      $('#countryField').text(initCountry.name);
       initSimState();
     }).fail(function() {
       tell("Oops! This page was called with a bad country file name: " + filename, "red");
@@ -434,10 +434,11 @@ $(document).ready(function() {
     fvals[0] = cSim.femalePop[100];
     PyrValues[0] = fvals;
     PyrValues[1] = mvals;
-    PyrValues[0].pop(); // TEMPORARY TEST HACK
-    PyrValues[1].pop(); // TEMPORARY TEST HACK
-    console.log("Pyramid: " + PyrValues[0] + ", " + PyrValues[1] + ", " + PyrValues);
 
+    var max = Math.max.apply(null, PyrValues[0].concat(PyrValues[1]));
+    console.log('Max: ' + max);
+    console.log("Pyramid: " + PyrValues[0] + ", " + PyrValues[1] + ", " + PyrValues);
+    P.initPyramid(max * 1.25);
     P.drawPyramid(PyrValues[0], PyrValues[1]);
 
     $('p.childrenField').text(cSim.fertility.toFixed(1) + ' Children');
