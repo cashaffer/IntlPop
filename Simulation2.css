@@ -5,30 +5,26 @@
   padding: 0;
 }
 
+html, body {background: #efe;}
+
 body, input, select, button {
   font-size: 12px;
   font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
 }
 
-p {
-  font-size: 14px;
-}
+p {font-size: 14px;}
 
-button {
-  padding: 1px 4px;
-}
+button {padding: 1px 4px;}
 
 /* Layout */
 
 #container {
   width: 1060px;
   height: 375px;
-  background: #efe;
+  margin: 0px auto;
 }
 
-#main {
-  overflow: auto;
-}
+#main {overflow: auto;}
 
 #header {
   height: 20px;
@@ -45,28 +41,27 @@ button {
   height: 300px;
 }
 
-#pyramidPanel {
-  width: 350px;
-  background: red;
-}
+#pyramidPanel {width: 350px;}
 
 #chartPanel {
   width: 450px;
-  background: white;
   overflow: auto;
+}
+
+#chartPanel #plotArea {
+  width: 450px;
+  height: 230px;
 }
 
 #chartPanel .fieldBox {
   float: left;
   height: 56px;
   width: 126px;
-  margin: 0px 10px;
+  margin: 0px 10px 10px;
   border: 2px solid #888;
 }
 
-#chartPanel .fieldBox button {
-  width: 126px;
-}
+#chartPanel .fieldBox button {width: 126px;}
 
 #chartPanel .fieldBox p {
   text-align: center;
@@ -75,8 +70,27 @@ button {
 
 #simPanel {
   width: 260px;
-  background: blue;
+  text-align: center;
 }
+
+#simPanel p {
+  margin-top: 5px;
+}
+
+#simPanel #box {
+  padding: 10px;
+  width: 220px;
+  height: 195px;
+  min-height: 40px;
+  margin: 0px auto;
+  border: 2px solid #888;
+}
+
+.currYearField, .currPopField {}
+#simPanel .field0 {color: #995555;}
+#simPanel .field1 {color: #559955;}
+#simPanel .field2 {color: #555599;}
+
 
 #output {
   height: 50px;
@@ -85,3 +99,25 @@ button {
 }
 
 /* Elements */
+
+/* Hidden Panels */
+.targetPopup {
+  display: none;
+  position: fixed;
+  width: 300px;
+  height: 150px;
+  top: 100px;
+  left: 50%;
+  margin-left: -150px;
+  border: 4px solid red;
+  background-color:#DEDFDE;
+  z-index: 1000;
+  border-radius: 20px;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+}
+
+/*
+.targetPopup .targetLabel {float: left;}
+.targetPopup .targetInput {float: left;}
+*/
