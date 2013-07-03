@@ -61,7 +61,7 @@ As the download `-d | --download` option requires the use of some third-party py
 1. Download the seven excel files listed at the [top](#data) of this page.
 2. Using Microsoft Excel or a similar program (like Macintosh iWork Numbers), export the "Estimates" worksheet of each raw data file to CSV format.
 	* If you are using Macintosh Numbers, this can be done by selecting 'File > Export > CSV', then clicking on 'Next' and then 'Export'.
-	* If you are using Microsoft Excel, you are on your own until I get to a Windows machine tomorrow morning and figure it out.
+	* If you are using Microsoft Excel, click on the MS Office Button and then select 'Save As'. In the dialog box that appears, select 'CSV (Comma delimited)' from the 'Save as type' box. Save the files in a location that you can remember easily.
 3. Rename the exported files respectively according to the following naming convention:
 	* POPULATION_BY_AGE_FEMALE.csv
 	* POPULATION_BY_AGE_MALE.csv
