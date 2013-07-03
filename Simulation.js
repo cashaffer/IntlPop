@@ -1,123 +1,108 @@
 "use strict";
 /*global console setCountry */
 $(document).ready(function() {
-  /* -------------------- UTILITY FUNCTIONS ----------------------- */
 
+  /* -------------------- UTILITY FUNCTIONS ----------------------- */
   var tell = function(msg, color) {
     $('p.output').text(msg).css("color", color);
-  };
+  }
 
   // From JSAV utils: Get parameters from the URL
 
-  function getQueryParameter(name) {
-    var params = window.location.search,
-      vars = {},
-      i,
-      pair;
-    if (params) {
-      params = params.slice(1).split('&'); // get rid of ?
-      for (i = params.length; i--;) {
-        pair = params[i].split('='); // split to name and value
-        vars[pair[0]] = decodeURIComponent(pair[1]); // decode URI
-        if (name && pair[0] === name) {
-          return pair[1]; // if name requested, return the matching value
+    function getQueryParameter(name) {
+      var params = window.location.search,
+        vars = {},
+        i,
+        pair;
+      if (params) {
+        params = params.slice(1).split('&'); // get rid of ?
+        for (i = params.length; i--;) {
+          pair = params[i].split('='); // split to name and value
+          vars[pair[0]] = decodeURIComponent(pair[1]); // decode URI
+          if (name && pair[0] === name) {
+            return pair[1]; // if name requested, return the matching value
+          }
         }
       }
+      if (name) // name was passed but param was not found, return undefined
+      {
+        return;
+      }
+      return vars;
     }
-    if (name) // name was passed but param was not found, return undefined
-    {
-      return;
+
+    // Based on the URL of the current page, build the URL for a data file
+
+    function urlForDataFile(filename) {
+      var pathArray = window.location.pathname.split('/');
+      var theURL = window.location.protocol + "//" + window.location.host;
+      for (var i = 0; i < pathArray.length - 1; i++) {
+        theURL += pathArray[i];
+        theURL += "/";
+      }
+      theURL += "CountryData/" + filename;
+      console.log("Data URL is: " + theURL);
+      return theURL;
     }
-    return vars;
-  }
 
-  // Based on the URL of the current page, build the URL for a data file
-
-  function urlForDataFile(filename) {
-    var pathArray = window.location.pathname.split('/');
-    var theURL = window.location.protocol + "//" + window.location.host;
-    for (var i = 0; i < pathArray.length - 1; i++) {
-      theURL += pathArray[i];
-      theURL += "/";
-    }
-    theURL += "CountryData/" + filename;
-    console.log("Data URL is: " + theURL);
-    return theURL;
-  }
-
-  // Formats a string with a large number
-  // adds commas in the appropriate places
-  // Returns a string
+    // Formats a string with a large number
+    // adds commas in the appropriate places
+    // Returns a string
   $.fn.formatNumberCommas = function() {
     return this.each(function() {
       $(this).text($(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
     });
   };
 
-  /* --------------- BUTTON AND FIELD HANDLERS--------------------- */
-
-  // Handler for Fertility Rate button
+  /* --------------- BUTTON AND FIELD HANDLERS --------------------- */
 
   function fertilityButtonClick() {
-    console.log('Fertility button was clicked.')
     var curr = simState.sim[simState.currSim];
-    tell("Open the fertility rate popup");
+    tell("Opened the fertility rate popup");
     $('#fertilityTargetValue').val(curr.cstep[curr.currstep].targetFertilityValue);
     $('#fertilityTargetYear').val(curr.cstep[curr.currstep].targetFertilityYear);
     $('#fertilityPopup').show();
   }
 
-  // Handler for Fertility Rate close button
-
   function fertilityCloseButtonClick() {
     var curr = simState.sim[simState.currSim];
-    tell("Close the fertility rate popup");
+    tell("Closed the fertility rate popup");
     console.log("Target value is " + $('#fertilityTargetValue').val());
     console.log("Target year is " + $('#fertilityTargetYear').val());
     $('#fertilityPopup').hide();
   }
 
-  // Handler for Life Expectancy button
-
-  function lifeexpButtonClick() {
+  function lifeExpButtonClick() {
     var curr = simState.sim[simState.currSim];
-    tell("Open the life expectancy popup");
+    tell("Opened the life expectancy popup");
     $('#lifeExpTargetValue').val(curr.cstep[curr.currstep].targetLifeExpValue);
     $('#lifeExpTargetYear').val(curr.cstep[curr.currstep].targetLifeExpYear);
     $('#lifeExpPopup').show();
   }
 
-  // Handler for Fertility Rate close button
-
-  function lifeexpCloseButtonClick() {
+  function lifeExpCloseButtonClick() {
     var curr = simState.sim[simState.currSim];
-    tell("Close the life expectancy popup");
+    tell("Closed the life expectancy popup");
     console.log("Target value is " + $('#lifeExpTargetValue').val());
     console.log("Target year is " + $('#lifeExpTargetYear').val());
     $('#lifeExpPopup').hide();
   }
 
-  // Handler for Net Migration button
-
-  function netmigButtonClick() {
+  function netMigButtonClick() {
     var curr = simState.sim[simState.currSim];
-    tell("Open the net migration popup");
-    $('#migTargetValue').val(curr.cstep[curr.currstep].targetMigValue);
-    $('#migTargetYear').val(curr.cstep[curr.currstep].targetMigYear);
-    $('#migPopup').show();
+    tell("Opened the net migration popup");
+    $('#netMigTargetValue').val(curr.cstep[curr.currstep].targetMigValue);
+    $('#netMigTargetYear').val(curr.cstep[curr.currstep].targetMigYear);
+    $('#netMigPopup').show();
   }
 
-  // Handler for Net Migration close button
-
-  function netmigCloseButtonClick() {
+  function netMigCloseButtonClick() {
     var curr = simState.sim[simState.currSim];
-    tell("Close the migration popup");
-    curr.cstep[curr.currstep].targetMigValue = $('#migTargetValue').val();
-    curr.cstep[curr.currstep].targetMigYear = $('#migTargetYear').val();
-    $('#migPopup').hide();
+    tell("Closed the migration popup");
+    curr.cstep[curr.currstep].targetMigValue = $('#netMigTargetValue').val();
+    curr.cstep[curr.currstep].targetMigYear = $('#netMigTargetYear').val();
+    $('#netMigPopup').hide();
   }
-
-  // Handler for simForward button
 
   function simForwardButtonClick() {
     tell("Clicked on simForward button.");
@@ -141,8 +126,6 @@ $(document).ready(function() {
     }
   }
 
-  // Handler for simBack button
-
   function simBackButtonClick() {
     tell("Clicked on simBack button.");
     // Remove the current simulation state record
@@ -155,25 +138,7 @@ $(document).ready(function() {
     }
   }
 
-  // Handler for Reset option
-
-  function resetButtonClick() {
-    console.log("Clicked reset");
-    $('p.currYearField1').text('');
-    $('p.currPopField1').text('');
-    $('p.currYearField2').text('');
-    $('p.currPopField2').text('');
-    initSimState();
-    for (var i = 1; i <= 4; i++) {
-      xArray[i] = [];
-      yArray[i] = [];
-    }
-    displayState();
-  }
-
-  // Handler for Another Simulation option
-
-  function anotherSimButtonClick() {
+  function newSimButtonClick() {
     console.log("Clicked anotherSim");
     if (simState.currSim === 2) {
       tell("Can only have three simulations at once. Reset if you want a new simulation.");
@@ -184,17 +149,33 @@ $(document).ready(function() {
     displayState();
   }
 
+
+  function resetButtonClick() {
+    console.log("Clicked reset");
+    $('p.currYearField.field1').text('');
+    $('p.currPopField.field1').text('');
+    $('p.currYearField.field2').text('');
+    $('p.currPopField.field2').text('');
+    initSimState();
+    for (var i = 1; i <= 4; i++) {
+      xArray[i] = [];
+      yArray[i] = [];
+    }
+    displayState();
+  }
+
   /* ------------------ Button Callbacks ------------------------- */
+  
   $('#fertilityButton').click(fertilityButtonClick);
-  $('#fertilityPopupclose').click(fertilityCloseButtonClick);
-  $('#lifeExpButton').click(lifeexpButtonClick);
-  $('#lifeExpPopupclose').click(lifeexpCloseButtonClick);
-  $('#netMigButton').click(netmigButtonClick);
-  $('#migPopupclose').click(netmigCloseButtonClick);
+  $('#fertilityCloseButton').click(fertilityCloseButtonClick);
+  $('#lifeExpButton').click(lifeExpButtonClick);
+  $('#lifeExpCloseButton').click(lifeExpCloseButtonClick);
+  $('#netMigButton').click(netMigButtonClick);
+  $('#netMigCloseButton').click(netMigCloseButtonClick);
   $('#simForwardButton').click(simForwardButtonClick);
   $('#simBackButton').click(simBackButtonClick);
-  $('.reset').click(resetButtonClick);
-  $('.anotherSim').click(anotherSimButtonClick);
+  $('#newSimButton').click(newSimButtonClick);
+  $('#resetButton').click(resetButtonClick);
 
   /* ------------------ SIMULATION SUPPORT ------------------------ */
 
@@ -218,7 +199,7 @@ $(document).ready(function() {
       simState.sim[2].cstep[i] = {};
     }
     initSim(simState.sim[simState.currSim].cstep[0]); // Initialize the first simulation
-    $('p.initialPopField').text('Initial Population: ' + initialPop()).formatNumberCommas();
+    $('p#initialPopField').text('Initial Population: ' + initialPop()).formatNumberCommas();
     $('.anotherSim').removeAttr('disabled');
     displayState();
   }
@@ -371,7 +352,7 @@ $(document).ready(function() {
       dataType: 'json'
     }).done(function(response) {
       initCountry = response;
-      $('p.countryField').text(initCountry.name);
+      $('#countryField').text(initCountry.name);
       initSimState();
     }).fail(function() {
       tell("Oops! This page was called with a bad country file name: " + filename, "red");
@@ -384,23 +365,23 @@ $(document).ready(function() {
     var curr = simState.sim[0].currstep;
     console.log("curr: " + curr);
     console.log("cstep: " + simState.sim[0].cstep[curr].year);
-    $('p.currYearField0').text('Year: ' + simState.sim[0].cstep[curr].year);
-    $('p.currPopField0').text('Population: ' +
+    $('p.currYearField.field0').text('Year: ' + simState.sim[0].cstep[curr].year);
+    $('p.currPopField.field0').text('Population: ' +
       simState.sim[0].cstep[curr].pop).formatNumberCommas();
     if (simState.currSim !== 0) {
       curr = simState.sim[1].currstep;
       console.log("curr 1: " + curr);
       console.log("cstep: " + simState.sim[1].cstep[curr].year);
-      $('p.currYearField1').text('Year: ' + simState.sim[1].cstep[curr].year);
-      $('p.currPopField1').text('Population: ' +
+      $('p.currYearField.field1').text('Year: ' + simState.sim[1].cstep[curr].year);
+      $('p.currPopField.field1').text('Population: ' +
         simState.sim[1].cstep[curr].pop).formatNumberCommas();
     }
     if (simState.currSim === 2) {
       curr = simState.sim[2].currstep;
       console.log("curr 2: " + curr);
       console.log("cstep: " + simState.sim[1].cstep[curr].year);
-      $('p.currYearField2').text('Year: ' + simState.sim[2].cstep[curr].year);
-      $('p.currPopField2').text('Population: ' +
+      $('p.currYearField.field2').text('Year: ' + simState.sim[2].cstep[curr].year);
+      $('p.currPopField.field2').text('Population: ' +
         simState.sim[2].cstep[curr].pop).formatNumberCommas();
     }
     console.log("Display: " + simState.currSim);
@@ -432,9 +413,6 @@ $(document).ready(function() {
       colors: ['transparent', '#995555', '#559955', '#555599']
     });
 
-    // WARNING: To display raw values,
-    //   convert Female[i] to -Female[i]
-    //   convert Male[i] to Female[i] + Male[i]
     var mtemp;
     var ftemp;
     curr = simState.sim[simState.currSim].currstep;
@@ -449,21 +427,19 @@ $(document).ready(function() {
         mtemp += cSim.malePop[i * 5 + j];
         ftemp += cSim.femalePop[i * 5 + j];
       }
-      mvals[mvals.length - (i + 1)] = mtemp + ftemp;
-      fvals[mvals.length - (i + 1)] = -ftemp;
+      mvals[mvals.length - (i + 1)] = mtemp;
+      fvals[mvals.length - (i + 1)] = ftemp;
     }
-    mvals[0] = cSim.malePop[100] + cSim.femalePop[100];
-    fvals[0] = -cSim.femalePop[100];
+    mvals[0] = cSim.malePop[100];
+    fvals[0] = cSim.femalePop[100];
     PyrValues[0] = fvals;
     PyrValues[1] = mvals;
-    console.log("Pyramid: " + fvals + ", " + mvals + ", " + PyrValues);
-    if (rPyramid !== undefined) {
-      rPyramid.remove();
-    }
-    rPyramid = rPyramidPanel.hbarchart(175, 25, 150, 250, PyrValues, {
-      stacked: true
-    }).hover(fin, fout);
-    rPyramid.label(false, false); // Puts up values to the right of bars
+
+    var max = Math.max.apply(null, PyrValues[0].concat(PyrValues[1]));
+    console.log('Max: ' + max);
+    console.log("Pyramid: " + PyrValues[0] + ", " + PyrValues[1] + ", " + PyrValues);
+    P.initPyramid(max * 1.25);
+    P.drawPyramid(PyrValues[0], PyrValues[1]);
 
     $('p.childrenField').text(cSim.fertility.toFixed(1) + ' Children');
     $('p.lifeExpField').text(cSim.lifeExp.toFixed(1) + ' Years');
@@ -551,9 +527,16 @@ $(document).ready(function() {
     console.log("Net change was: " + (currSim.pop - temp));
   }
 
+  // Change this function to update any necessary values
+  // when the pyramid bars are resized by the user.
+  var pyramidValsWereChanged = function(mVals, fVals) {
+    console.log(mVals);
+    console.log(fVals);
+  }
+
   /* ------------------ START HERE ---------------------------- */
 
-  // Generic message for  output window when there is nothing special to do
+  // Generic message for output window when there is nothing special to do.
   var generalMsg = "You can click on the 'Options' button to choose from among the available simulation features, click on the 'Sim' button to advance the simulation, or click on one of the other buttons to set simulation parameters.";
 
   var initCountry; // Initial country data from data file
@@ -577,30 +560,23 @@ $(document).ready(function() {
 
   // Set up the interface
 
-  // Pyramid Panel
-  var rPyramidPanel = new Raphael("pyramidPanel", 350, 300),
-    fin = function() {
-      this.flag = rPyramidPanel.popup(this.bar.x, this.bar.y, this.bar.value || "0").insertBefore(this);
-    },
-    fout = function() {
-      this.flag.animate({
-        opacity: 0
-      }, 300, function() {
-        this.remove();
-      });
-    };
+  // Init Pyramid Panel
+  // Generates random populations between 0 and 2000000
+  var randomList = function() { // For Testing
+    var list = [];
+    for (var i = 1; i <= 20; i++) {
+      list.push(Math.floor(Math.random() * 19000000) + 1);
+    }
+    return list;
+  }
+  P.initPyramid(25000000);
+  P.drawPyramid(randomList(), randomList(), pyramidValsWereChanged);
 
   // Population chart panel
-  var rChartPanel = new Raphael("popChartPanel", 450, 270);
-  rChartPanel.rect(27, 203, 126, 60);
-  rChartPanel.rect(163, 203, 126, 60);
-  rChartPanel.rect(299, 203, 126, 60);
+  var rChartPanel = new Raphael("plotArea", 450, 230);
 
   // Simulation panel
-  var rSim = new Raphael("simPanel", 255, 300);
-  rSim.rect(5, 20, 245, 200);
-  rSim.path("M20 50 L230 50");
-  $('p.initialPopField').text("Initial Population:");
+  $('p#initialPopField').text("Initial Population:");
 
   tell(generalMsg);
 
@@ -612,4 +588,5 @@ $(document).ready(function() {
   } else {
     var dataURL = initCountryObject(filename);
   }
+
 });

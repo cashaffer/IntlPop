@@ -1,222 +1,123 @@
 /* Generic element styling */
+
 * {
   margin: 0;
   padding: 0;
 }
+
+html, body {background: #efe;}
 
 body, input, select, button {
   font-size: 12px;
   font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
 }
 
-p {
-  font-size: 14px;
+p {font-size: 14px;}
+
+button {padding: 1px 4px;}
+
+/* Layout */
+
+#container {
+  width: 1060px;
+  height: 375px;
+  margin: 0px auto;
+}
+
+#main {overflow: auto;}
+
+#header {
+  height: 20px;
   text-align: center;
 }
 
-button {
-  padding-left: 4px;
-  padding-right: 4px;
-  padding-top: 1px;
-  padding-bottom: 1px;
-}
-
-/* Element-specific styling */
-#container {
-  position: relative;
-  top: 0;
-  left: 0;
-  width: 1060px;
-  height: 374px;
-  background-color: #efe;
-}
-
-#pyramidPanel { 
-  position: absolute;
-  width: 350px;
-  height: 300px;
-  top: 0;
-  left: 0;
-}
-
-#popChartPanel { 
-  position: absolute;
-  top: 30px;
-  left: 350px;
-  width: 450px;
-  height: 270px;
-}
-
-#simPanel { 
-  position: relative;
-  width: 255px;
-  height: 300px;
-  top: 0;
-  left: 800px;
-}
-
-/* .output is where we send text messages to explain what is going on */
-.output {
-  position: absolute;
-  height: 60px;
-  width: 1048px;
-  top: 301px;
-  border: 1px solid black;
-  padding: 5px;
-  text-align: left;
-}
-
-.countryField {
-  position: absolute;
-  width: 450px;
-  top: -25px;
+#header h2 {
+  font-weight: lighter;
   color: purple;
-  font-size: 16px;
 }
 
-.childrenField {
-  position: absolute;
-  width: 125px;
-  top: 231px;
-  left: 26px;
-  font-size: 16px;
+#pyramidPanel, #chartPanel, #simPanel {
+  float: left;
+  height: 300px;
 }
 
-.lifeExpField {
-  position: absolute;
-  width: 125px;
-  top: 231px;
-  left: 162px;
-  font-size: 16px;
+#pyramidPanel {width: 350px;}
+
+#chartPanel {
+  width: 450px;
+  overflow: auto;
 }
 
-.netMigField {
-  position: absolute;
-  width: 125px;
-  top: 231px;
-  left: 297px;
-  font-size: 16px;
+#chartPanel #plotArea {
+  width: 450px;
+  height: 230px;
 }
 
-.initialPopField {
-  position: absolute;
-  width: 255px;
-  top: 27px;
-}
-
-.currYearField0 {
-  position: absolute;
-  width: 255px;
-  top: 65px;
-  color: #995555;
-}
-
-.currPopField0 {
-  position: absolute;
-  width: 255px;
-  top: 80px;
-  color: #995555;
-}
-
-.currYearField1 {
-  position: absolute;
-  width: 255px;
-  top: 110px;
-  color: #559955;
-}
-
-.currPopField1 {
-  position: absolute;
-  width: 255px;
-  top: 125px;
-  color: #559955;
-}
-
-.currYearField2 {
-  position: absolute;
-  width: 255px;
-  top: 155px;
-  color: #555599;
-}
-
-.currPopField2 {
-  position: absolute;
-  width: 255px;
-  top: 170px;
-  color: #555599;
-}
-
-#fertilityButton, #lifeExpButton, #netMigButton {
-  position: relative;
-  top: -75px;
-  left: 24px;
+#chartPanel .fieldBox {
+  float: left;
+  height: 56px;
   width: 126px;
-  margin: 3px;
+  margin: 0px 10px 10px;
+  border: 2px solid #888;
 }
 
-#simBackButton, #simOptionsButton, #simForwardButton {
-  position: relative;
-  top: -80px;
-  left: 35px;
-  width: 60px;
+#chartPanel .fieldBox button {width: 126px;}
+
+#chartPanel .fieldBox p {
+  text-align: center;
+  padding-top: 10px;
 }
 
-#optionsDropDown {
+#simPanel {
+  width: 260px;
+  text-align: center;
 }
 
+#simPanel p {
+  margin-top: 5px;
+}
+
+#simPanel #box {
+  padding: 10px;
+  width: 220px;
+  height: 195px;
+  min-height: 40px;
+  margin: 0px auto;
+  border: 2px solid #888;
+}
+
+.currYearField, .currPopField {}
+#simPanel .field0 {color: #995555;}
+#simPanel .field1 {color: #559955;}
+#simPanel .field2 {color: #555599;}
+
+
+#output {
+  height: 50px;
+  border: 1px solid #888;
+  padding: 2px 2px 2px 1px;
+}
+
+/* Elements */
+
+/* Hidden Panels */
 .targetPopup {
-  display:none;
+  display: none;
   position: fixed;
-  width:250px;
-  height: 150px;
-  top: 50%;
+  width: 280px;
+  height: 130px;
+  padding: 10px;
+  top: 100px;
   left: 50%;
-  margin-left:-155px;
-  margin-top:-110px;
-  border:4px solid red;
+  margin-left: -150px;
+  border: 4px solid red;
   background-color:#DEDFDE;
-  padding:20px;
-  z-index:102;
-  border-radius:10px;
-  -webkit-border-radius:20px;
-  -moz-border-radius:20px;
+  z-index: 1000;
+  text-align: center;
+  border-radius: 20px;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
 }
 
-.targetPopContent {
-    height:auto;
-    width:250px;
-    margin: auto;
-}
-
-.targetPopupclose {
-position: relative;
-    margin:35px 0 0 80px;
-    width:50px;
-    left: 25px;
-}
-
-.targetValue {
-  position: relative;
-  top: -17px;
-  left: 110px;
-  width: 125px
-}
-
-.targetYear {
-  position: relative;
-  top: -5px;
-  left: 110px;
-  width: 125px
-}
-
-.targetValLabel {
-  position: relative;
-  text-align: left;
-  top: 15px;
-}
-
-.targetYearLabel {
-  position: relative;
-  text-align: left;
-  top: 30px;
-}
+.targetPopup p {margin-bottom: 10px;}
+.targetPopup .closeButton {margin: 10px auto;}

@@ -1,96 +1,103 @@
 <!DOCTYPE html>
-<!-- HTML page for a single simulation. The idea is that the user can
-     pop up as many separate simulation windows as desired (triggered
-     from IntlPop.html).
--->
-
 <html>
 <head>
   <meta charset="utf-8">
   <title>IntlPop Simulation Window</title>
 
-</head>
+  <link rel="stylesheet" href="lib/jquery-ui.css">
+  <link rel="stylesheet" href="lib/jquery.dropdown.css" />
+  <link rel="stylesheet" href="Simulation.css" />
+  <link rel="stylesheet" href="lib/tipsy.css">
+  <link rel="stylesheet" href="lib/pyramid.css" />
 
+</head>
 <body>
-<div id="container">
-  <div id="main">
-    <div id="pyramidPanel">
-      <div id="birthChart"></div>
-      <div id="deathChart"></div>
-    </div>
-    <div id="popChartPanel">
-      <p class="countryField"></p>
-      <p class="childrenField"></p>
-      <p class="lifeExpField"></p>
-      <p class="netMigField"></p>
-      <button id="fertilityButton">Fertility Rate</button>
-      <button id="lifeExpButton">Life Expectancy</button>
-      <button id="netMigButton">Net Migration</button>
-    </div>
-    <div id="simPanel">
-      <p class="initialPopField"></p>
-      <p class="currYearField0"></p>
-      <p class="currPopField0"></p>
-      <p class="currYearField1"></p>
-      <p class="currPopField1"></p>
-      <p class="currYearField2"></p>
-      <p class="currPopField2"></p>
-      <button id="simBackButton" disabled="disabled" autocomplete="off">&lt; Sim</button>
-      <button id="simOptionsButton" value="Dropdown"
-              data-dropdown="#optionsDropDown" data-horizontal-offset="-85">Options</button>
-      <button id="simForwardButton" disabled="disabled" autocomplete="off">Sim &gt;</button>
-    </div>
+  <div id="container">
+    <div id="header"><h2 id="countryField"></h2></div>
+    <div id="main">
+
+      <div id="pyramidPanel"><div class="pyramid"></div></div>
+      
+      <div id="chartPanel">
+        <div id="plotArea"></div>
+        <div class="fieldBox">
+          <button id="fertilityButton">Fertility Rate</button>
+          <p id="fertilityField">Placeholder</p>
+        </div>
+        <div class="fieldBox">
+          <button id="lifeExpButton">Life Expectancy</button>
+          <p id="lifeExpField">Placeholder</p>
+        </div>
+        <div class="fieldBox">
+          <button id="netMigButton">Net Migration</button>
+          <p id="netMigField">Placeholder</p>
+        </div>
+      </div>
+      
+      <div id="simPanel">
+        <div id="box">
+          <p id="initialPopField">Initial Population:</p>
+          <hr>
+          <p class="currYearField field0"></p>
+          <p class="currPopField field0"></p>
+          <br />
+          <p class="currYearField field1"></p>
+          <p class="currPopField field1"></p>
+          <br />
+          <p class="currYearField field2"></p>
+          <p class="currPopField field2"></p>
+          <br />
+        </div>
+        <button id="simBackButton" disabled="disabled" autocomplete="off">&lt; Sim</button>
+        <button id="simOptionsButton" value="Dropdown"
+        data-dropdown="#optionsDropDown" data-horizontal-offset="-85">Options</button>
+        <button id="simForwardButton" disabled="disabled" autocomplete="off">Sim &gt;</button>
+      </div>
+
+    </div> <!-- End Main -->
+
+    <div id="output"><p class="output">Output text field.</p></div>
+
   </div>
-  <p class="output"></p>
+
+  <!-- Hidden Popups -->
   <div id="fertilityPopup" class="targetPopup">
-    <div id="fertilityPopContent" class ="targetPopContent">
-      <p>Adjust the Fertility Rate</p>
-      <p class="targetValLabel">Target Value:</p>
-      <p class="targetYearLabel">Target Year:</p>
-      <input id="fertilityTargetValue" class="targetValue" type="text"/>
-      <input id="fertilityTargetYear" class="targetYear" type="text"/>
-      <input id="fertilityPopupclose" class="targetPopupclose" type="Button" value="Close"/>
-    </div>   
+    <p>Adjust the Fertility Rate</p>
+    <p class="targetLabel">Target Value:&nbsp;<input id="fertilityTargetValue" class="targetInput" type="text"/></p>
+    <p class="targetLabel">Target Year:&nbsp;<input id="fertilityTargetYear" class="targetInput" type="text"/></p>
+    <input class="closeButton" id="fertilityCloseButton" type="Button" value="Close"/>
   </div>
   <div id="lifeExpPopup" class="targetPopup">
-    <div id="lifeExpPopContent" class ="targetPopContent">
-      <p>Adjust the Fertility Rate</p>
-      <p class="targetValLabel">Target Value:</p>
-      <p class="targetYearLabel">Target Year:</p>
-      <input id="lifeExpTargetValue" class="targetValue" type="text"/>
-      <input id="lifeExpTargetYear" class="targetYear" type="text"/>
-      <input id="lifeExpPopupclose" class="targetPopupclose" type="Button" value="Close"/>
-    </div>   
+    <p>Adjust the Life Expectancy</p>
+    <p class="targetLabel">Target Value:&nbsp;<input id="lifeExpTargetValue" class="targetInput" type="text"/></p>
+    <p class="targetLabel">Target Year:&nbsp;<input id="lifeExpTargetYear" class="targetInput" type="text"/></p>
+    <input class="closeButton" id="lifeExpCloseButton" type="Button" value="Close"/>   
   </div>
-  <div id="migPopup" class="targetPopup">
-    <div id="migPopContent" class ="targetPopContent">
-      <p>Adjust the Net Migration</p>
-      <p class="targetValLabel">Target Value:</p>
-      <p class="targetYearLabel">Target Year:</p>
-      <input id="migTargetValue" class="targetValue" type="text"/>
-      <input id="migTargetYear" class="targetYear" type="text"/>
-      <input id="migPopupclose" class="targetPopupclose" type="Button" value="Close"/>
-    </div>   
+  <div id="netMigPopup" class="targetPopup">
+    <p>Adjust the Net Migration</p>
+    <p class="targetLabel">Target Value:&nbsp;<input id="netMigTargetValue" class="targetInput" type="text"/></p>
+    <p class="targetLabel">Target Year:&nbsp;<input id="netMigTargetYear" class="targetInput" type="text"/></p>
+    <input class="closeButton" id="netMigCloseButton" type="Button" value="Close"/>
   </div>
-</div>
+  <div id="optionsDropDown" class="dropdown-menu">
+    <ul>
+      <li id="newSimButton"><a href="#">Run another simulation</a></li>
+      <li><a href="#">View birth and death rate buttons</a></li>
+      <li id="resetButton"><a href="#">Reset the simulation</a></li>
+    </ul>
+  </div>
 
-<div id="optionsDropDown" class="dropdown-menu">
-  <ul>
-    <li class="anotherSim"><a href="#">Run another simulation</a></li>
-    <li><a href="#">View birth and death rate buttons</a></li>
-    <li class="reset"><a href="#">Reset the simulation</a></li>
-  </ul>
-</div>
+  <!-- Load Javascripts -->
+  <script src="lib/jquery.min.js"></script>
+  <script src="lib/jquery-ui.min.js"></script>
+  <script src="lib/jquery.dropdown.js"></script>
+  <script src="lib/raphael-min.js"></script>
+  <script src="lib/g.raphael-min.js"></script>
+  <script src="lib/g.line-min.js"></script> 
+  <script src="lib/pyramid.js"></script>
+  <script src="lib/tipsy.js"></script>
 
-<link type="text/css" rel="stylesheet" href="Simulation.css" />
-<script src="lib/raphael-min.js"></script>
-<script src="lib/g.raphael-min.js"></script>
-<script src="lib/g.bar-min.js"></script>
-<script src="lib/g.line-min.js"></script> 
-<script src="lib/jquery.min.js"></script>
-<script src="lib/jquery-ui.min.js"></script>
-<link type="text/css" rel="stylesheet" href="lib/jquery.dropdown.css" />
-<script type="text/javascript" src="lib/jquery.dropdown.js"></script>
-<script type="text/javascript" src="Simulation.js"></script>
+  <script src="Simulation.js"></script>
+
 </body>
 </html>
