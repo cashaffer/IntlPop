@@ -24,7 +24,7 @@ button {padding: 1px 4px;}
   margin: 0px auto;
 }
 
-#main {overflow: auto;}
+#main {overflow: hidden;}
 
 #header {
   height: 20px;
@@ -45,7 +45,7 @@ button {padding: 1px 4px;}
 
 #chartPanel {
   width: 450px;
-  overflow: auto;
+  overflow: hidden;
 }
 
 #chartPanel #plotArea {
