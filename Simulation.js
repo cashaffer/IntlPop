@@ -335,9 +335,9 @@ $(document).ready(function() {
     cStep.targetLifeExpValue = cStep.lifeExp;
     cStep.targetLifeExpYear = cStep.year;
 
-    $('p.childrenField').text(cStep.fertility.toFixed(1) + ' Children');
-    $('p.lifeExpField').text(cStep.lifeExp.toFixed(1) + ' Years');
-    $('p.netMigField').text(cStep.netMigration).formatNumberCommas();
+    $('p#fertilityField').text(cStep.fertility.toFixed(1) + ' Children');
+    $('p#lifeExpField').text(cStep.lifeExp.toFixed(1) + ' Years');
+    $('p#netMigField').text(cStep.netMigration).formatNumberCommas();
     $('#simForwardButton').removeAttr('disabled');
     $('#simBackButton').attr('disabled', 'disabled');
   }
