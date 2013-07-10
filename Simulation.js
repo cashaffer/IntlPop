@@ -8,46 +8,41 @@ $(document).ready(function() {
   }
 
   // From JSAV utils: Get parameters from the URL
-
-    function getQueryParameter(name) {
-      var params = window.location.search,
-        vars = {},
-        i,
-        pair;
-      if (params) {
-        params = params.slice(1).split('&'); // get rid of ?
-        for (i = params.length; i--;) {
-          pair = params[i].split('='); // split to name and value
-          vars[pair[0]] = decodeURIComponent(pair[1]); // decode URI
-          if (name && pair[0] === name) {
-            return pair[1]; // if name requested, return the matching value
-          }
+  function getQueryParameter(name) {
+    var params = window.location.search,
+      vars = {}, i, pair;
+    if (params) {
+      params = params.slice(1).split('&'); // get rid of ?
+      for (i = params.length; i--;) {
+        pair = params[i].split('='); // split to name and value
+        vars[pair[0]] = decodeURIComponent(pair[1]); // decode URI
+        if (name && pair[0] === name) {
+          return pair[1]; // if name requested, return the matching value
         }
       }
-      if (name) // name was passed but param was not found, return undefined
-      {
-        return;
-      }
-      return vars;
     }
-
-    // Based on the URL of the current page, build the URL for a data file
-
-    function urlForDataFile(filename) {
-      var pathArray = window.location.pathname.split('/');
-      var theURL = window.location.protocol + "//" + window.location.host;
-      for (var i = 0; i < pathArray.length - 1; i++) {
-        theURL += pathArray[i];
-        theURL += "/";
-      }
-      theURL += "CountryData/" + filename;
-      console.log("Data URL is: " + theURL);
-      return theURL;
+    if (name) { // name was passed but param was not found, return undefined
+      return;
     }
+    return vars;
+  }
 
-    // Formats a string with a large number
-    // adds commas in the appropriate places
-    // Returns a string
+  // Based on the URL of the current page, build the URL for a data file
+  function urlForDataFile(filename) {
+    var pathArray = window.location.pathname.split('/');
+    var theURL = window.location.protocol + "//" + window.location.host;
+    for (var i = 0; i < pathArray.length - 1; i++) {
+      theURL += pathArray[i];
+      theURL += "/";
+    }
+    theURL += "CountryData/" + filename;
+    console.log("Data URL is: " + theURL);
+    return theURL;
+  }
+
+  // Format a string that represents a large number by
+  // adding commas in the appropriate places
+  // Returns a string
   $.fn.formatNumberCommas = function() {
     return this.each(function() {
       $(this).text($(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
@@ -182,17 +177,9 @@ $(document).ready(function() {
   // Initialize the simulation state variable, and initialize the display
   function initSimState() {
     simState.currSim = 0;
-    simState.sim = [{
-        cstep: [],
-        currstep: 0
-      }, {
-        cstep: [],
-        currstep: 0
-      }, {
-        cstep: [],
-        currstep: 0
-      }
-    ];
+    simState.sim = [{ cstep: [], currstep: 0 },
+                    { cstep: [], currstep: 0 },
+                    { cstep: [], currstep: 0 } ];
     for (var i = 0; i < maxSteps; i++) {
       simState.sim[0].cstep[i] = {};
       simState.sim[1].cstep[i] = {};
@@ -359,6 +346,7 @@ $(document).ready(function() {
     });
   }
 
+
   // Display the current simulation state
   function displayState() {
     var i;
@@ -435,10 +423,10 @@ $(document).ready(function() {
     PyrValues[0] = fvals;
     PyrValues[1] = mvals;
 
-    var max = Math.max.apply(null, PyrValues[0].concat(PyrValues[1]));
-    console.log('Max: ' + max);
+    var maxCohort = Math.max.apply(null, PyrValues[0].concat(PyrValues[1]));
+    console.log('Max: ' + maxCohort);
     console.log("Pyramid: " + PyrValues[0] + ", " + PyrValues[1] + ", " + PyrValues);
-    P.initPyramid(max * 1.25);
+    P.initPyramid(maxCohort * 1.25);
     P.drawPyramid(PyrValues[0], PyrValues[1]);
 
     $('p.childrenField').text(cSim.fertility.toFixed(1) + ' Children');
@@ -446,8 +434,8 @@ $(document).ready(function() {
     $('p.netMigField').text(cSim.netMigration).formatNumberCommas();
   }
 
-  // Advance the current simulation state by one year
 
+  // Advance the current simulation state by one year
   function advanceSimState(currSim) {
     var i;
     currSim.year += 1;
@@ -527,12 +515,26 @@ $(document).ready(function() {
     console.log("Net change was: " + (currSim.pop - temp));
   }
 
+
   // Change this function to update any necessary values
   // when the pyramid bars are resized by the user.
   var pyramidValsWereChanged = function(mVals, fVals) {
+    var i;
+    console.log("IN PYRAMIDVALUESWERECHANGED");
+    console.log(PyrValues[0]);
+    console.log(PyrValues[1]);
+    for (i=0; i< mVals.length; i++) {
+      if (mVals[i] !== PyrValues[0][i]) {
+	console.log("HERE WE GO: Changed male pyramid bar " + i);
+      }
+      if (fVals[i] !== PyrValues[1][i]) {
+	console.log("HERE WE GO: Changed female pyramid bar " + i);
+      }
+    }
     console.log(mVals);
     console.log(fVals);
   }
+
 
   /* ------------------ START HERE ---------------------------- */
 
@@ -544,7 +546,6 @@ $(document).ready(function() {
   var stepSize = 10; // Number of years between each registered step in chart
   var simState = {}; // Current simulation state object, it holds everything
   var rChart; // graphael line chart object
-  var rPyramid; // graphael population pyramid object
   var xArray = [];
   var yArray = [];
   var PyrValues = [];
