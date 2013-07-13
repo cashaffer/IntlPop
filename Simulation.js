@@ -61,9 +61,18 @@ $(document).ready(function() {
 
   function fertilityCloseButtonClick() {
     var curr = simState.sim[simState.currSim];
+    var currstep = curr.cstep[curr.currstep];
     tell("Closed the fertility rate popup");
+    currstep.targetFertilityValue = $('#fertilityTargetValue').val();
+    currstep.targetFertilityYear = $('#fertilityTargetYear').val();
     console.log("Target value is " + $('#fertilityTargetValue').val());
     console.log("Target year is " + $('#fertilityTargetYear').val());
+    if (currstep.targetFertilityYear == currstep.year) {
+      console.log("Set the display field for fertility");
+      $('p#fertilityField').text(currstep.targetFertilityValue).formatNumberCommas();
+    }
+    // TODO: Validate the values set in the fields here
+    // TODO: If they are bad, then reset them to current values (?)
     $('#fertilityPopup').hide();
   }
 
@@ -77,9 +86,18 @@ $(document).ready(function() {
 
   function lifeExpCloseButtonClick() {
     var curr = simState.sim[simState.currSim];
+    var currstep = curr.cstep[curr.currstep];
     tell("Closed the life expectancy popup");
+    currstep.targetLifeExpValue = $('#lifeExpTargetValue').val();
+    currstep.targetLifeExpYear = $('#lifeExpTargetYear').val();
     console.log("Target value is " + $('#lifeExpTargetValue').val());
     console.log("Target year is " + $('#lifeExpTargetYear').val());
+    if (currstep.targetLifeExpYear == currstep.year) {
+      console.log("Set the display field for lifeExp");
+      $('p#lifeExpField').text(currstep.targetLifeExpValue).formatNumberCommas();
+    }
+    // TODO: Validate the values set in the fields here
+    // TODO: If they are bad, then reset them to current values (?)
     $('#lifeExpPopup').hide();
   }
 
@@ -93,9 +111,18 @@ $(document).ready(function() {
 
   function netMigCloseButtonClick() {
     var curr = simState.sim[simState.currSim];
+    var currstep = curr.cstep[curr.currstep];
     tell("Closed the migration popup");
-    curr.cstep[curr.currstep].targetMigValue = $('#netMigTargetValue').val();
-    curr.cstep[curr.currstep].targetMigYear = $('#netMigTargetYear').val();
+    currstep.targetMigValue = $('#netMigTargetValue').val();
+    currstep.targetMigYear = $('#netMigTargetYear').val();
+    console.log("Closed the migration popup. Target year: " +
+      currstep.targetMigYear + ", target value: " + currstep.targetMigValue);
+    if (currstep.targetMigYear == currstep.year) {
+      console.log("Set the display field for migration");
+      $('p#netMigField').text(currstep.targetMigValue).formatNumberCommas();
+    }
+    // TODO: Validate the values set in the fields here
+    // TODO: If they are bad, then reset them to current values (?)
     $('#netMigPopup').hide();
   }
 
@@ -426,12 +453,23 @@ $(document).ready(function() {
     var maxCohort = Math.max.apply(null, PyrValues[0].concat(PyrValues[1]));
     console.log('Max: ' + maxCohort);
     console.log("Pyramid: " + PyrValues[0] + ", " + PyrValues[1] + ", " + PyrValues);
-    P.initPyramid(maxCohort * 1.25);
-    P.drawPyramid(PyrValues[0], PyrValues[1]);
+//    P.initPyramid(maxCohort * 1.25);
+    P.drawPyramid(PyrValues[0], PyrValues[1], maxCohort * 1.25);
 
-    $('p.childrenField').text(cSim.fertility.toFixed(1) + ' Children');
-    $('p.lifeExpField').text(cSim.lifeExp.toFixed(1) + ' Years');
-    $('p.netMigField').text(cSim.netMigration).formatNumberCommas();
+    $('p#childrenField').text(cSim.fertility.toFixed(1) + ' Children');
+    $('p#lifeExpField').text(cSim.lifeExp.toFixed(1) + ' Years');
+    console.log("Now net migration is: " + cSim.netMigration);
+    $('p#netMigField').text(cSim.netMigration).formatNumberCommas();
+  }
+
+  function sumPop(currSim) {
+    // Sum and return the simulation population
+    var temp = 0;
+    for (var i = 0; i <= 100; i++) {
+      temp += currSim.malePop[i];
+      temp += currSim.femalePop[i];
+    }
+    return temp;
   }
 
 
@@ -454,7 +492,10 @@ $(document).ready(function() {
         console.log("Immediate migration change");
         currSim.netMigration = currSim.targetMigValue;
       } else {
-        console.log("Need to support other years on migration");
+	var migDiff = currSim.targetMigValue - currSim.netMigration;
+        migDiff = Math.round(migDiff/(currSim.targetMigYear - currSim.year + 1));
+        console.log("Gradual migration change based on scenario: " + migDiff);
+        currSim.netMigration += migDiff;
       }
     }
     if (currSim.targetMigYear < currSim.year) {
@@ -505,12 +546,7 @@ $(document).ready(function() {
         currSim.femalePop[5 * i + j] += Math.round(migFemale[i] * currSim.netMigration / 5000.0);
       }
     }
-    // Now, sum it all up and report it
-    currSim.pop = 0;
-    for (i = 0; i <= 100; i++) {
-      currSim.pop += currSim.malePop[i];
-      currSim.pop += currSim.femalePop[i];
-    }
+    currSim.pop = sumPop(currSim);
     console.log("Year end pop: " + currSim.pop);
     console.log("Net change was: " + (currSim.pop - temp));
   }
@@ -518,21 +554,45 @@ $(document).ready(function() {
 
   // Change this function to update any necessary values
   // when the pyramid bars are resized by the user.
-  var pyramidValsWereChanged = function(mVals, fVals) {
-    var i;
+  var pyramidValsWereChanged = function(fVals, mVals) {
+    var i, j;
     console.log("IN PYRAMIDVALUESWERECHANGED");
     console.log(PyrValues[0]);
     console.log(PyrValues[1]);
+    var curr = simState.sim[simState.currSim];
+    var currSim = curr.cstep[curr.currstep];
+    console.log("Start population is " + currSim.pop);
     for (i=0; i< mVals.length; i++) {
-      if (mVals[i] !== PyrValues[0][i]) {
+      if (mVals[i] !== PyrValues[1][i]) {
 	console.log("HERE WE GO: Changed male pyramid bar " + i);
+        if (i === 0) {
+	  currSim.malePop[100] = mVals[i];
+	}
+        else {
+	  for (j=0; j<5; j++) {
+            currSim.malePop[((20-i)*5)+j] = Math.round(mVals[i]/5.0);
+	  }
+	}
+        PyrValues[1][i] = mVals[i];
       }
-      if (fVals[i] !== PyrValues[1][i]) {
+      if (fVals[i] !== PyrValues[0][i]) {
 	console.log("HERE WE GO: Changed female pyramid bar " + i);
+        if (i === 0) {
+	  currSim.femalePop[100] = fVals[i];
+	}
+        else {
+	  for (j=0; j<5; j++) {
+            currSim.femalePop[((20-i)*5)+j] = Math.round(fVals[i]/5.0);
+	  }
+	}
+        PyrValues[0][i] = fVals[i];
       }
     }
+    currSim.pop = sumPop(currSim);
     console.log(mVals);
     console.log(fVals);
+    console.log("New population is " + currSim.pop);
+    displayState();
   }
 
 
@@ -570,8 +630,8 @@ $(document).ready(function() {
     }
     return list;
   }
-  P.initPyramid(25000000);
-  P.drawPyramid(randomList(), randomList(), pyramidValsWereChanged);
+  P.initPyramid(pyramidValsWereChanged, 25000000);
+//  P.drawPyramid(randomList(), randomList(), pyramidValsWereChanged);
 
   // Population chart panel
   var rChartPanel = new Raphael("plotArea", 450, 230);
