@@ -63,13 +63,14 @@ $(document).ready(function() {
     var curr = simState.sim[simState.currSim];
     var currstep = curr.cstep[curr.currstep];
     tell("Closed the fertility rate popup");
-    currstep.targetFertilityValue = $('#fertilityTargetValue').val();
+    currstep.targetFertilityValue = $('#fertilityTargetValue').val() * 1.0;
     currstep.targetFertilityYear = $('#fertilityTargetYear').val();
-    console.log("Target value is " + $('#fertilityTargetValue').val());
+    console.log("Target value is " + $('#fertilityTargetValue').val() * 1.0);
     console.log("Target year is " + $('#fertilityTargetYear').val());
+//    currstep.targetFertilityValue = currstep.targetFertilityValue * 1.0;
     if (currstep.targetFertilityYear == currstep.year) {
       console.log("Set the display field for fertility");
-      $('p#fertilityField').text(currstep.targetFertilityValue).formatNumberCommas();
+      $('p#fertilityField').text(currstep.targetFertilityValue.toFixed(1) + ' Children');
     }
     // TODO: Validate the values set in the fields here
     // TODO: If they are bad, then reset them to current values (?)
@@ -230,12 +231,8 @@ $(document).ready(function() {
     return pop * 1000;
   }
 
-  /*
-  * Initialize the state for one of the three simulations
-  *
-  * @param cStep (object) stands for "Current Step." Contains all of
-  * the data about the current simulation state.
-  */
+  // Initialize the state for one of the three simulations
+  // cStep is the object for the current step in the simulation state.
   function initSim(cStep) {
     var i, j, ipos;
     var currBRate;
@@ -456,7 +453,7 @@ $(document).ready(function() {
 //    P.initPyramid(maxCohort * 1.25);
     P.drawPyramid(PyrValues[0], PyrValues[1], maxCohort * 1.25);
 
-    $('p#childrenField').text(cSim.fertility.toFixed(1) + ' Children');
+    $('p#fertilityField').text(cSim.fertility.toFixed(1) + ' Children');
     $('p#lifeExpField').text(cSim.lifeExp.toFixed(1) + ' Years');
     console.log("Now net migration is: " + cSim.netMigration);
     $('p#netMigField').text(cSim.netMigration).formatNumberCommas();
@@ -470,6 +467,17 @@ $(document).ready(function() {
       temp += currSim.femalePop[i];
     }
     return temp;
+  }
+
+
+  // Scale the birth rates by the scale factor
+  // Used for setting rates in scenarios
+  function scaleFertility(currSim, scaleFactor) {
+    console.log("Old birth Rates: " + currSim.birthrate);
+    for (var i = 15; i <= 49; i++) {
+      currSim.birthrate[i] *= scaleFactor;
+    }
+    console.log("New birth Rates: " + currSim.birthrate);
   }
 
 
@@ -492,7 +500,7 @@ $(document).ready(function() {
         console.log("Immediate migration change");
         currSim.netMigration = currSim.targetMigValue;
       } else {
-	var migDiff = currSim.targetMigValue - currSim.netMigration;
+        var migDiff = currSim.targetMigValue - currSim.netMigration;
         migDiff = Math.round(migDiff/(currSim.targetMigYear - currSim.year + 1));
         console.log("Gradual migration change based on scenario: " + migDiff);
         currSim.netMigration += migDiff;
@@ -501,8 +509,26 @@ $(document).ready(function() {
     if (currSim.targetMigYear < currSim.year) {
       currSim.targetMigYear = currSim.year;
     }
+
+    var scaleFactor;
     if (currSim.targetFertilityValue !== currSim.fertility) {
       console.log("Updating Fertility Scenario");
+      if (currSim.targetFertilityYear < currSim.year) {
+        console.log("Immediate fertility change");
+        scaleFactor = (1.0 * currSim.targetFertilityValue) /
+                      (1.0 * currSim.fertility);
+        scaleFertility(currSim, scaleFactor);
+	console.log("Change Fertility from " + currSim.fertility + " to " + currSim.targetFertilityValue);
+        currSim.fertility = currSim.targetFertilityValue;
+      } else {
+        var fertilityDiff = (currSim.targetFertilityValue - currSim.fertility) /
+                            (currSim.targetFertilityYear - currSim.year + 1);
+        console.log("Gradual fertility change based on scenario: " + fertilityDiff);
+        scaleFactor = (1.0 * currSim.fertility + fertilityDiff) /
+                      (1.0 * currSim.fertility);
+        currSim.fertility += fertilityDiff;
+        scaleFertility(currSim, scaleFactor);
+      }
     }
     if (currSim.targetFertilityYear < currSim.year) {
       currSim.targetFertilityYear = currSim.year;
