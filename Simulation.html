@@ -62,23 +62,43 @@
 
   <!-- Hidden Popups -->
   <div id="fertilityPopup" class="targetPopup">
-    <p>Adjust the Fertility Rate</p>
+    <p>Adjust the Total Fertility Rate</p>
     <p class="targetLabel">Target Value:&nbsp;<input id="fertilityTargetValue" class="targetInput" type="text"/></p>
     <p class="targetLabel">Target Year:&nbsp;<input id="fertilityTargetYear" class="targetInput" type="text"/></p>
-    <input class="closeButton" id="fertilityCloseButton" type="Button" value="Close"/>
+    <input class="closeButton" id="fertilityCloseButton" type="Button"
+      value="Close"/>
+    <input class="fertilityRatesOpenButton" id="fertilityRatesOpenButton"
+      type="Button" value="Adjust Individual Rates"/>
   </div>
+
+  <div id="fertilityRatesPopup" class="targetPopup">
+    <p>Adjust Individual Fertility Rates</p>
+    <input class="closeButton" id="fertilityRatesCloseButton" type="Button"
+      value="Close"/>
+  </div>
+
   <div id="lifeExpPopup" class="targetPopup">
     <p>Adjust the Life Expectancy</p>
     <p class="targetLabel">Target Value:&nbsp;<input id="lifeExpTargetValue" class="targetInput" type="text"/></p>
     <p class="targetLabel">Target Year:&nbsp;<input id="lifeExpTargetYear" class="targetInput" type="text"/></p>
-    <input class="closeButton" id="lifeExpCloseButton" type="Button" value="Close"/>   
+    <input class="closeButton" id="lifeExpCloseButton" type="Button" value="Close"/>
+    <input class="lifeExpRatesOpenButton" id="lifeExpRatesOpenButton"
+      type="Button" value="Adjust Individual Rates"/>
   </div>
+
+  <div id="lifeExpRatesPopup" class="targetPopup">
+    <p>Adjust Individual Life Expectancy Rates</p>
+    <input class="closeButton" id="lifeExpRatesCloseButton" type="Button"
+      value="Close"/>
+  </div>
+
   <div id="netMigPopup" class="targetPopup">
     <p>Adjust the Net Migration</p>
     <p class="targetLabel">Target Value:&nbsp;<input id="netMigTargetValue" class="targetInput" type="text"/></p>
     <p class="targetLabel">Target Year:&nbsp;<input id="netMigTargetYear" class="targetInput" type="text"/></p>
     <input class="closeButton" id="netMigCloseButton" type="Button" value="Close"/>
   </div>
+
   <div id="optionsDropDown" class="dropdown-menu">
     <ul>
       <li id="newSimButton"><a href="#">Run another simulation</a></li>

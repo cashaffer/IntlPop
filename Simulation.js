@@ -77,6 +77,17 @@ $(document).ready(function() {
     $('#fertilityPopup').hide();
   }
 
+  function fertilityRatesOpenButtonClick() {
+    tell("Switch to the individual fertility rate popup");
+    $('#fertilityPopup').hide();
+    $('#fertilityRatesPopup').show();
+  }
+
+  function fertilityRatesCloseButtonClick() {
+    tell("Closed the individual fertility rate popup");
+    $('#fertilityRatesPopup').hide();
+  }
+
   function lifeExpButtonClick() {
     var curr = simState.sim[simState.currSim];
     tell("Opened the life expectancy popup");
@@ -89,17 +100,28 @@ $(document).ready(function() {
     var curr = simState.sim[simState.currSim];
     var currstep = curr.cstep[curr.currstep];
     tell("Closed the life expectancy popup");
-    currstep.targetLifeExpValue = $('#lifeExpTargetValue').val();
+    currstep.targetLifeExpValue = $('#lifeExpTargetValue').val() * 1.0;
     currstep.targetLifeExpYear = $('#lifeExpTargetYear').val();
-    console.log("Target value is " + $('#lifeExpTargetValue').val());
+    console.log("Target value is " + $('#lifeExpTargetValue').val() * 1.0);
     console.log("Target year is " + $('#lifeExpTargetYear').val());
     if (currstep.targetLifeExpYear == currstep.year) {
       console.log("Set the display field for lifeExp");
-      $('p#lifeExpField').text(currstep.targetLifeExpValue).formatNumberCommas();
+      $('p#lifeExpField').text(currstep.targetLifeExpValue.toFixed(1) + ' Years');
     }
     // TODO: Validate the values set in the fields here
     // TODO: If they are bad, then reset them to current values (?)
     $('#lifeExpPopup').hide();
+  }
+
+  function lifeExpRatesOpenButtonClick() {
+    tell("Switch to the individual life expectancy rate popup");
+    $('#lifeExpPopup').hide();
+    $('#lifeExpRatesPopup').show();
+  }
+
+  function lifeExpRatesCloseButtonClick() {
+    tell("Closed the individual life expectancy rate popup");
+    $('#lifeExpRatesPopup').hide();
   }
 
   function netMigButtonClick() {
@@ -190,9 +212,13 @@ $(document).ready(function() {
   /* ------------------ Button Callbacks ------------------------- */
   
   $('#fertilityButton').click(fertilityButtonClick);
+  $('#fertilityRatesOpenButton').click(fertilityRatesOpenButtonClick);
   $('#fertilityCloseButton').click(fertilityCloseButtonClick);
+  $('#fertilityRatesCloseButton').click(fertilityRatesCloseButtonClick);
   $('#lifeExpButton').click(lifeExpButtonClick);
+  $('#lifeExpRatesOpenButton').click(lifeExpRatesOpenButtonClick);
   $('#lifeExpCloseButton').click(lifeExpCloseButtonClick);
+  $('#lifeExpRatesCloseButton').click(lifeExpRatesCloseButtonClick);
   $('#netMigButton').click(netMigButtonClick);
   $('#netMigCloseButton').click(netMigCloseButtonClick);
   $('#simForwardButton').click(simForwardButtonClick);
