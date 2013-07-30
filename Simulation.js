@@ -611,11 +611,12 @@ $(document).ready(function() {
 	currSim.lifeExp = calcLifeExp(currSim);
       } else {
         var lifeExpDiff = (currSim.targetLifeExpValue - currSim.lifeExp) /
-                            (currSim.targetlifeExpYear - currSim.year + 1);
+                            (currSim.targetLifeExpYear - currSim.year + 1);
         console.log("Gradual mortality change based on scenario: " + lifeExpDiff);
         scaleFactor = (1.0 * currSim.lifeExp + lifeExpDiff) /
                       (1.0 * currSim.lifeExp);
         currSim.lifeExp += lifeExpDiff;
+	console.log("The target life expectancy is: " + currSim.lifeExp);
         scaleLifeExp(currSim, scaleFactor);
 	console.log("The real life expectancy is now: " + calcLifeExp(currSim));
         // Stopgap: Show what we really got to instead of += lifeExpDiff
