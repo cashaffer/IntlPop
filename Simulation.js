@@ -2,6 +2,8 @@
 /*global console setCountry */
 $(document).ready(function() {
 
+  var BASEMortality = 0.995; // Minimum mortality rate
+
   /* -------------------- UTILITY FUNCTIONS ----------------------- */
   var tell = function(msg, color) {
     $('p.output').text(msg).css("color", color);
@@ -257,14 +259,37 @@ $(document).ready(function() {
     return pop * 1000;
   }
 
+  // Calculate the life expectancy
+  function calcLifeExp(cStep) {
+    var i;
+    var leTemp, leDeaths;
+    var lifeExp = 0.0;
+    var alive = 1000000.0; // A population to age to calculate life expectancy
+    // Note that infant mortality deaths do not reduce the population,
+    // because I assume that they were already factored into the births count.
+    for (i = 1; i <= 100; i++) {
+      leTemp = alive * ((cStep.maleMortality[i] + cStep.femaleMortality[i]) / 2.0);
+      leDeaths = alive - leTemp;
+      alive = leTemp;
+      lifeExp += (leDeaths / 1000000.0) * (i - 0.5);
+    }
+    for (i = 0; i < 100; i++) { // Calculate a few more years for people over 100
+      leTemp = alive * ((cStep.maleMortality[100] + cStep.femaleMortality[100]) / 2.0);
+      leDeaths = alive - leTemp;
+      alive = leTemp;
+      lifeExp += (leDeaths / 1000000.0) * (100.5 + i);
+    }
+    console.log("At this point in calculating life expectancy, we still have " + alive + " people alive");
+    return lifeExp;
+  }
+
   // Initialize the state for one of the three simulations
   // cStep is the object for the current step in the simulation state.
   function initSim(cStep) {
     var i, j, ipos;
     var currBRate;
-    var leTemp, leDeaths;
-    var currMMRate = 1.0;
-    var currFMRate = 1.0;
+    var currMMRate = BASEMortality;
+    var currFMRate = BASEMortality;
 
     console.log("In initSim: " + simState.currSim);
     cStep.netMigration = initCountry.netMigration * 1000;
@@ -289,10 +314,10 @@ $(document).ready(function() {
     cStep.maleMortality = [];
     cStep.femaleMortality = [];
     for (i = 1; i < initCountry.maleMortality.length; i++) {
-      if (initCountry.malePop[i] !== 0) {
+      if ((initCountry.malePop[i] !== 0) && (initCountry.maleMortality[i] !== 0)) {
         currMMRate = 1.0 - (initCountry.maleMortality[i] / initCountry.malePop[i] * 0.2);
       } // Otherwise, leave it at the last calcuated value (default 1.0)
-      if (initCountry.femalePop[i] !== 0) {
+      if ((initCountry.femalePop[i] !== 0) && (initCountry.femaleMortality[i] !== 0)) {
         currFMRate = 1.0 - (initCountry.femaleMortality[i] / initCountry.femalePop[i] * 0.2);
       } // Otherwise, leave it at the last calcuated value (default 1.0)
       for (j = 0; j < 5; j++) {
@@ -301,45 +326,36 @@ $(document).ready(function() {
       }
     }
     // UN data only goes up to 95+, so the 100+ bin needs special handling
-    cStep.maleMortality[100] = 1.0 - ((1.0 - currMMRate) * 2.0);
-    cStep.femaleMortality[100] = 1.0 - ((1.0 - currFMRate) * 2.0);
+    cStep.maleMortality[100] = currMMRate;
+    cStep.femaleMortality[100] = currFMRate;
+
     // We have the IMR, so set it explicitly
     cStep.maleMortality[0] = 1.0 - (initCountry.infantMortality / 1000.0);
     cStep.femaleMortality[0] = 1.0 - (initCountry.infantMortality / 1000.0);
+
     // We need to treat years 1-4 specially, since most of those die in year 0.
     var births = 0;
     for (i = 0; i < initCountry.births.length; i++) {
       births += initCountry.births[i];
     }
-    var deaths = (initCountry.maleMortality[0] * 1000.0) -
-      (births * initCountry.infantMortality / 2.0);
+    var infantDeaths = births * initCountry.infantMortality;
+    var deaths = (initCountry.maleMortality[0] * 1000.0) - infantDeaths/2.0;
     currMMRate = 1.0 - (deaths / 4.0) / (initCountry.malePop[0] * 200.0);
-    deaths = (initCountry.femaleMortality[0] * 1000.0) -
-      (births * initCountry.infantMortality / 2.0);
+    if (currMMRate > 1.0) { currMMRate = 1.0; }
+    deaths = (initCountry.femaleMortality[0] * 1000.0) - infantDeaths/2.0;
     currFMRate = 1.0 - (deaths / 4.0) / (initCountry.femalePop[0] * 200.0);
-    console.log("Deaths: " + deaths);
+    if (currFMRate > 1.0) { currFMRate = 1.0; }
     for (i = 1; i <= 4; i++) {
       cStep.maleMortality[i] = currMMRate;
       cStep.femaleMortality[i] = currFMRate;
     }
-
+    console.log("Child mortality rate calc: births: " + births + ", infantDeaths: " + infantDeaths +
+                ", net female deaths: " + deaths);
+    console.log("Mortality rates:");
+    console.log(cStep.maleMortality);
+    console.log(cStep.femaleMortality);
     // Calculate the life expectancy
-    cStep.lifeExp = 0.0;
-    var alive = 1000000.0; // A population to age to calculate life expectancy
-    // Note that infant mortality deaths do not reduce the population,
-    // because I assume that they were already factored into the births count.
-    for (i = 1; i <= 100; i++) {
-      leTemp = alive * ((cStep.maleMortality[i] + cStep.femaleMortality[i]) / 2.0);
-      leDeaths = alive - leTemp;
-      alive = leTemp;
-      cStep.lifeExp += (leDeaths / 1000000.0) * (i - 0.5);
-    }
-    for (i = 0; i < 20; i++) { // Calculate a few more years for people over 100
-      leTemp = alive * ((cStep.maleMortality[100] + cStep.femaleMortality[100]) / 2.0);
-      leDeaths = alive - leTemp;
-      alive = leTemp;
-      cStep.lifeExp += (leDeaths / 1000000.0) * (100.5 + i);
-    }
+    cStep.lifeExp = calcLifeExp(cStep);
 
     // Calculate the yearly populations (male and female)
     cStep.malePop = [];
@@ -506,6 +522,20 @@ $(document).ready(function() {
     console.log("New birth Rates: " + currSim.birthrate);
   }
 
+  // Scale the mortality rates by the scale factor
+  // Used for setting rates in scenarios
+  // TODO: THIS CALCULATION IS PROBABLY WRONG, BUT NEED CORRECT MORTALITY RATES TO CHECK
+  // It will probably require iterative convergence
+  function scaleLifeExp(currSim, scaleFactor) {
+    scaleFactor = 1.0/scaleFactor;
+    console.log("Old mortality Rates: " + currSim.maleMortality);
+    console.log("Scale Factor: " + scaleFactor);
+    for (var i = 0; i <= 100; i++) {
+      currSim.maleMortality[i] = 1.0 - ((1.0 - currSim.maleMortality[i]) * scaleFactor);
+      currSim.femaleMortality[i] = 1.0 - ((1.0 - currSim.femaleMortality[i]) * scaleFactor);
+    }
+    console.log("New mortality Rates: " + currSim.maleMortality);
+  }
 
   // Advance the current simulation state by one year
   function advanceSimState(currSim) {
@@ -520,6 +550,8 @@ $(document).ready(function() {
     console.log("Target Migration Year: " + currSim.targetMigYear);
 
     // Make any changes required by "scenarios"
+
+    // Update migration for scenarios (if appropriate)
     if (currSim.targetMigValue !== currSim.netMigration) {
       console.log("Updating Migration Scenario");
       if (currSim.targetMigYear < currSim.year) {
@@ -536,7 +568,9 @@ $(document).ready(function() {
       currSim.targetMigYear = currSim.year;
     }
 
-    var scaleFactor;
+    var scaleFactor; // Used by both TFR and life expectancy scenario updates
+
+    // Update fertility rates for scenarios (if appropriate)
     if (currSim.targetFertilityValue !== currSim.fertility) {
       console.log("Updating Fertility Scenario");
       if (currSim.targetFertilityYear < currSim.year) {
@@ -559,13 +593,40 @@ $(document).ready(function() {
     if (currSim.targetFertilityYear < currSim.year) {
       currSim.targetFertilityYear = currSim.year;
     }
+
+
+    // Update mortality rates for scenarios (if appropriate)
+
     if (currSim.targetLifeExpValue !== currSim.lifeExp) {
-      console.log("Updating Life Expectancy Scenario");
+      console.log("Updating mortality Scenario");
+      if (currSim.targetLifeExpYear < currSim.year) {
+        console.log("Immediate mortality change");
+        scaleFactor = (1.0 * currSim.targetLifeExpValue) /
+                      (1.0 * currSim.lifeExp);
+	console.log("targetLifeExpValue: " + currSim.targetLifeExpValue + ", current LifeExp: " + currSim.lifeExp);
+        scaleLifeExp(currSim, scaleFactor);
+	console.log("Change Life Expectancy from " + currSim.lifeExp + " to " + currSim.targetLifeExpValue);
+	console.log("The real life expectancy is now: " + calcLifeExp(currSim));
+        // Stopgap: Show what we really got to instead of currSim.targetLifeExpValue;
+	currSim.lifeExp = calcLifeExp(currSim);
+      } else {
+        var lifeExpDiff = (currSim.targetLifeExpValue - currSim.lifeExp) /
+                            (currSim.targetlifeExpYear - currSim.year + 1);
+        console.log("Gradual mortality change based on scenario: " + lifeExpDiff);
+        scaleFactor = (1.0 * currSim.lifeExp + lifeExpDiff) /
+                      (1.0 * currSim.lifeExp);
+        currSim.lifeExp += lifeExpDiff;
+        scaleLifeExp(currSim, scaleFactor);
+	console.log("The real life expectancy is now: " + calcLifeExp(currSim));
+        // Stopgap: Show what we really got to instead of += lifeExpDiff
+	currSim.lifeExp = calcLifeExp(currSim);
+      }
     }
     if (currSim.targetLifeExpYear < currSim.year) {
       currSim.targetLifeExpYear = currSim.year;
     }
 
+    // Now, step the simulation by a year
     var deaths = 0;
     for (i = 0; i <= 99; i++) {
       deaths += currSim.malePop[i] * currSim.maleMortality[i + 1];
