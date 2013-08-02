@@ -81,12 +81,81 @@ $(document).ready(function() {
 
   function fertilityRatesOpenButtonClick() {
     tell("Switch to the individual fertility rate popup");
+    var curr = simState.sim[simState.currSim];
+    var cstep = curr.cstep[curr.currstep];
     $('#fertilityPopup').hide();
+    $('#birth1').val(Math.round(cstep.birthrate[15] * 1000.0));
+    $('#birth2').val(Math.round(cstep.birthrate[20] * 1000.0));
+    $('#birth3').val(Math.round(cstep.birthrate[25] * 1000.0));
+    $('#birth4').val(Math.round(cstep.birthrate[30] * 1000.0));
+    $('#birth5').val(Math.round(cstep.birthrate[35] * 1000.0));
+    $('#birth6').val(Math.round(cstep.birthrate[40] * 1000.0));
+    $('#birth7').val(Math.round(cstep.birthrate[45] * 1000.0));
     $('#fertilityRatesPopup').show();
   }
 
   function fertilityRatesCloseButtonClick() {
     tell("Closed the individual fertility rate popup");
+    var curr = simState.sim[simState.currSim];
+    var cstep = curr.cstep[curr.currstep];
+    var temp, i, newbirth;
+    temp = $('#birth1').val();
+    if (temp != Math.round(cstep.birthrate[15] * 1000.0)) {
+      newbirth = temp/1000.0;
+      for (i=0; i<5; i++) {
+        cstep.birthrate[15+i] = newbirth;
+      }
+    }
+    temp = $('#birth2').val();
+    if (temp != Math.round(cstep.birthrate[20] * 1000.0)) {
+      newbirth = temp/1000.0;
+      for (i=0; i<5; i++) {
+        cstep.birthrate[20+i] = newbirth;
+      }
+    }
+    temp = $('#birth3').val();
+    if (temp != Math.round(cstep.birthrate[25] * 1000.0)) {
+      newbirth = temp/1000.0;
+      for (i=0; i<5; i++) {
+        cstep.birthrate[25+i] = newbirth;
+      }
+    }
+    temp = $('#birth4').val();
+    if (temp != Math.round(cstep.birthrate[30] * 1000.0)) {
+      newbirth = temp/1000.0;
+      for (i=0; i<5; i++) {
+        cstep.birthrate[30+i] = newbirth;
+      }
+    }
+    temp = $('#birth5').val();
+    if (temp != Math.round(cstep.birthrate[35] * 1000.0)) {
+      newbirth = temp/1000.0;
+      for (i=0; i<5; i++) {
+        cstep.birthrate[35+i] = newbirth;
+      }
+    }
+    temp = $('#birth6').val();
+    if (temp != Math.round(cstep.birthrate[40] * 1000.0)) {
+      newbirth = temp/1000.0;
+      for (i=0; i<5; i++) {
+        cstep.birthrate[40+i] = newbirth;
+      }
+    }
+    temp = $('#birth7').val();
+    if (temp != Math.round(cstep.birthrate[45] * 1000.0)) {
+      newbirth = temp/1000.0;
+      for (i=0; i<5; i++) {
+        cstep.birthrate[45+i] = newbirth;
+      }
+    }
+    console.log("New birth rates: " + cstep.birthrate);
+    var newTFR = 0.0;
+    for(i=15; i<50; i++) {
+      newTFR += cstep.birthrate[i];
+    }
+    cstep.targetFertilityValue = cstep.fertility = newTFR;
+    console.log("New fertility: " + cstep.fertility);
+    $('p#fertilityField').text(cstep.targetFertilityValue.toFixed(1) + ' Children');
     $('#fertilityRatesPopup').hide();
   }
 
@@ -283,11 +352,29 @@ $(document).ready(function() {
     return lifeExp;
   }
 
+
+  // Calculate the yearly birth rates, and the TFR
+  function setBirthRates(sim, cohortRates) {
+    var currBRate, i, j;
+    sim.fertility = 0.0;
+    sim.birthrate = [];
+    for (i = 0; i < 15; i++) { // The UN data show no births for ages 0-14
+      sim.birthrate[i] = 0;
+    }
+    for (i = 0; i < cohortRates.length; i++) {
+      sim.fertility += (cohortRates[i] / initCountry.femalePop[i + 3]);
+      currBRate = (cohortRates[i] / initCountry.femalePop[i + 3] * 0.2);
+      for (j = 0; j < 5; j++) {
+        sim.birthrate[15 + i * 5 + j] = currBRate;
+      }
+    }
+  }
+
+
   // Initialize the state for one of the three simulations
   // cStep is the object for the current step in the simulation state.
   function initSim(cStep) {
     var i, j, ipos;
-    var currBRate;
     var currMMRate = BASEMortality;
     var currFMRate = BASEMortality;
 
@@ -296,19 +383,8 @@ $(document).ready(function() {
     cStep.pop = initialPop();
     cStep.year = initCountry.startYear;
 
-    // Calculate the yearly birth rates, and the TFR
-    cStep.fertility = 0.0;
-    cStep.birthrate = [];
-    for (i = 0; i < 15; i++) { // The UN data show no births for ages 0-14
-      cStep.birthrate[i] = 0;
-    }
-    for (i = 0; i < initCountry.births.length; i++) {
-      cStep.fertility += (initCountry.births[i] / initCountry.femalePop[i + 3]);
-      currBRate = (initCountry.births[i] / initCountry.femalePop[i + 3] * 0.2);
-      for (j = 0; j < 5; j++) {
-        cStep.birthrate[15 + i * 5 + j] = currBRate;
-      }
-    }
+    setBirthRates(cStep, initCountry.births);
+    console.log("Birthrates: " + cStep.birthrate);
 
     // Calculate the yearly death rates (male and female)
     cStep.maleMortality = [];
