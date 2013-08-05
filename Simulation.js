@@ -84,13 +84,9 @@ $(document).ready(function() {
     var curr = simState.sim[simState.currSim];
     var cstep = curr.cstep[curr.currstep];
     $('#fertilityPopup').hide();
-    $('#birth1').val(Math.round(cstep.birthrate[15] * 1000.0));
-    $('#birth2').val(Math.round(cstep.birthrate[20] * 1000.0));
-    $('#birth3').val(Math.round(cstep.birthrate[25] * 1000.0));
-    $('#birth4').val(Math.round(cstep.birthrate[30] * 1000.0));
-    $('#birth5').val(Math.round(cstep.birthrate[35] * 1000.0));
-    $('#birth6').val(Math.round(cstep.birthrate[40] * 1000.0));
-    $('#birth7').val(Math.round(cstep.birthrate[45] * 1000.0));
+    for(var i=1; i<=7; i++) {
+      $('#birth'+i).val(Math.round(cstep.birthrate[10+5*i] * 1000.0));
+    }
     $('#fertilityRatesPopup').show();
   }
 
@@ -98,54 +94,15 @@ $(document).ready(function() {
     tell("Closed the individual fertility rate popup");
     var curr = simState.sim[simState.currSim];
     var cstep = curr.cstep[curr.currstep];
-    var temp, i, newbirth;
-    temp = $('#birth1').val();
-    if (temp != Math.round(cstep.birthrate[15] * 1000.0)) {
-      newbirth = temp/1000.0;
-      for (i=0; i<5; i++) {
-        cstep.birthrate[15+i] = newbirth;
-      }
-    }
-    temp = $('#birth2').val();
-    if (temp != Math.round(cstep.birthrate[20] * 1000.0)) {
-      newbirth = temp/1000.0;
-      for (i=0; i<5; i++) {
-        cstep.birthrate[20+i] = newbirth;
-      }
-    }
-    temp = $('#birth3').val();
-    if (temp != Math.round(cstep.birthrate[25] * 1000.0)) {
-      newbirth = temp/1000.0;
-      for (i=0; i<5; i++) {
-        cstep.birthrate[25+i] = newbirth;
-      }
-    }
-    temp = $('#birth4').val();
-    if (temp != Math.round(cstep.birthrate[30] * 1000.0)) {
-      newbirth = temp/1000.0;
-      for (i=0; i<5; i++) {
-        cstep.birthrate[30+i] = newbirth;
-      }
-    }
-    temp = $('#birth5').val();
-    if (temp != Math.round(cstep.birthrate[35] * 1000.0)) {
-      newbirth = temp/1000.0;
-      for (i=0; i<5; i++) {
-        cstep.birthrate[35+i] = newbirth;
-      }
-    }
-    temp = $('#birth6').val();
-    if (temp != Math.round(cstep.birthrate[40] * 1000.0)) {
-      newbirth = temp/1000.0;
-      for (i=0; i<5; i++) {
-        cstep.birthrate[40+i] = newbirth;
-      }
-    }
-    temp = $('#birth7').val();
-    if (temp != Math.round(cstep.birthrate[45] * 1000.0)) {
-      newbirth = temp/1000.0;
-      for (i=0; i<5; i++) {
-        cstep.birthrate[45+i] = newbirth;
+    var temp, i, j, newbirth;
+
+    for(j=1; j<=7; j++) {
+      temp = $('#birth'+j).val();
+      if (temp != Math.round(cstep.birthrate[10+5*j] * 1000.0)) {
+	newbirth = temp/1000.0;
+	for (i=0; i<5; i++) {
+	  cstep.birthrate[10+5*j+i] = newbirth;
+	}
       }
     }
     console.log("New birth rates: " + cstep.birthrate);
