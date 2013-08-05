@@ -3,6 +3,7 @@
 $(document).ready(function() {
 
   var BASEMortality = 0.995; // Minimum mortality rate
+  var EPSILON = 0.04; // For comparing floating point numbers
 
   /* -------------------- UTILITY FUNCTIONS ----------------------- */
   var tell = function(msg, color) {
@@ -557,17 +558,19 @@ $(document).ready(function() {
 
   // Scale the mortality rates by the scale factor
   // Used for setting rates in scenarios
-  // TODO: THIS CALCULATION IS PROBABLY WRONG, BUT NEED CORRECT MORTALITY RATES TO CHECK
-  // It will probably require iterative convergence
-  function scaleLifeExp(currSim, scaleFactor) {
-    scaleFactor = 1.0/scaleFactor;
-    console.log("Old mortality Rates: " + currSim.maleMortality);
-    console.log("Scale Factor: " + scaleFactor);
-    for (var i = 0; i <= 100; i++) {
-      currSim.maleMortality[i] = 1.0 - ((1.0 - currSim.maleMortality[i]) * scaleFactor);
-      currSim.femaleMortality[i] = 1.0 - ((1.0 - currSim.femaleMortality[i]) * scaleFactor);
+  // Uses iterative convergence to get the results
+  function scaleLifeExp(currSim, targetLE) {
+    console.log("IN SCALEDLIFEEXP:" + currSim.lifeExp + ", " + targetLE);
+    var scaleFactor;
+    while (Math.abs(currSim.lifeExp - targetLE) > EPSILON) {
+      scaleFactor = (1.0 * currSim.lifeExp) / (1.0 * targetLE);
+      for (var i = 0; i <= 100; i++) {
+	currSim.maleMortality[i] = 1.0 - ((1.0 - currSim.maleMortality[i]) * scaleFactor);
+	currSim.femaleMortality[i] = 1.0 - ((1.0 - currSim.femaleMortality[i]) * scaleFactor);
+      }
+      currSim.lifeExp = calcLifeExp(currSim);
+      console.log("SCALED: New life expectancy: " + currSim.lifeExp);
     }
-    console.log("New mortality Rates: " + currSim.maleMortality);
   }
 
   // Advance the current simulation state by one year
@@ -629,31 +632,18 @@ $(document).ready(function() {
 
 
     // Update mortality rates for scenarios (if appropriate)
-
-    if (currSim.targetLifeExpValue !== currSim.lifeExp) {
+    if (Math.abs(currSim.lifeExp - currSim.targetLifeExpValue) > EPSILON) {
       console.log("Updating mortality Scenario");
       if (currSim.targetLifeExpYear < currSim.year) {
-        console.log("Immediate mortality change");
-        scaleFactor = (1.0 * currSim.targetLifeExpValue) /
-                      (1.0 * currSim.lifeExp);
-	console.log("targetLifeExpValue: " + currSim.targetLifeExpValue + ", current LifeExp: " + currSim.lifeExp);
-        scaleLifeExp(currSim, scaleFactor);
-	console.log("Change Life Expectancy from " + currSim.lifeExp + " to " + currSim.targetLifeExpValue);
-	console.log("The real life expectancy is now: " + calcLifeExp(currSim));
-        // Stopgap: Show what we really got to instead of currSim.targetLifeExpValue;
-	currSim.lifeExp = calcLifeExp(currSim);
+        console.log("Immediate mortality change. Change Life Expectancy from " +
+                    currSim.lifeExp + " to " + currSim.targetLifeExpValue);
+	scaleLifeExp(currSim, currSim.targetLifeExpValue);
       } else {
         var lifeExpDiff = (currSim.targetLifeExpValue - currSim.lifeExp) /
                             (currSim.targetLifeExpYear - currSim.year + 1);
         console.log("Gradual mortality change based on scenario: " + lifeExpDiff);
-        scaleFactor = (1.0 * currSim.lifeExp + lifeExpDiff) /
-                      (1.0 * currSim.lifeExp);
-        currSim.lifeExp += lifeExpDiff;
-	console.log("The target life expectancy is: " + currSim.lifeExp);
-        scaleLifeExp(currSim, scaleFactor);
+        scaleLifeExp(currSim, currSim.lifeExp + lifeExpDiff);
 	console.log("The real life expectancy is now: " + calcLifeExp(currSim));
-        // Stopgap: Show what we really got to instead of += lifeExpDiff
-	currSim.lifeExp = calcLifeExp(currSim);
       }
     }
     if (currSim.targetLifeExpYear < currSim.year) {
