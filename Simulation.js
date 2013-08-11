@@ -119,9 +119,13 @@ $(document).ready(function() {
 
   function lifeExpButtonClick() {
     var curr = simState.sim[simState.currSim];
+    var cstep = curr.cstep[curr.currstep];
     tell("Opened the life expectancy popup");
-    $('#lifeExpTargetValue').val(curr.cstep[curr.currstep].targetLifeExpValue);
-    $('#lifeExpTargetYear').val(curr.cstep[curr.currstep].targetLifeExpYear);
+    $('#lifeExpTargetValue').val(cstep.targetLifeExpValue);
+    $('#lifeExpTargetYear').val(cstep.targetLifeExpYear);
+    var imr = Math.round((1.0 - cstep.maleMortality[0]) * 1000.0);
+    $('#IMR').val(imr);
+    console.log("IMR: " + cstep.maleMortality[0]);
     $('#lifeExpPopup').show();
   }
 
@@ -129,6 +133,9 @@ $(document).ready(function() {
     var curr = simState.sim[simState.currSim];
     var currstep = curr.cstep[curr.currstep];
     tell("Closed the life expectancy popup");
+    var imr = 1.0 - $('#IMR').val() / 1000.0;
+    currstep.maleMortality[0] = currstep.femaleMortality[0] = imr;
+    console.log("New IMR: " + imr);
     currstep.targetLifeExpValue = $('#lifeExpTargetValue').val() * 1.0;
     currstep.targetLifeExpYear = $('#lifeExpTargetYear').val();
     console.log("Target value is " + $('#lifeExpTargetValue').val() * 1.0);
@@ -136,6 +143,8 @@ $(document).ready(function() {
     if (currstep.targetLifeExpYear == currstep.year) {
       console.log("Set the display field for lifeExp");
       $('p#lifeExpField').text(currstep.targetLifeExpValue.toFixed(1) + ' Years');
+    } else {
+      $('p#lifeExpField').text(calcLifeExp(currSim) + ' Years');
     }
     // TODO: Validate the values set in the fields here
     // TODO: If they are bad, then reset them to current values (?)

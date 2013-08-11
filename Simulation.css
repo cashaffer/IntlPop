@@ -207,6 +207,12 @@ button {padding: 1px 4px;}
   -moz-border-radius: 20px;
 }
 
+#lifeExpCloseButton {
+  position: relative;
+  bottom: 10px;
+}
+
+
 #lifeExpRatesPopup p {margin-bottom: 10px;}
 #lifeExpRatesPopup .closeButton {
   position: relative;
@@ -216,4 +222,100 @@ button {padding: 1px 4px;}
 
 .lifeExpInput { 
   width: 40px;
+}
+
+.pyrlabelm { 
+  position: absolute;
+  font-size: 8px;
+  left: 15px;
+}
+
+.pyrlabelf { 
+  position: absolute;
+  font-size: 8px;
+  left: 320px;
+}
+
+#fp0 {
+  top: 42px;
+}
+
+#fp1 {
+  top: 53px;
+}
+
+#fp2 {
+  top: 64px;
+}
+
+#fp3 {
+  top: 75px;
+}
+
+#fp4 {
+  top: 86px;
+}
+
+#fp5 {
+  top: 97px;
+}
+
+#fp6 {
+  top: 108px;
+}
+
+#fp7 {
+  top: 119px;
+}
+
+#fp8 {
+  top: 130px;
+}
+
+#fp9 {
+  top: 141px;
+}
+
+#fp10 {
+  top: 152px;
+}
+
+#fp11 {
+  top: 163px;
+}
+
+#fp12 {
+  top: 174px;
+}
+
+#fp13 {
+  top: 185px;
+}
+
+#fp14 {
+  top: 196px;
+}
+
+#fp15 {
+  top: 207px;
+}
+
+#fp16 {
+  top: 218px;
+}
+
+#fp17 {
+  top: 229px;
+}
+
+#fp18 {
+  top: 240px;
+}
+
+#fp19 {
+  top: 251px;
+}
+
+#fp20 {
+  top: 262px;
 }
