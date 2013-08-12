@@ -70,7 +70,6 @@ $(document).ready(function() {
     currstep.targetFertilityYear = $('#fertilityTargetYear').val();
     console.log("Target value is " + $('#fertilityTargetValue').val() * 1.0);
     console.log("Target year is " + $('#fertilityTargetYear').val());
-//    currstep.targetFertilityValue = currstep.targetFertilityValue * 1.0;
     if (currstep.targetFertilityYear == currstep.year) {
       console.log("Set the display field for fertility");
       $('p#fertilityField').text(currstep.targetFertilityValue.toFixed(1) + ' Children');
@@ -140,12 +139,10 @@ $(document).ready(function() {
     currstep.targetLifeExpYear = $('#lifeExpTargetYear').val();
     console.log("Target value is " + $('#lifeExpTargetValue').val() * 1.0);
     console.log("Target year is " + $('#lifeExpTargetYear').val());
-    if (currstep.targetLifeExpYear == currstep.year) {
-      console.log("Set the display field for lifeExp");
-      $('p#lifeExpField').text(currstep.targetLifeExpValue.toFixed(1) + ' Years');
-    } else {
-      $('p#lifeExpField').text(calcLifeExp(currSim) + ' Years');
+    if (currstep.targetLifeExpYear !== currstep.year) {
+      currstep.targetLifeExpValue = calcLifeExp(currstep);
     }
+    $('p#lifeExpField').text(currstep.targetLifeExpValue.toFixed(1) + ' Years');
     // TODO: Validate the values set in the fields here
     // TODO: If they are bad, then reset them to current values (?)
     $('#lifeExpPopup').hide();
@@ -301,8 +298,9 @@ $(document).ready(function() {
     var leTemp, leDeaths;
     var lifeExp = 0.0;
     var alive = 1000000.0; // A population to age to calculate life expectancy
-    // Note that infant mortality deaths do not reduce the population,
-    // because I assume that they were already factored into the births count.
+    // Adjust for infant mortality
+    alive = alive * ((cStep.maleMortality[0] + cStep.femaleMortality[0]) / 2.0);
+    console.log("Alive after IMR: " + alive);
     for (i = 1; i <= 100; i++) {
       leTemp = alive * ((cStep.maleMortality[i] + cStep.femaleMortality[i]) / 2.0);
       leDeaths = alive - leTemp;
