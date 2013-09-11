@@ -3,15 +3,171 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Intlpop Project Help Page</title>
+  <title>Intlpop 3 Help Page</title>
   <link rel="stylesheet" href="GeoSim.css" type="text/css" />
 </head>
 
 <body>
-<h1>IntlPop Help Page</h1>
+<h1>IntlPop 3 Help Page</h1>
 
 <p>
-Once we get the interface settled...
+IntlPop 3 allows you to run simple demographic simulations using data
+about countries or regions of the world to predict future population
+trends.
+</p>
+
+<h2>Getting Started</h2>
+
+<p>
+When you open IntlPop 3, you should see a map taking up most of the
+interface pane, with a list of countries/regions immediately to its
+right. At the top of the pane are a few buttons and some information
+about which country/region is currently selected.
+</p>
+
+<h3>Using the Map to Select a Country or Region</h3>
+
+<p>
+In the lower left corner of the map are three radio buttons that allow
+you to view the world by country, region, or continent. Just click on
+the one that you want.
+</p>
+
+<p>
+In the upper left corner of the map are +/- buttons to adjust the size
+of what you see on the map.
+You can move around the map by clicking and dragging in the desired
+direction.
+When your mouse cursor is hovering over a country or region, the name
+should appear above the map in the "Current Hover" field.
+</p>
+
+<p>
+You can select a country or region simply by clicking on it. At this
+point, its name should appear in the "Current Selection" field above
+the map.
+</p>
+
+<h3>Using the Country List to Select a Country or Region</h3>
+
+<p>
+You can scroll down the list of countries and regions to make your
+selection. You can also cut down on the number of entries to look
+through by typing a search string into the empty box next to the
+"Select It" button.
+</p>
+
+<h2>Using the Simulation Window</h2>
+
+<p>
+Once you have selected your country or region to explore, click the
+"Select It" button to open a simulation window.
+You can select as many countries or regions as you like, and open as
+many simulation windows as you like.
+Each simulation window is independant of the others.
+</p>
+
+<h3>Running a Simulation</h2>
+
+<p>
+You can simulate the next step (10 years) for the current conditions
+by clicking the "Sim &gt;" button, until you reach the end of the
+simulation period (in 2090).
+If you have run at least one time step, then you can back up by
+clicking the "Sim &lt;" button.
+</p>
+
+<p>
+The "Options" button allows you to start another simulation.
+Any new simulation will start with the default demographic data.
+(See "Changing the Scenario" below.)
+You may run up to three simulations for comparison.
+At any given instant, the population pyramid that you see on the
+screen refers to the current timestep of the current simulation that
+you are running.
+The graph in the middle of the screen shows lines for each of the
+simulations that you have run, each in its own color.
+The box on the right side of the screen will show the year and
+the corresponding population for the last timestep that you have run
+for each of the simulations.
+This allows you to see and compare the results of up to three
+simulations in the graph and in the final population numbers.
+From the Options menu, you can also reset the simulation (making
+everything just like when you first opened that simulation window).
+</p>
+
+<h3>Changing the Scenario</h2>
+
+<p>
+IntlPop 3 allows you to change the state of the simulation in many
+ways.
+Making changes will then affect the projected outcome for the
+simulation.
+</p>
+
+<p>
+If you place the cursor over a bar of the population pyramid, then you
+will see the absolute population for that cohort (a 5-year age range
+for either males or females).
+You can also change the value of the bar (shrinking or growing the
+number of people in that cohort) by moving the cursor to the end of
+the bar and then dragging it in or out.
+When you adjust the value of a bar, the total population shown in the
+box to the right of the simulation window will also update.
+</p>
+
+<p>
+The "Fertility Rate" box shows the total fertility rate (the average
+number of children that a woman will have in her lifetime).
+Clicking on the button will open a box that lets you adjust this value
+in a number of ways.
+You can just type in a new value in the "Target Value" field.
+If you do so, you can also adjust the "Target Year" field.
+If you do not change the "Target Year", then your changed value will
+be applied immediately to the simulation.
+If you change the year to some time in the future, then the total
+fertility rate will gradually change over time from its current value
+to your target value, reaching the target in the year that you
+specified.
+If you click the "Adjust Individual Rates" button, then you will see a
+list of 5-year cohorts and the actual number of children per thousand
+women of the corresponding age.
+You can then type in a new value to any of those cohorts.
+Such changes will take place immediately, rather than over time.
+The "Close" button will close the window.
+</p>
+
+<p>
+The "Life Expectancy" box shows the life expectancy for an individual
+born at that step in the simulation.
+If you click the "Life Expectancy" button, then you will be able to
+adjust various aspects of the mortality rates for the population.
+Similar to the "Fertility Rate", you can adjust the overall life
+expectancy by typing a new number in the "Target Value" field.
+And you can use the "Target Year" field to make your change take place
+gradually over time.
+Changing the "Life Expectancy" will alter all individual cohort
+mortality rates that the simulation uses.
+IntlPop 3 does not give you any direct way to alter those mortality
+rates individually.
+However, you can adjust the Infant Mortality Rate (the number of
+infant deaths per thousand births) by typing a new number into that
+field.
+The "Close" button will close the Life Expectancy window.
+</p>
+
+<p>
+The "Net Migration" box shows the number of people in a given year who
+move out of the country (if the number is negative) or into the
+country (if the number is positive).
+If you click on the "Net Migration" button, you will be able to change
+this number.
+If you do not change the "Target Year" field, then your change will
+take place immediately.
+If you change this field to a year in the future, then the annual
+migration will be changed gradually over time until it reaches the
+specified value in the specified year.
+The "Close" button will close the Net Migration window.
 </p>
 
 </body>

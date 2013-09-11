@@ -77,16 +77,10 @@ button {
   left: 270px;
 }
 
-.countries {
-  position: absolute;
-  top: 45px;
-  left: 5px;
-}
-
 .hover {
   position: absolute;
   top: 45px;
-  left: 450px;
+  left: 5px;
 }
 
 .currentSelection {
@@ -98,7 +92,7 @@ button {
 #doSelect {
   position: absolute;
   top: 0px;
-  left: 635px;
+  left: 630px;
 }
 
 /* .output is where we send text messages to explain what is going on */
