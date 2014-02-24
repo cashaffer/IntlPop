@@ -166,27 +166,30 @@ button {padding: 1px 4px;}
   left: -70px;
 }
 
-#birthlab4 { 
+#birthlab4 {
   position: relative;
   left: -70px;
 }
 
 #birthlab5 { 
   position: relative;
-  top: -115px;
-  left: 50px;
+  top: -116px;
+  left: 150px;
+  width: 110px;
 }
 
 #birthlab6 { 
   position: relative;
-  top: -115px;
-  left: 50px;
+  top: -116px;
+  left: 150px;
+  width: 110px;
 }
 
 #birthlab7 { 
   position: relative;
-  top: -115px;
-  left: 50px;
+  top: -116px;
+  left: 150px;
+  width: 110px;
 }
 
 #lifeExpRatesPopup {

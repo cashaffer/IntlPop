@@ -68,8 +68,8 @@ $(document).ready(function() {
     tell("Closed the fertility rate popup");
     currstep.targetFertilityValue = $('#fertilityTargetValue').val() * 1.0;
     currstep.targetFertilityYear = $('#fertilityTargetYear').val();
-    console.log("Target value is " + $('#fertilityTargetValue').val() * 1.0);
-    console.log("Target year is " + $('#fertilityTargetYear').val());
+    console.log("Target TFR value: " + $('#fertilityTargetValue').val() * 1.0);
+    console.log("Target TFR year: " + $('#fertilityTargetYear').val());
     if (currstep.targetFertilityYear == currstep.year) {
       console.log("Set the display field for fertility");
       $('p#fertilityField').text(currstep.targetFertilityValue.toFixed(1) + ' Children');
@@ -137,26 +137,19 @@ $(document).ready(function() {
     console.log("New IMR: " + imr);
     currstep.targetLifeExpValue = $('#lifeExpTargetValue').val() * 1.0;
     currstep.targetLifeExpYear = $('#lifeExpTargetYear').val();
-    console.log("Target value is " + $('#lifeExpTargetValue').val() * 1.0);
-    console.log("Target year is " + $('#lifeExpTargetYear').val());
-    if (currstep.targetLifeExpYear !== currstep.year) {
+    console.log("Target LifeEx value: " + $('#lifeExpTargetValue').val() * 1.0);
+    console.log("Target LifeEx year: " + $('#lifeExpTargetYear').val());
+    if (currstep.targetLifeExpYear == currstep.year) {
+      console.log("Old LifeExp: " + currstep.targetLifeExpValue);
+      scaleLifeExp(currstep, currstep.targetLifeExpValue);
       currstep.targetLifeExpValue = calcLifeExp(currstep);
+      console.log("New LifeExp: " + currstep.targetLifeExpValue);
+      console.log("Set the display field for Life Ex");
+      $('p#lifeExpField').text(currstep.targetLifeExpValue.toFixed(1) + ' Years');
     }
-    $('p#lifeExpField').text(currstep.targetLifeExpValue.toFixed(1) + ' Years');
     // TODO: Validate the values set in the fields here
     // TODO: If they are bad, then reset them to current values (?)
     $('#lifeExpPopup').hide();
-  }
-
-  function lifeExpRatesOpenButtonClick() {
-    tell("Switch to the individual life expectancy rate popup");
-    $('#lifeExpPopup').hide();
-    $('#lifeExpRatesPopup').show();
-  }
-
-  function lifeExpRatesCloseButtonClick() {
-    tell("Closed the individual life expectancy rate popup");
-    $('#lifeExpRatesPopup').hide();
   }
 
   function netMigButtonClick() {
@@ -251,9 +244,7 @@ $(document).ready(function() {
   $('#fertilityCloseButton').click(fertilityCloseButtonClick);
   $('#fertilityRatesCloseButton').click(fertilityRatesCloseButtonClick);
   $('#lifeExpButton').click(lifeExpButtonClick);
-  $('#lifeExpRatesOpenButton').click(lifeExpRatesOpenButtonClick);
   $('#lifeExpCloseButton').click(lifeExpCloseButtonClick);
-  $('#lifeExpRatesCloseButton').click(lifeExpRatesCloseButtonClick);
   $('#netMigButton').click(netMigButtonClick);
   $('#netMigCloseButton').click(netMigCloseButtonClick);
   $('#simForwardButton').click(simForwardButtonClick);
@@ -292,7 +283,7 @@ $(document).ready(function() {
     return pop * 1000;
   }
 
-  // Calculate the life expectancy
+  // Calculate the life expectancy from the current rates
   function calcLifeExp(cStep) {
     var i;
     var leTemp, leDeaths;
