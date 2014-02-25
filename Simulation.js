@@ -438,6 +438,8 @@ $(document).ready(function() {
     }).done(function(response) {
       initCountry = response;
       $('#countryField').text(initCountry.name);
+      // The value read from the UN data files is for a 5 year period, so rescale
+      initCountry.netMigration  = initCountry.netMigration/5;
       initSimState();
     }).fail(function() {
       tell("Oops! This page was called with a bad country file name: " + filename, "red");
